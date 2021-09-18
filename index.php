@@ -7,6 +7,7 @@ if (is_file('config.php')) {
 	require_once('config.php');
 }
 
+// special comment
 //phpinfo();
 
 // Install
