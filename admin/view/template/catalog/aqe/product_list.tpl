@@ -601,13 +601,13 @@
 									?>
 									<div style="color: #23b423;border-color: #23b423;" id="" class="btn btn-default printQrOuterLists" data-qrmodel="<?php echo $product['modelQR']; ?>" data-qrid="<?php echo $product['product_id']; ?>" data-titles='<?php echo $qr_title; ?>'>Печать QR код</div>
 									<?php
-										require_once '/home/dby/sites/d4.by/gd/phpqrcode/qrlib.php';
+										require_once $_SERVER['DOCUMENT_ROOT'].'/gd/phpqrcode/qrlib.php';
 									
 										/* Генерация QR-кода во временный файл */
 										QRcode::png('https://d4.by/gd/?product_id='.$product['product_id'], '/home/dby/sites/d4.by/gd/qr/'.$product['modelQR'].'_tmp.png', 'Q', 6, 1);
 										
 										/* Конвертация PNG8 в PNG24 */
-										$im = imagecreatefrompng('/home/dby/sites/d4.by/gd/qr/'.$product['modelQR'].'_tmp.png');
+										$im = imagecreatefrompng($_SERVER['DOCUMENT_ROOT'].'/gd/qr/'.$product['modelQR'].'_tmp.png');
 										
 										$width = imagesx($im);
 										$height = imagesy($im);
@@ -632,7 +632,7 @@
 										imagedestroy($im);
 										
 										/* Наложение логотипа */
-										$logo = imagecreatefrompng('/home/dby/sites/d4.by/gd/logo.png');
+										$logo = imagecreatefrompng($_SERVER['DOCUMENT_ROOT'].'/gd/logo.png');
 										$logo_width = imagesx($logo);
 										$logo_height = imagesy($logo);
 										
@@ -643,9 +643,9 @@
 										$y = ceil(($height - $new_height) / 2);
 										
 										imagecopyresampled($dst, $logo, $x, $y, 0, 0, $new_width, $new_height, $logo_width, $logo_height);
-										imagepng($dst,'/home/dby/sites/d4.by/gd/qr/'.$product['modelQR'].'_main.png',3);
+										imagepng($dst,$_SERVER['DOCUMENT_ROOT'].'/gd/qr/'.$product['modelQR'].'_main.png',3);
 										
-										unlink('/home/dby/sites/d4.by/gd/qr/'.$product['modelQR'].'_tmp.png');
+										unlink($_SERVER['DOCUMENT_ROOT'].'/gd/qr/'.$product['modelQR'].'_tmp.png');
 
 										//$img_sm_qr1 = '<img src="https://d4.by/gd/qr/'.$product['modelQR'].'_main.png" style="width:110px;">';
 										//echo '<br><br>';

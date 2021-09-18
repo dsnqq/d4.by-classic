@@ -591,3 +591,13 @@ admin/controller/extension/module/simple.php
 admin/view/template/extension/module/simple.tpl
 admin/model/extension/module/simple.php
 catalog/controller/extension/module/simpleapi.php
+system\startup.php
+system\library\mfilter_helper.php
+system\library\mfilter_core.php
+system\library\mfilter_module.php
+system\library\mfilter_mobile.php
+system\library\mfilter_plus.php
+system\library\mfilter_core.php
+system\library\mfilter_helper.php
+system\library\mfilter_module.php
+catalog\controller\startup\seo_url.php
