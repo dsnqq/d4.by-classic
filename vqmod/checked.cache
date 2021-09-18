@@ -587,3 +587,7 @@ system/storage/modification/admin/language/ru-ru/catalog/arhive.php
 system/storage/modification/admin/view/template/catalog/arhive_list.tpl
 admin/model/catalog/arhive.php
 admin/controller/catalog/arhive.php
+admin/controller/extension/module/simple.php
+admin/view/template/extension/module/simple.tpl
+admin/model/extension/module/simple.php
+catalog/controller/extension/module/simpleapi.php

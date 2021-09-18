@@ -55,3 +55,9 @@
 # IDE Project files
 /.idea
 /.idea
+
+/php.ini
+/user.ini
+/admin/.htaccess
+/php.ini.bak
+/vqmod/vqcache/*
