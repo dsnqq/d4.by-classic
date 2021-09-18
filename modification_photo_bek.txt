@@ -1,0 +1,327 @@
+<modification>
+	<name>Упрощенный фотоменеджер</name>
+	<code>EasyPhoto</code>
+	<version>2</version>
+	<author>opencart2x.ru</author>
+	<link>https://opencart2x.ru</link>
+	
+	<file path="admin/model/catalog/product.php">
+        <operation error="skip">
+            <search><![CDATA[foreach ($data['product_image'] as $product_image) {]]></search>
+            <add position="after"><![CDATA[
+				/***ip-2016***/
+					$direct = $this->config->get('easyphoto_direct')?$this->config->get('easyphoto_direct'):'easyphoto';
+					if(strpos($direct, $product_image['image'])){
+						$separator = $this->config->get('easyphoto_separator')?$this->config->get('easyphoto_separator'):1000;
+						$image = explode($direct."/", $product_image['image']);
+						for($ids=0; $ids<1000*$separator; $ids += $separator){
+							$finish = $ids+$separator;
+							if($product_id > $ids and $product_id <= $finish){
+								$path = $direct . '/' . $ids . '_' . $finish . '/' . $product_id;
+								$directory = DIR_IMAGE . 'catalog/' . $path;
+								
+							}
+						}
+						if(!strpos($product_image['image'], $path)){
+							if (!is_dir($directory)) {
+								mkdir($directory, 0777, true);
+							}
+							rename(DIR_IMAGE . $product_image['image'], $directory . '/' . $image[1]);
+							$product_image['image'] = 'catalog/' . $path . '/' . $image[1];
+						}
+					}
+				/***ip-2016***/			
+			]]></add>
+        </operation>	
+	</file>
+	<file path="admin/view/template/catalog/product_form.tpl">
+        <operation error="skip">
+            <search><![CDATA[<li><a href="#tab-data" data-toggle="tab"><?php echo $tab_data; ?></a></li>]]></search>
+            <add position="before"><![CDATA[
+				<?php /***ip-2016***/ ?>
+				<li><a href="#tab-photo" data-toggle="tab">Изображения</a></li>
+				<?php /***ip-2016***/ ?>			
+			]]></add>
+        </operation>
+		
+        <operation error="skip">
+            <search><![CDATA[<div class="tab-pane active" id="tab-data"></div>]]></search>
+            <add position="before"><![CDATA[
+				<?php /***ip-2016***/ ?>
+				<div class="tab-pane active" id="tab-photo">
+				
+				<div>
+				<input type="hidden" name="image" value="<?php echo $image; ?>" id="input-image-main" />
+				<div id="photos">
+					<?php $photo_row = 0; ?>
+					<?php foreach ($product_images as $product_photo) { ?>
+					<div id="photo-row<?php echo $photo_row; ?>" draggable="true" <?php if($image == $product_photo['image']){echo 'class="main_selected"';} ?>>
+						<a href="" id="thumb-photo<?php echo $photo_row; ?>" data-toggle="photo" class="img-thumbnail">
+							<img src="/image/<?php echo $product_photo['image']; ?>" alt="" title="" data-placeholder="<?php echo $placeholder; ?>" />
+						</a>
+						<input type="hidden" class="image_for_main" name="product_image[<?php echo $photo_row; ?>][image]" value="<?php echo $product_photo['image']; ?>" id="input-photo<?php echo $photo_row; ?>" />
+						<input type="hidden" name="product_image[<?php echo $photo_row; ?>][sort_order]" class="sort_order" value="<?php echo $product_photo['sort_order']; ?>" />
+						<button type="button" title="Удалить" data-toggle="tooltip" class="easy_remove btn btn-danger"><i class="fa fa-remove"></i></button>
+						<button type="button" data-toggle="tooltip" title="Главное изображение" class="easy_main btn btn-success"><i class="fa fa-check"></i></button>
+					</div>
+					<?php $photo_row++; ?>
+					<?php } ?>
+				</div>
+				<div style="display:inline-block;margin-left:20px;">
+					<button type="button" data-toggle="tooltip" title="Выбрать напрямую" class="addeasyphoto btn btn-primary"><i class="fa fa-plus-circle"></i> Добавить фото</button>
+				</div>
+				</div>	  
+				<style>
+				#thumb-photo, #photos .img-thumbnail{text-align:center;width:162px;height:162px;line-height:150px;cursor: move;display:block;}
+				#photos .img-thumbnail img{width:auto;height:auto;max-width:150px;max-height:150px;vertical-align:middle;display:inline-block;cursor: move;}
+				#photos{display:inline-block;vertical-align:top;}
+				#photos>div{border:2px solid #dddddd;position:relative;margin-bottom:15px;margin-right:11px;display:inline-block;width:162px;cursor:move;float:left;}
+				#photos>div:hover{border-color:#bbbbbb!important;}
+				.easy_remove{position:absolute;top:-10px;right:-10px;display:none;}
+				.easy_main{position:absolute;top:-10px;left:-10px;display:none;}
+				#photos>div:hover .easy_remove, #photos>div:hover .easy_main{display:block;}
+				.dragin{opacity:.8;border:2px dashed #8fbb6c!important;}
+				.dragon{border:2px dashed #8fbb6c!important;}
+				.main_selected .easy_main{display:block;}
+				[draggable]{-moz-user-select: none;-khtml-user-select: none;-webkit-user-select: none;user-select: none;-khtml-user-drag: element;-webkit-user-drag: element;}
+				</style>			  
+				<script type="text/javascript">
+					$(document).ready(function(){
+						$('#thumb-image').parent().parent().remove();
+						$('a[href="#tab-image"]').parent().remove();
+						$('#tab-image').remove();
+					});
+
+					$(document).delegate('a[data-toggle=\'photo\']', 'click', function(e) {
+						e.preventDefault();
+
+						$('.popover').popover('hide', function() {
+							$('.popover').remove();
+						});
+
+						var element = this;
+
+						$(element).popover({
+							html: true,
+							placement: 'right',
+							trigger: 'manual',
+							content: function() {
+								return '<button type="button" id="button-image" class="btn btn-primary"><i class="fa fa-pencil"></i> Изменить</button>';
+							}
+						});
+
+						$(element).popover('show');
+
+						$('#button-image').on('click', function() {
+							$('#modal-image').remove();
+
+							$.ajax({
+								url: 'index.php?route=common/filemanager&token=' + getURLVar('token') + '&target=' + $(element).parent().find('input').attr('id') + '&thumb=' + $(element).attr('id'),
+								dataType: 'html',
+								beforeSend: function() {
+									$('#button-image i').replaceWith('<i class="fa fa-circle-o-notch fa-spin"></i>');
+									$('#button-image').prop('disabled', true);
+								},
+								complete: function() {
+									$('#button-image i').replaceWith('<i class="fa fa-pencil"></i>');
+									$('#button-image').prop('disabled', false);
+								},
+								success: function(html) {
+									$('body').append('<div id="modal-image" class="modal">' + html + '</div>');
+									$('#modal-image').modal('show');
+								}
+							});
+
+							$(element).popover('hide', function() {
+								$('.popover').remove();
+							});
+						});
+					});	
+					
+					var photo_row = <?php echo $photo_row; ?>;
+					function addphoto() {
+						html  = '<div id="photo-row' + photo_row + '" draggable="true">';
+						html += '  	<a href="" id="thumb-photo' + photo_row + '" data-toggle="photo" class="img-thumbnail">';
+						html += '  		<img src="<?php echo $placeholder; ?>" alt="" title="" data-placeholder="<?php echo $placeholder; ?>" />';
+						html += '  	</a>';
+						html += '  	<input type="hidden" class="image_for_main" name="product_image[' + photo_row + '][image]" value="" id="input-photo' + photo_row + '" />';
+						html += '  	<input type="hidden" name="product_image[' + photo_row + '][sort_order]" value="" class="sort_order" />';
+						html += '  	<button type="button" title="Удалить" data-toggle="tooltip" class="easy_remove btn btn-danger"><i class="fa fa-remove"></i></button>';
+						html += '  	<button type="button" data-toggle="tooltip" title="Главное изображение" class="easy_main btn btn-success"><i class="fa fa-check"></i></button>';
+						html += '</div>';
+
+						$('#photos').append(html);
+						photo_row++;
+						each_elements();
+					}
+					
+					$('body').on('click', '.easy_remove', function() {
+						if(!$(this).parent().hasClass('main_selected')){
+							$(this).parent().remove();
+						} else{
+							$('#input-image-main').val("");
+							$(this).parent().remove();
+						}
+					});	
+					
+					$('body').on('click', '.easy_main', function() {	
+						$('#input-image-main').val($(this).parent().find('.image_for_main').val());
+						$('#photos>div').removeClass('main_selected');
+						$(this).parent().addClass('main_selected');
+					});
+					
+					$('body').on('click', '.addeasyphoto', function() {
+						photo_user = 0;
+						if($("div").is("#photo-row0")){
+							var photo_user = 1;
+						}
+						$('#form-upload').remove();
+						$('body').prepend('<form enctype="multipart/form-data" id="form-upload" style="display: none;"><input type="file" name="file[]" value="" multiple="multiple" /></form>');
+						$('#form-upload input[name=\'file[]\']').trigger('click');
+						timer = setInterval(function () {
+							if ($('#form-upload input[name=\'file[]\']').val() != '') {
+								clearInterval(timer);
+								$.ajax({
+									url: 'index.php?route=extension/module/easyphoto/upload&token=<?php echo $token; ?>&product_id=<?php echo isset($_GET['product_id'])?$_GET['product_id']:0; ?>',
+									type: 'post',
+									dataType: 'json',
+									data: new FormData($('#form-upload')[0]),
+									cache: false,
+									contentType: false,
+									processData: false,
+									beforeSend: function () {
+										$('.addeasyphoto i').replaceWith('<i class="fa fa-circle-o-notch fa-spin"></i>');
+										$('.addeasyphoto').prop('disabled', true);
+									},
+									complete: function () {
+										$('.addeasyphoto i').replaceWith('<i class="fa fa-upload"></i>');
+										$('.addeasyphoto').prop('disabled', false);
+									},
+									success: function (json) {
+										if (json['files']) {
+											$.each(json['files'], function(key, value){
+												addphoto();
+												row_local = photo_row-1;
+												$('#input-photo'+row_local).val('catalog/'+json['direct']+'/'+value);
+												$('#thumb-photo'+row_local+' img').attr({'src':'/image/catalog/'+json['direct']+'/'+value});
+											});
+											if(photo_user == 0){
+												$("#photo-row0").find('.easy_main').trigger('click');
+											} 
+										}
+									}
+								});
+							}
+						}, 5);
+					});
+					
+					function each_elements(){
+					   [].forEach.call(document.querySelectorAll('#photos>div'), function (col) {
+						col.setAttribute('draggable', 'true');
+						col.addEventListener('dragstart', this.handleDragStart, false);
+						col.addEventListener('dragenter', this.handleDragEnter, false);
+						col.addEventListener('dragover', this.handleDragOver, false);
+						col.addEventListener('dragleave', this.handleDragLeave, false);
+						col.addEventListener('drop', this.handleDrop, false);
+						col.addEventListener('dragend', this.handleDragEnd, false);
+					  });
+					  color();
+					  $('#photos>div').removeClass('main_selected');
+					  $('#photos>div').removeClass('dragin');
+					  $('#photos>div').removeClass('dragon');
+
+					  $('#photos>div').each(function(index, value){
+						if($('#input-image-main').val() == $(this).find('.image_for_main').val()){
+							$(this).addClass('main_selected');
+						}
+					  });
+					}
+					
+					function color(){
+						$('#photos>div').css({'border-color': '#dddddd'});	
+					}
+					
+					function sorts(){
+						$('#photos>div').each(function(index, value){
+							$(this).find('.sort_order').val(index);
+						});
+					}
+
+					(function() {
+					  var id_ = 'photos';
+					  var cols_ = document.querySelectorAll('#' + id_ + '>div');
+					  var dragSrcEl_ = null;
+
+					  this.handleDragStart = function(e) {
+						e.dataTransfer.effectAllowed = 'move';
+						$(this).addClass('dragin');
+						e.dataTransfer.setData('text/html', this.innerHTML);
+						dragSrcEl_ = this;
+					  };
+
+					  this.handleDragOver = function(e) {
+						$(this).addClass('dragon');
+						if (e.preventDefault) {
+						  e.preventDefault(); // Allows us to drop.
+						}
+						e.dataTransfer.dropEffect = 'move';
+						return false;
+					  };
+
+					  this.handleDragEnter = function(e) {
+						  $(cols_).removeClass('dragon');
+					  };
+
+					  this.handleDragLeave = function(e) {
+						$(this).removeClass('over');
+					  };
+
+					  this.handleDrop = function(e) {
+						$(cols_).removeClass('dragon');
+						if (e.stopPropagation) {
+						  e.stopPropagation();
+						}
+
+						if (dragSrcEl_ != this) {
+						  dragSrcEl_.innerHTML = this.innerHTML;
+						  this.innerHTML = e.dataTransfer.getData('text/html');
+						  $(cols_).removeClass('dragin');
+						  $(this).css({'border-color': "#ffa64c"});
+						  sorts();
+						}
+						setTimeout(each_elements, 300);
+						setTimeout(color, 300);
+						return false;
+					  };
+
+					  this.handleDragEnd = function(e) {
+						$(cols_).removeClass('dragin');
+							[].forEach.call(cols_, function (col) {
+						});
+					  };
+
+					   each_elements();
+					})();
+				</script>
+				</div>
+				<?php /***ip-2016***/ ?>
+			]]></add>
+        </operation>		
+	</file>
+	<file path="catalog/controller/product/product.php">
+        <operation error="skip">
+            <search><![CDATA[$results = $this->model_catalog_product->getProductImages($this->request->get['product_id']);]]></search>
+            <add position="after"><![CDATA[
+				/***ip-2016***/
+				$pre_results = $results;
+				$results = array();
+				foreach ($pre_results as $result) {
+					if($result['image'] != $product_info['image']){
+						$results[] = $result;
+					}
+				}
+				/***ip-2016***/		
+			]]></add>
+        </operation>	
+	</file>	
+</modification>
