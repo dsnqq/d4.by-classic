@@ -602,17 +602,32 @@ class ControllerCatalogArhive extends Controller {
 				}
 			}
 
+			if($result['manufacturer_id']){
+				$this->load->model('catalog/manufacturer');
+				$manufacturer_info = $this->model_catalog_manufacturer->getManufacturer($result['manufacturer_id']);
+				$manufacturer_name = $manufacturer_info['name'];
+			} else{
+				$manufacturer_name = '';
+			}
+
 			$data['products'][] = array(
 				'product_id' => $result['product_id'],
 				'image'      => $image,
+				'manufacturer' => $manufacturer_name,
 				'name'       => $result['name'],
 				'model'      => $result['model'],
+				'toplivo'    => $result['isbn'],
+				'objem'      => $result['jan'],
+				'sku'        => $result['sku'],
+				'date_added' => $result['date_added'],
+				'year'       => $result['length'],
 				'price'      => $result['price'],
+				'description'=> $result['description'],
 				'category'   => $category,
 				'special'    => $special,
 				'quantity'   => $result['quantity'],
 				'status'     => $result['status'] ? $this->language->get('text_enabled') : $this->language->get('text_disabled'),
-				'edit'       => $this->url->link('catalog/product/edit', 'token=' . $this->session->data['token'] . '&product_id=' . $result['product_id'] . $url, true)
+				'edit'       => $this->url->link('catalog/arhive/edit', 'token=' . $this->session->data['token'] . '&product_id=' . $result['product_id'] . $url, true)
 			);
 		}
 

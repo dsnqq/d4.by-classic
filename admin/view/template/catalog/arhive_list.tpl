@@ -2,9 +2,11 @@
 <div id="content">
   <div class="page-header">
     <div class="container-fluid">
-      <div class="pull-right"><a href="<?php echo $add; ?>" data-toggle="tooltip" title="<?php echo $button_add; ?>" class="btn btn-primary"><i class="fa fa-plus"></i></a>
-        <?php /*<button type="submit" form="form-product" formaction="<?php echo $copy; ?>" data-toggle="tooltip" title="<?php echo $button_copy; ?>" class="btn btn-default"><i class="fa fa-copy"></i></button>*/?>
-        <button type="button" data-toggle="tooltip" title="<?php echo $button_delete; ?>" class="btn btn-danger" onclick="confirm('<?php echo $text_confirm; ?>') ? $('#form-product').submit() : false;"><i class="fa fa-trash-o"></i></button>
+      <div class="pull-right">
+      <?php /*
+        <a href="<?php echo $add; ?>" data-toggle="tooltip" title="<?php echo $button_add; ?>" class="btn btn-primary"><i class="fa fa-plus"></i></a>
+        <button type="submit" form="form-product" formaction="<?php echo $copy; ?>" data-toggle="tooltip" title="<?php echo $button_copy; ?>" class="btn btn-default"><i class="fa fa-copy"></i></button>
+        <button type="button" data-toggle="tooltip" title="<?php echo $button_delete; ?>" class="btn btn-danger" onclick="confirm('<?php echo $text_confirm; ?>') ? $('#form-product').submit() : false;"><i class="fa fa-trash-o"></i></button>*/?>
       </div>
       <h1><?php echo $heading_title; ?></h1>
       <ul class="breadcrumb">
@@ -109,76 +111,40 @@
             <table class="table table-bordered table-hover">
               <thead>
                 <tr>
-                  <td style="width: 1px;" class="text-center"><input type="checkbox" onclick="$('input[name*=\'selected\']').prop('checked', this.checked);" /></td>
-                  <td class="text-center"><?php echo $column_image; ?></td>
-                  <td class="text-left"><?php if ($sort == 'pd.name') { ?>
-                    <a href="<?php echo $sort_name; ?>" class="<?php echo strtolower($order); ?>"><?php echo $column_name; ?></a>
-                    <?php } else { ?>
-                    <a href="<?php echo $sort_name; ?>"><?php echo $column_name; ?></a>
-                    <?php } ?></td>
-                  <td class="text-left"><?php if ($sort == 'p.model') { ?>
-                    <a href="<?php echo $sort_model; ?>" class="<?php echo strtolower($order); ?>"><?php echo $column_model; ?></a>
-                    <?php } else { ?>
-                    <a href="<?php echo $sort_model; ?>"><?php echo $column_model; ?></a>
-                    <?php } ?></td>
-                  <td class="text-right"><?php if ($sort == 'p.price') { ?>
-                    <a href="<?php echo $sort_price; ?>" class="<?php echo strtolower($order); ?>"><?php echo $column_price; ?></a>
-                    <?php } else { ?>
-                    <a href="<?php echo $sort_price; ?>"><?php echo $column_price; ?></a>
-                    <?php } ?></td>
-                  <td class="text-left"><?php echo $column_category; ?></td>
-                  <td class="text-right"><?php if ($sort == 'p.quantity') { ?>
-                    <a href="<?php echo $sort_quantity; ?>" class="<?php echo strtolower($order); ?>"><?php echo $column_quantity; ?></a>
-                    <?php } else { ?>
-                    <a href="<?php echo $sort_quantity; ?>"><?php echo $column_quantity; ?></a>
-                    <?php } ?></td>
-                  <td class="text-left"><?php if ($sort == 'p.status') { ?>
-                    <a href="<?php echo $sort_status; ?>" class="<?php echo strtolower($order); ?>"><?php echo $column_status; ?></a>
-                    <?php } else { ?>
-                    <a href="<?php echo $sort_status; ?>"><?php echo $column_status; ?></a>
-                    <?php } ?></td>
-                  <td class="text-right"><?php echo $column_action; ?></td>
+                 <td>Изображение</td>
+                 <td>Марка и модель</td>
+                 <td>Год</td>
+                 <td>Объем</td>
+                 <td>Тип топлива</td>
+                 <td>Название запчасти</td>
+                 <td>Артикул</td>
+                 <td>Цена</td>
+                 <td>Номер запчасти</td>
+                 <td>Дата создания</td>
+                 <td>Статус</td>
+                 <td>Описание</td>
+                 <td>Действия</td>
                 </tr>
               </thead>
               <tbody>
                 <?php if ($products) { ?>
                 <?php foreach ($products as $product) { ?>
                 <tr>
-                  <td class="text-center"><?php if (in_array($product['product_id'], $selected)) { ?>
-                    <input type="checkbox" name="selected[]" value="<?php echo $product['product_id']; ?>" checked="checked" />
-                    <?php } else { ?>
-                    <input type="checkbox" name="selected[]" value="<?php echo $product['product_id']; ?>" />
-                    <?php } ?></td>
-                  <td class="text-center"><?php if ($product['image']) { ?>
-                    <img src="<?php echo $product['image']; ?>" alt="<?php echo $product['name']; ?>" class="img-thumbnail" />
-                    <?php } else { ?>
-                    <span class="img-thumbnail list"><i class="fa fa-camera fa-2x"></i></span>
-                    <?php } ?></td>
-                  <td class="text-left"><?php echo $product['name']; ?></td>
-                  <td class="text-left"><?php echo $product['model']; ?></td>
-                  <td class="text-right"><?php if ($product['special']) { ?>
-                    <span style="text-decoration: line-through;"><?php echo $product['price']; ?></span><br/>
-                    <div class="text-danger"><?php echo $product['special']; ?></div>
-                    <?php } else { ?>
-                    <?php echo $product['price']; ?>
-                    <?php } ?></td>
-
-                  <td class="text-left">
-                    <?php foreach ($categories as $category) { ?>
-                    <?php if (in_array($category['category_id'], $product['category'])) { ?>
-                    <?php echo $category['name'];?><br>
-                    <?php } ?>
-                    <?php } ?></td>
-
-                  <td class="text-right"><?php if ($product['quantity'] <= 0) { ?>
-                    <span class="label label-warning"><?php echo $product['quantity']; ?></span>
-                    <?php } elseif ($product['quantity'] <= 5) { ?>
-                    <span class="label label-danger"><?php echo $product['quantity']; ?></span>
-                    <?php } else { ?>
-                    <span class="label label-success"><?php echo $product['quantity']; ?></span>
-                    <?php } ?></td>
-                  <td class="text-left"><?php echo $product['status']; ?></td>
-                  <td class="text-right"><a href="<?php echo $product['edit']; ?>" data-toggle="tooltip" title="<?php echo $button_edit; ?>" class="btn btn-primary"><i class="fa fa-pencil"></i></a></td>
+                  <td><img src="<?php echo $product['image']; ?>" alt="<?php echo $product['name']; ?>" class="img-thumbnail" /></td>
+                  <td></td>
+                  <td><?php echo $product['length']; ?></td>
+                  <td><?php echo $product['objem']; ?></td>
+                  <td><?php echo $product['toplivo']; ?></td>
+                  <td><?php echo $product['manufacturer']; ?></td>
+                  <td><?php echo $product['model']; ?></td>
+                  <td><?php echo $product['price']; ?>$</td>
+                  <td><?php echo $product['sku']; ?></td>
+                  <td><?php echo $product['date_added']; ?></td>
+                  <td><?php echo $product['status']; ?></td>
+                  <td><?php echo $product['description']; ?></td>
+                  <td>
+                    <a href="<?php echo $product['edit']; ?>" data-toggle="tooltip" title="<?php echo $button_edit; ?>" class="btn btn-primary"><i class="fa fa-pencil"></i></a>
+                  </td>
                 </tr>
                 <?php } ?>
                 <?php } else { ?>
