@@ -1015,6 +1015,7 @@ class ControllerCatalogArhive extends Controller {
 			$data['product_page'] = HTTP_CATALOG.'index.php?route=product/product&product_id='.$this->request->get['product_id'];
 		}
 
+		$this->load->model('catalog/arhive');
 		$data['cancel'] = $this->url->link('catalog/product', 'token=' . $this->session->data['token'] . $url, true);
 
 		if (isset($this->request->get['product_id']) && ($this->request->server['REQUEST_METHOD'] != 'POST')) {

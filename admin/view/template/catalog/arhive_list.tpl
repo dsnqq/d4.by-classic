@@ -131,7 +131,7 @@
                 <?php foreach ($products as $product) { ?>
                 <tr>
                   <td><img src="<?php echo $product['image']; ?>" alt="<?php echo $product['name']; ?>" class="img-thumbnail" /></td>
-                  <td></td>
+                  <td><?php print_r($product['category']); ?></td>
                   <td><?php echo $product['length']; ?></td>
                   <td><?php echo $product['objem']; ?></td>
                   <td><?php echo $product['toplivo']; ?></td>
