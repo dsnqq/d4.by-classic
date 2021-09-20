@@ -582,12 +582,22 @@ class ControllerCatalogArhive extends Controller {
 
 		foreach ($results as $result) {
 
-      $category =  $this->model_catalog_arhive->getProductCategories($result['product_id']);
+	  
+			$this->load->model('catalog/category');
+
+			//$category =  $this->model_catalog_arhive->getProductCategories($result['product_id']);
+			$categories = $this->model_catalog_arhive->getProductCategories($result['product_id']);
+			$category_paths = array();
+			foreach($categories as $cat) {
+				$category = $this->model_catalog_category->getCategory($cat);
+				$category_paths[] = (($category['path']) ? $category['path'] . ' <br /> ' : '') . $category['name'];
+			}
+			$category_paths = implode("<br />", $category_paths);
 
 			if (is_file(DIR_IMAGE . $result['image'])) {
-				$image = $this->model_tool_image->resize($result['image'], 40, 40);
+				$image = $this->model_tool_image->resize($result['image'], 150, 150);
 			} else {
-				$image = $this->model_tool_image->resize('no_image.png', 40, 40);
+				$image = $this->model_tool_image->resize('no_image.png', 150, 150);
 			}
 
 			$special = false;
@@ -623,7 +633,7 @@ class ControllerCatalogArhive extends Controller {
 				'year'       => $result['length'],
 				'price'      => $result['price'],
 				'description'=> $result['description'],
-				'category'   => $category,
+				'category'   => $category_paths,
 				'special'    => $special,
 				'quantity'   => $result['quantity'],
 				'status'     => $result['status'] ? $this->language->get('text_enabled') : $this->language->get('text_disabled'),
