@@ -3,7 +3,18 @@
 
   <link rel="stylesheet" href="/admin/view/javascript/lightbox.css" />
   <script src="/admin/view/javascript/lightbox.min.js"></script>
-
+  <?php
+    /*
+      марка и модель
+      артикул
+      год
+      объем
+      тип топлива
+      название запчасти
+      цена
+      номер запчасти
+    */
+  ?>
   <div class="page-header">
     <div class="container-fluid">
       <div class="pull-right">
@@ -36,7 +47,7 @@
         <h3 class="panel-title"><i class="fa fa-list"></i> <?php echo $text_list; ?></h3>
       </div>
       <div class="panel-body">
-        <div class="well hide" >
+        <div class="well " >
           <div class="row"> 
             <div class="col-sm-4">
               <div class="form-group">
@@ -175,6 +186,18 @@
       </div>
     </div>
   </div>
+
+
+  <?php /* javascript for bootstrap select */ ?>
+  <script src="view/javascript/bootstrap-select.min.js"></script>
+  <script src="view/javascript/jquery.chained.js"></script>
+  <script>
+      $(document).ready(function() { //
+          $('.selectpicker').selectpicker();
+      });
+  </script>
+  <link type="text/css" href="view/stylesheet/bootstrap-select.css" rel="stylesheet" media="screen" />
+
 
   <script type="text/javascript"><!--
 $('#button-filter').on('click', function() {

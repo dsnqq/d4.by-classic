@@ -331,13 +331,17 @@ class ModelCatalogProduct extends Model {
 
 	public function deleteProduct($product_id) {
 		
-		/* copy in arhive */
+		/* Copy in arhive */
 		$this->db->query("INSERT INTO  " . DB_PREFIX . "arhive SELECT * FROM " . DB_PREFIX . "product WHERE product_id = '" . (int)$product_id . "'");
 		$this->db->query("INSERT INTO  " . DB_PREFIX . "arhive_attribute SELECT * FROM " . DB_PREFIX . "product_attribute WHERE product_id = '" . (int)$product_id . "'");
 		$this->db->query("INSERT INTO  " . DB_PREFIX . "arhive_description SELECT * FROM " . DB_PREFIX . "product_description WHERE product_id = '" . (int)$product_id . "'");
 		$this->db->query("INSERT INTO  " . DB_PREFIX . "arhive_image SELECT * FROM " . DB_PREFIX . "product_image WHERE product_id = '" . (int)$product_id . "'");
 		$this->db->query("INSERT INTO  " . DB_PREFIX . "arhive_to_category SELECT * FROM " . DB_PREFIX . "product_to_category WHERE product_id = '" . (int)$product_id . "'");
-		/* end copy in arhive */
+		/* End copy in arhive */
+
+        /*$date_now = date('Y-m-d');
+        $this->db->query("UPDATE  " . DB_PREFIX . "arhive SET date_delete = ". $date_now ." WHERE product_id = '" . (int)$product_id . "'");
+        */
 
 		$this->db->query("DELETE FROM " . DB_PREFIX . "product_special WHERE product_id = '" . (int)$product_id . "'");
 		$this->db->query("DELETE FROM " . DB_PREFIX . "product_image WHERE product_id = '" . (int)$product_id . "'");
