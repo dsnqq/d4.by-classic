@@ -1,5 +1,9 @@
 <?php echo $header; ?><?php echo $column_left; ?>
 <div id="content">
+
+  <link rel="stylesheet" href="/admin/view/javascript/lightbox.css" />
+  <script src="/admin/view/javascript/lightbox.min.js"></script>
+
   <div class="page-header">
     <div class="container-fluid">
       <div class="pull-right">
@@ -130,7 +134,15 @@
                 <?php if ($products) { ?>
                 <?php foreach ($products as $product) { ?>
                 <tr>
-                  <td><img src="<?php echo $product['image']; ?>" alt="<?php echo $product['name']; ?>" class="img-thumbnail" /></td>
+                  <td>
+                    <?php if($product['popup'] != ""){ ?>
+                      <a data-lightbox="image<?php echo $product['product_id']; ?>" href="https://d4.by/image/<?php echo $product['popup']; ?>">
+                        <img src="<?php echo $product['image']; ?>" alt="<?php echo $product['name']; ?>" class="img-thumbnail" />
+                      </a>
+                    <?php }else{ ?>
+                      <img src="<?php echo $product['image']; ?>" alt="<?php echo $product['name']; ?>" class="img-thumbnail" />
+                    <?php } ?>
+                  </td>
                   <td><?php print_r($product['category']); ?></td>
                   <td><?php echo $product['length']; ?></td>
                   <td><?php echo $product['objem']; ?></td>
@@ -163,6 +175,7 @@
       </div>
     </div>
   </div>
+
   <script type="text/javascript"><!--
 $('#button-filter').on('click', function() {
 	var url = 'index.php?route=catalog/product&token=<?php echo $token; ?>';

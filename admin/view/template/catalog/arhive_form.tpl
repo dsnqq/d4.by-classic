@@ -1360,7 +1360,7 @@
               </div>
             </div> */ ?>
             <div class="tab-pane active" id="tab-data"></div>
-            <div class="tab-pane active" id="tab-image" style="margin-top: 15px;">
+            <div class="tab-pane active hide" id="tab-image" style="margin-top: 15px;">
               <div class="table-responsive">
                 <table class="table table-striped table-bordered table-hover">
                   <thead>

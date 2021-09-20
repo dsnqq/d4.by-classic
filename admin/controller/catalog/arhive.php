@@ -596,8 +596,10 @@ class ControllerCatalogArhive extends Controller {
 
 			if (is_file(DIR_IMAGE . $result['image'])) {
 				$image = $this->model_tool_image->resize($result['image'], 150, 150);
+                $image_pop = $result['image'];
 			} else {
 				$image = $this->model_tool_image->resize('no_image.png', 150, 150);
+                $image_pop = "";
 			}
 
 			$special = false;
@@ -623,6 +625,7 @@ class ControllerCatalogArhive extends Controller {
 			$data['products'][] = array(
 				'product_id' => $result['product_id'],
 				'image'      => $image,
+				'popup'      => $image_pop,
 				'manufacturer' => $manufacturer_name,
 				'name'       => $result['name'],
 				'model'      => $result['model'],
