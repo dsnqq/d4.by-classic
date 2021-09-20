@@ -1666,7 +1666,7 @@ class ControllerCatalogArhive extends Controller {
 		$data['column_left'] = $this->load->controller('common/column_left');
 		$data['footer'] = $this->load->controller('common/footer');
 
-		$this->response->setOutput($this->load->view('catalog/product_form', $data));
+		$this->response->setOutput($this->load->view('catalog/arhive_form', $data));
 	}
 	
 

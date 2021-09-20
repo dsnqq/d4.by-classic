@@ -387,7 +387,7 @@
     <?php } ?>
     <div class="panel panel-default">
       <div class="panel-heading">
-        <h3 class="panel-title"><i class="fa fa-pencil"></i> <?php echo $text_form; ?></h3>
+        <h3 class="panel-title">Просмотр архивной запчасти</h3>
       </div>
       <div class="panel-body">
         <form action="<?php echo $action; ?>" method="post" enctype="multipart/form-data" id="form-product" class="form-horizontal">
@@ -1400,7 +1400,7 @@
                     <tr>
                       <td colspan="2"></td>
                       <td class="text-left">
-                        <button type="button" onclick="addImage();" data-toggle="tooltip" title="<?php echo $button_image_add; ?>" class="btn btn-primary">Добавить фото</button>
+                        <button type="button" onclick="addImage();" data-toggle="tooltip" title="<?php echo $button_image_add; ?>" class="btn btn-primary ">Добавить фото</button>
                         <?php /*<button type="button" onclick="addMultiImage();" data-toggle="tooltip" title="<?php echo $button_image_add; ?>" class="btn btn-primary">Добавить фото</button>*/ ?>
                     
                       </td>
@@ -1521,7 +1521,7 @@
                   <tfoot>
                     <tr>
                       <td colspan="2"></td>
-                      <td class="text-left"><button type="button" onclick="addAttribute();" data-toggle="tooltip" title="<?php echo $button_attribute_add; ?>" class="btn btn-primary">Добавить атрибут</button></td>
+                      <td class="text-left"><button type="button" onclick="addAttribute();" data-toggle="tooltip" title="<?php echo $button_attribute_add; ?>" class="btn btn-primary hide">Добавить атрибут</button></td>
                     </tr>
                   </tfoot>
                 </table>
@@ -1598,7 +1598,7 @@
           </div>
         
 
-          <?php if(strpos($_SERVER['REQUEST_URI'],'catalog/product/add') !== false){?>
+          <?php /*if(strpos($_SERVER['REQUEST_URI'],'catalog/product/add') !== false){?>
           <input type="text" name="go_list_product" id="addet" value="0" style="position:absolute;left:-99999px;opacity:0;">
           <button type="submit" onclick="$('#content #addet').attr('value', '1');"  class="btn btn-primary" form="form-product" data-toggle="tooltip" title="" data-original-title="Сохранить">Добавить объявление</button>
           <?php } else{ ?>
@@ -1614,7 +1614,7 @@
           <a class="btn btn-info abtn live_without_save" href="/admin/index.php?route=catalog/product&token=<?php echo $_GET['token'];?>" class="btn btn-info abtn">Выйти без сохранения</a>
           <?php if(strpos($_SERVER['REQUEST_URI'],'catalog/product/add') === false){?>
             <a class="btn btn-warning" href="<?php echo $product_page; ?>" target="_blank" data-toggle="tooltip" title="<?php echo $button_view; ?>">Посмотреть на сайте</a>     
-            <?php } ?>
+            <?php }*/ ?>
         </form>
 
 
@@ -1685,10 +1685,11 @@
             $cat_qr = str_replace('&nbsp;&nbsp;&gt;&nbsp;&nbsp;', ' ', $cat_qr);
             $qr_title = "<div>".$cat_qr . ", " . $length . "г. " . $ean . "</div><div>" . $jan . " " .$isbn . " " . $mpn . " " . $upc . "</div><div>" . $man_qr . "</div><div>" . '<span style="font-size:17px;">' .$model . '</span></div>';
             
-            echo '<div style="display:flex;align-items:center;max-width:275px;border:1px solid #000;"><div>'.$img_sm_qr1.'</div><div style="text-align:center;font-size:12px;padding-left:10px;margin:0 auto;font-weight:bold;line-height:18px;">'.$qr_title.'</div></div>';
+           // echo '<div style="display:flex;align-items:center;max-width:275px;border:1px solid #000;"><div>'.$img_sm_qr1.'</div><div style="text-align:center;font-size:12px;padding-left:10px;margin:0 auto;font-weight:bold;line-height:18px;">'.$qr_title.'</div></div>';
            
       ?>
-        <button id="printBut" class="btn btn-danger" style="float: right;">Печать QR код</button>
+      <!---
+        <button id="printBut" class="btn btn-danger" style="float: right;">Печать QR код</button>--->
         <div style="clear:both;"></div>
     <iframe name="imgFrame" style="width: 0; height: 0; border: 0;color:#fff;"></iframe>
 

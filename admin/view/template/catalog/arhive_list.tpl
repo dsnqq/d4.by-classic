@@ -143,7 +143,7 @@
                   <td><?php echo $product['status']; ?></td>
                   <td><?php echo $product['description']; ?></td>
                   <td>
-                    <a href="<?php echo $product['edit']; ?>" data-toggle="tooltip" title="<?php echo $button_edit; ?>" class="btn btn-primary"><i class="fa fa-pencil"></i></a>
+                    <a href="<?php echo $product['edit']; ?>" data-toggle="tooltip" title="<?php echo $button_edit; ?>" class="btn btn-primary">Смотреть</a>
                   </td>
                 </tr>
                 <?php } ?>
