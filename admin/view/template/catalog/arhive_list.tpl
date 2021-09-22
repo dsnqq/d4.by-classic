@@ -1,20 +1,10 @@
 <?php echo $header; ?><?php echo $column_left; ?>
-<?php require_once $_SERVER['DOCUMENT_ROOT'].'/admin/shiny_config.php';?>
+<?php require_once $_SERVER['DOCUMENT_ROOT'].'/admin/product_config.php';?>
 <div id="content">
 
   <link rel="stylesheet" href="/admin/view/javascript/lightbox.css" />
   <script src="/admin/view/javascript/lightbox.min.js"></script>
-  <?php
-    /*
-      Год
-      Объем
-      Тип топлива
-      Название запчасти
-      Артикул
-      Номер запчасти
-      Статус
-    */
-  ?>
+  
   <div class="page-header">
     <div class="container-fluid">
       <h1><?php echo $heading_title; ?></h1>
@@ -73,12 +63,7 @@
                   <?php /* Объем */ ?>
                   <label class="col-sm-2 control-label" for="input-jan" style="font-weight:bold;">Объем</span></label>
                   <div class="col-sm-2 padding-r-2">
-                    <select id="main__jan" name="jan" class=" selectpicker" data-live-search="true">
-                          <option value="" <?php echo ($jan == "") ? "selected='selected'" : "" ; ?>>Объем</option>
-                          <?php foreach($width_shiny as $width_shiny_item){ ?>
-                            <option value="<?php echo $width_shiny_item; ?>" <?php echo ($width_shiny_item == $jan) ? "selected='selected'" : "" ; ?>><?php echo $width_shiny_item; ?></option>
-                          <?php } ?>
-                    </select>
+                  <input type="text" name="jan" value="<?php echo $jan; ?>" placeholder="Объем" id="input-jan" class="" />
                   </div>
                 </div>
 
@@ -110,27 +95,17 @@
                 
                 <div class="form-group ">
                   <?php /* Артикул */ ?>
-                  <label class="col-sm-2 control-label" for="input-jan" style="font-weight:bold;">Артикул</span></label>
+                  <label class="col-sm-2 control-label" for="input-model" style="font-weight:bold;">Артикул</span></label>
                   <div class="col-sm-2 padding-r-2">
-                    <select id="main__jan" name="jan" class=" selectpicker" data-live-search="true">
-                          <option value="" <?php echo ($jan == "") ? "selected='selected'" : "" ; ?>>Артикул</option>
-                          <?php foreach($width_shiny as $width_shiny_item){ ?>
-                            <option value="<?php echo $width_shiny_item; ?>" <?php echo ($width_shiny_item == $jan) ? "selected='selected'" : "" ; ?>><?php echo $width_shiny_item; ?></option>
-                          <?php } ?>
-                    </select>
+                    <input type="text" name="model" value="<?php echo $model; ?>" placeholder="Артикул" id="input-model" class="" />
                   </div>
                 </div>
                 
                 <div class="form-group ">
                   <?php /* Номер запчасти */ ?>
-                  <label class="col-sm-2 control-label" for="input-jan" style="font-weight:bold;">Номер запчасти</span></label>
+                  <label class="col-sm-2 control-label" for="input-sku" style="font-weight:bold;">Номер запчасти</span></label>
                   <div class="col-sm-2 padding-r-2">
-                    <select id="main__jan" name="jan" class=" selectpicker" data-live-search="true">
-                          <option value="" <?php echo ($jan == "") ? "selected='selected'" : "" ; ?>>Номер запчасти</option>
-                          <?php foreach($width_shiny as $width_shiny_item){ ?>
-                            <option value="<?php echo $width_shiny_item; ?>" <?php echo ($width_shiny_item == $jan) ? "selected='selected'" : "" ; ?>><?php echo $width_shiny_item; ?></option>
-                          <?php } ?>
-                    </select>
+                    <input type="text" name="sku" value="<?php echo $sku; ?>" placeholder="Номер запчасти" id="input-sku" class="" />
                   </div>
                 </div>
                 
