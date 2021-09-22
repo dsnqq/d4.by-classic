@@ -273,6 +273,7 @@ class ModelCatalogArhive extends Model {
 			'p.model',
 			'p.price',
 			'p.quantity',
+			'p.date_delete',
 			'p.status',
 			'p.sort_order'
 		);
@@ -377,6 +378,29 @@ class ModelCatalogArhive extends Model {
 		}
 
 		return $product_attribute_data;
+	}
+	
+	public function restoreProduct($product_id) {
+		
+		/* Copy in product */
+		$this->db->query("INSERT INTO  " . DB_PREFIX . "product SELECT * FROM " . DB_PREFIX . "arhive WHERE product_id = '" . (int)$product_id . "'");
+		$this->db->query("INSERT INTO  " . DB_PREFIX . "product_attribute SELECT * FROM " . DB_PREFIX . "arhive_attribute WHERE product_id = '" . (int)$product_id . "'");
+		$this->db->query("INSERT INTO  " . DB_PREFIX . "product_description SELECT * FROM " . DB_PREFIX . "arhive_description WHERE product_id = '" . (int)$product_id . "'");
+		$this->db->query("INSERT INTO  " . DB_PREFIX . "product_image SELECT * FROM " . DB_PREFIX . "arhive_image WHERE product_id = '" . (int)$product_id . "'");
+		$this->db->query("INSERT INTO  " . DB_PREFIX . "product_to_category SELECT * FROM " . DB_PREFIX . "arhive_to_category WHERE product_id = '" . (int)$product_id . "'");
+		$this->db->query("INSERT INTO  " . DB_PREFIX . "product_to_layout SELECT * FROM " . DB_PREFIX . "arhive_to_layout WHERE product_id = '" . (int)$product_id . "'");
+		$this->db->query("INSERT INTO  " . DB_PREFIX . "product_to_store SELECT * FROM " . DB_PREFIX . "arhive_to_store WHERE product_id = '" . (int)$product_id . "'");
+		/* End copy in product */
+
+		$this->db->query("DELETE FROM " . DB_PREFIX . "arhive WHERE product_id = '" . (int)$product_id . "'");
+		$this->db->query("DELETE FROM " . DB_PREFIX . "arhive_to_layout WHERE product_id = '" . (int)$product_id . "'");
+		$this->db->query("DELETE FROM " . DB_PREFIX . "arhive_to_store WHERE product_id = '" . (int)$product_id . "'");
+		$this->db->query("DELETE FROM " . DB_PREFIX . "arhive_attribute WHERE product_id = '" . (int)$product_id . "'");
+		$this->db->query("DELETE FROM " . DB_PREFIX . "arhive_description WHERE product_id = '" . (int)$product_id . "'");
+		$this->db->query("DELETE FROM " . DB_PREFIX . "arhive_image WHERE product_id = '" . (int)$product_id . "'");
+		$this->db->query("DELETE FROM " . DB_PREFIX . "arhive_to_category WHERE product_id = '" . (int)$product_id . "'");
+
+		$this->cache->delete('product');
 	}
 
 	public function getModelProduct($model) {

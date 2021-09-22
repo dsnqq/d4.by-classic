@@ -154,7 +154,7 @@
                       <img src="<?php echo $product['image']; ?>" alt="<?php echo $product['name']; ?>" class="img-thumbnail" />
                     <?php } ?>
                   </td>
-                  <td><?php print_r($product['category']); ?></td>
+                  <td><?php echo $product['category']; ?></td>
                   <td><?php echo $product['length']; ?></td>
                   <td><?php echo $product['objem']; ?></td>
                   <td><?php echo $product['toplivo']; ?></td>
@@ -166,7 +166,9 @@
                   <td><?php echo $product['status']; ?></td>
                   <td><?php echo $product['description']; ?></td>
                   <td>
-                    <a href="<?php echo $product['edit']; ?>" data-toggle="tooltip" title="<?php echo $button_edit; ?>" class="btn btn-primary">Смотреть</a>
+                    <a style="width: 100%;" href="<?php echo $product['edit']; ?>" class="btn btn-primary">Смотреть</a>
+                    <br>
+                    <a style="width: 100%;"  data-textrest="Вы точно хотите восстановить запчасть '<?php echo $product['manufacturer']; ?>' - <?php echo preg_replace('/<.+>/U', ' ', $product['category']); ?>?" href="<?php echo $product['restore']; ?>" class="restoreButton btn btn-success">Восстановить</a>
                   </td>
                 </tr>
                 <?php } ?>
@@ -191,6 +193,14 @@
   <?php /* javascript for bootstrap select */ ?>
   <script src="view/javascript/bootstrap-select.min.js"></script>
   <script src="view/javascript/jquery.chained.js"></script>
+  
+  <script>
+    $(document).ready(function() {
+      $(".restoreButton").on("click", function () {
+        return confirm($(this).data('textrest'));
+      });
+    });
+  </script>
   <script>
       $(document).ready(function() { //
           $('.selectpicker').selectpicker();

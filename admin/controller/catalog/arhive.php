@@ -476,13 +476,13 @@ class ControllerCatalogArhive extends Controller {
 		if (isset($this->request->get['sort'])) {
 			$sort = $this->request->get['sort'];
 		} else {
-			$sort = 'pd.name';
+			$sort = 'p.date_delete';
 		}
 
 		if (isset($this->request->get['order'])) {
 			$order = $this->request->get['order'];
 		} else {
-			$order = 'ASC';
+			$order = 'DESC';
 		}
 
 		if (isset($this->request->get['page'])) {
@@ -641,6 +641,7 @@ class ControllerCatalogArhive extends Controller {
 				'quantity'   => $result['quantity'],
 				'date_delete' => $result['date_delete'],
 				'status'     => $result['status'] ? $this->language->get('text_enabled') : $this->language->get('text_disabled'),
+				'restore'    => $this->url->link('catalog/arhive/restore', 'token=' . $this->session->data['token'] . '&product_id=' . $result['product_id'] . $url, true),
 				'edit'       => $this->url->link('catalog/arhive/edit', 'token=' . $this->session->data['token'] . '&product_id=' . $result['product_id'] . $url, true)
 			);
 		}
@@ -808,6 +809,59 @@ class ControllerCatalogArhive extends Controller {
 		$data['footer'] = $this->load->controller('common/footer');
 
 		$this->response->setOutput($this->load->view('catalog/arhive_list', $data));
+	}
+
+	public function restore() {
+		$this->load->language('catalog/arhive');
+
+		$this->document->setTitle($this->language->get('heading_title'));
+
+		$this->load->model('catalog/arhive');
+		$this->model_catalog_arhive->restoreProduct($this->request->get['product_id']);
+		
+
+		$this->session->data['success'] = $this->language->get('text_success');
+
+		$url = '';
+
+		if (isset($this->request->get['filter_name'])) {
+			$url .= '&filter_name=' . urlencode(html_entity_decode($this->request->get['filter_name'], ENT_QUOTES, 'UTF-8'));
+		}
+
+		if (isset($this->request->get['filter_model'])) {
+			$url .= '&filter_model=' . urlencode(html_entity_decode($this->request->get['filter_model'], ENT_QUOTES, 'UTF-8'));
+		}
+
+		if (isset($this->request->get['filter_price'])) {
+			$url .= '&filter_price=' . $this->request->get['filter_price'];
+		}
+
+		if (isset($this->request->get['filter_quantity'])) {
+			$url .= '&filter_quantity=' . $this->request->get['filter_quantity'];
+		}
+
+		if (isset($this->request->get['filter_category'])) {
+			$url .= '&filter_category=' . $this->request->get['filter_category'];
+		}
+
+		if (isset($this->request->get['filter_status'])) {
+			$url .= '&filter_status=' . $this->request->get['filter_status'];
+		}
+
+		if (isset($this->request->get['sort'])) {
+			$url .= '&sort=' . $this->request->get['sort'];
+		}
+
+		if (isset($this->request->get['order'])) {
+			$url .= '&order=' . $this->request->get['order'];
+		}
+
+		if (isset($this->request->get['page'])) {
+			$url .= '&page=' . $this->request->get['page'];
+		}
+
+		$this->response->redirect($this->url->link('catalog/arhive', 'token=' . $this->session->data['token'] . $url, true));
+		//$this->getList();
 	}
 
 	protected function getForm() {
