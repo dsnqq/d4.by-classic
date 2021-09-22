@@ -1,28 +1,22 @@
 <?php echo $header; ?><?php echo $column_left; ?>
+<?php require_once $_SERVER['DOCUMENT_ROOT'].'/admin/shiny_config.php';?>
 <div id="content">
 
   <link rel="stylesheet" href="/admin/view/javascript/lightbox.css" />
   <script src="/admin/view/javascript/lightbox.min.js"></script>
   <?php
     /*
-      марка и модель
-      артикул
-      год
-      объем
-      тип топлива
-      название запчасти
-      цена
-      номер запчасти
+      Год
+      Объем
+      Тип топлива
+      Название запчасти
+      Артикул
+      Номер запчасти
+      Статус
     */
   ?>
   <div class="page-header">
     <div class="container-fluid">
-      <div class="pull-right">
-      <?php /*
-        <a href="<?php echo $add; ?>" data-toggle="tooltip" title="<?php echo $button_add; ?>" class="btn btn-primary"><i class="fa fa-plus"></i></a>
-        <button type="submit" form="form-product" formaction="<?php echo $copy; ?>" data-toggle="tooltip" title="<?php echo $button_copy; ?>" class="btn btn-default"><i class="fa fa-copy"></i></button>
-        <button type="button" data-toggle="tooltip" title="<?php echo $button_delete; ?>" class="btn btn-danger" onclick="confirm('<?php echo $text_confirm; ?>') ? $('#form-product').submit() : false;"><i class="fa fa-trash-o"></i></button>*/?>
-      </div>
       <h1><?php echo $heading_title; ?></h1>
       <ul class="breadcrumb">
         <?php foreach ($breadcrumbs as $breadcrumb) { ?>
@@ -49,75 +43,116 @@
       <div class="panel-body">
         <div class="well " >
           <div class="row"> 
-            <div class="col-sm-4">
-              <div class="form-group">
-                <label class="control-label" for="input-name"><?php echo $entry_name; ?></label>
-                <input type="text" name="filter_name" value="<?php echo $filter_name; ?>" placeholder="<?php echo $entry_name; ?>" id="input-name" class="form-control" />
+                <div class="form-group ">
+                  <?php /* Марка и модель */ ?>
+                  <label class="col-sm-2 control-label" for="input-jan" style="font-weight:bold;">Марка и модель</span></label>
+                  <div class="col-sm-2 padding-r-2">
+                    <select id="main__jan" name="jan" class=" selectpicker" data-live-search="true">
+                          <option value="" <?php echo ($jan == "") ? "selected='selected'" : "" ; ?>>Марка и модель</option>
+                          <?php foreach($width_shiny as $width_shiny_item){ ?>
+                            <option value="<?php echo $width_shiny_item; ?>" <?php echo ($width_shiny_item == $jan) ? "selected='selected'" : "" ; ?>><?php echo $width_shiny_item; ?></option>
+                          <?php } ?>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="form-group ">
+                  <?php /* Год */ ?>
+                  <label class="col-sm-2 control-label" for="input-jan" style="font-weight:bold;">Год</span></label>
+                  <div class="col-sm-2 padding-r-2">
+                    <select id="main__jan" name="jan" class=" selectpicker" data-live-search="true">
+                          <option value="" <?php echo ($jan == "") ? "selected='selected'" : "" ; ?>>Год</option>
+                          <?php foreach($width_shiny as $width_shiny_item){ ?>
+                            <option value="<?php echo $width_shiny_item; ?>" <?php echo ($width_shiny_item == $jan) ? "selected='selected'" : "" ; ?>><?php echo $width_shiny_item; ?></option>
+                          <?php } ?>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="form-group ">
+                  <?php /* Объем */ ?>
+                  <label class="col-sm-2 control-label" for="input-jan" style="font-weight:bold;">Объем</span></label>
+                  <div class="col-sm-2 padding-r-2">
+                    <select id="main__jan" name="jan" class=" selectpicker" data-live-search="true">
+                          <option value="" <?php echo ($jan == "") ? "selected='selected'" : "" ; ?>>Объем</option>
+                          <?php foreach($width_shiny as $width_shiny_item){ ?>
+                            <option value="<?php echo $width_shiny_item; ?>" <?php echo ($width_shiny_item == $jan) ? "selected='selected'" : "" ; ?>><?php echo $width_shiny_item; ?></option>
+                          <?php } ?>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="form-group ">
+                  <?php /* Тип топлива */ ?>
+                  <label class="col-sm-2 control-label" for="input-jan" style="font-weight:bold;">Тип топлива</span></label>
+                  <div class="col-sm-2 padding-r-2">
+                    <select id="main__jan" name="jan" class=" selectpicker" data-live-search="true">
+                          <option value="" <?php echo ($jan == "") ? "selected='selected'" : "" ; ?>>Тип топлива</option>
+                          <?php foreach($width_shiny as $width_shiny_item){ ?>
+                            <option value="<?php echo $width_shiny_item; ?>" <?php echo ($width_shiny_item == $jan) ? "selected='selected'" : "" ; ?>><?php echo $width_shiny_item; ?></option>
+                          <?php } ?>
+                    </select>
+                  </div>
+                </div>
+                
+                <div class="form-group ">
+                  <?php /* Название запчасти */ ?>
+                  <label class="col-sm-2 control-label" for="input-jan" style="font-weight:bold;">Название запчасти</span></label>
+                  <div class="col-sm-2 padding-r-2">
+                    <select id="main__jan" name="jan" class=" selectpicker" data-live-search="true">
+                          <option value="" <?php echo ($jan == "") ? "selected='selected'" : "" ; ?>>Название запчасти</option>
+                          <?php foreach($width_shiny as $width_shiny_item){ ?>
+                            <option value="<?php echo $width_shiny_item; ?>" <?php echo ($width_shiny_item == $jan) ? "selected='selected'" : "" ; ?>><?php echo $width_shiny_item; ?></option>
+                          <?php } ?>
+                    </select>
+                  </div>
+                </div>
+                
+                <div class="form-group ">
+                  <?php /* Артикул */ ?>
+                  <label class="col-sm-2 control-label" for="input-jan" style="font-weight:bold;">Артикул</span></label>
+                  <div class="col-sm-2 padding-r-2">
+                    <select id="main__jan" name="jan" class=" selectpicker" data-live-search="true">
+                          <option value="" <?php echo ($jan == "") ? "selected='selected'" : "" ; ?>>Артикул</option>
+                          <?php foreach($width_shiny as $width_shiny_item){ ?>
+                            <option value="<?php echo $width_shiny_item; ?>" <?php echo ($width_shiny_item == $jan) ? "selected='selected'" : "" ; ?>><?php echo $width_shiny_item; ?></option>
+                          <?php } ?>
+                    </select>
+                  </div>
+                </div>
+                
+                <div class="form-group ">
+                  <?php /* Номер запчасти */ ?>
+                  <label class="col-sm-2 control-label" for="input-jan" style="font-weight:bold;">Номер запчасти</span></label>
+                  <div class="col-sm-2 padding-r-2">
+                    <select id="main__jan" name="jan" class=" selectpicker" data-live-search="true">
+                          <option value="" <?php echo ($jan == "") ? "selected='selected'" : "" ; ?>>Номер запчасти</option>
+                          <?php foreach($width_shiny as $width_shiny_item){ ?>
+                            <option value="<?php echo $width_shiny_item; ?>" <?php echo ($width_shiny_item == $jan) ? "selected='selected'" : "" ; ?>><?php echo $width_shiny_item; ?></option>
+                          <?php } ?>
+                    </select>
+                  </div>
+                </div>
+                
+                <div class="form-group ">
+                  <?php /* Статус */ ?>
+                  <label class="col-sm-2 control-label" for="input-jan" style="font-weight:bold;">Статус</span></label>
+                  <div class="col-sm-2 padding-r-2">
+                    <select id="main__jan" name="jan" class=" selectpicker" data-live-search="true">
+                          <option value="" <?php echo ($jan == "") ? "selected='selected'" : "" ; ?>>Статус</option>
+                          <?php foreach($width_shiny as $width_shiny_item){ ?>
+                            <option value="<?php echo $width_shiny_item; ?>" <?php echo ($width_shiny_item == $jan) ? "selected='selected'" : "" ; ?>><?php echo $width_shiny_item; ?></option>
+                          <?php } ?>
+                    </select>
+                  </div>
+                </div>
               </div>
-              <div class="form-group">
-                <label class="control-label" for="input-model"><?php echo $entry_model; ?></label>
-                <input type="text" name="filter_model" value="<?php echo $filter_model; ?>" placeholder="<?php echo $entry_model; ?>" id="input-model" class="form-control" />
+              <div class="form-group ">
+                <button type="button" style="font-weight: bold;background: #67d55c;font-size: 20px;" id="button-filter" class="btn  "><i class="fa fa-filter"></i> <?php echo $button_filter; ?></button>
+                <button type="button" style="font-weight: bold;background: #FFEB3B;font-size: 20px;" id="button-clear" class="btn  ">Сбросить</button>
               </div>
-              <div class="form-group">
-                <label class="control-label" for="input-category"><?php echo $column_category; ?></label>
-                <select name="filter_category" id="input-category" class="form-control">
-                  <option value="*"></option>
-                  <?php foreach ($categories as $category) { ?>
-                  <?php if ($category['product_count'] >= 1) { ?>
-                  <?php if ($category['category_id']==$filter_category) { ?>
-                  <option value="<?php echo $category['category_id']; ?>" selected="selected"><?php echo $category['name']; ?>&nbsp;&nbsp;&nbsp;&nbsp;</option>
-                  <?php } else { ?>
-                  <option value="<?php echo $category['category_id']; ?>">&nbsp;&nbsp;<?php echo $category['name']; ?>&nbsp;&nbsp;&nbsp;&nbsp;</option>
-                  <?php } ?>
-                  <?php } ?>
-                  <?php } ?>
-                </select>
-              </div>
-            </div>
-            <div class="col-sm-4">
-              <div class="form-group">
-                <label class="control-label" for="input-price"><?php echo $entry_price; ?></label>
-                <input type="text" name="filter_price" value="<?php echo $filter_price; ?>" placeholder="<?php echo $entry_price; ?>" id="input-price" class="form-control" />
-              </div>
-              <div class="form-group">
-                <label class="control-label" for="input-quantity"><?php echo $entry_quantity; ?></label>
-                <input type="text" name="filter_quantity" value="<?php echo $filter_quantity; ?>" placeholder="<?php echo $entry_quantity; ?>" id="input-quantity" class="form-control" />
-              </div>
-            </div>
-            <div class="col-sm-4">
-              <div class="form-group">
-                <label class="control-label" for="input-status"><?php echo $entry_status; ?></label>
-                <select name="filter_status" id="input-status" class="form-control">
-                  <option value="*"></option>
-                  <?php if ($filter_status) { ?>
-                  <option value="1" selected="selected"><?php echo $text_enabled; ?></option>
-                  <?php } else { ?>
-                  <option value="1"><?php echo $text_enabled; ?></option>
-                  <?php } ?>
-                  <?php if (!$filter_status && !is_null($filter_status)) { ?>
-                  <option value="0" selected="selected"><?php echo $text_disabled; ?></option>
-                  <?php } else { ?>
-                  <option value="0"><?php echo $text_disabled; ?></option>
-                  <?php } ?>
-                </select>
-              </div>
-              <div class="form-group">
-                <label class="control-label" for="input-image"><?php echo $entry_image; ?></label>
-                <select name="filter_image" id="input-image" class="form-control">
-                  <option value="*"></option>
-                  <?php if ($filter_image) { ?>
-                  <option value="1" selected="selected"><?php echo $text_enabled; ?></option>
-                  <?php } else { ?>
-                  <option value="1"><?php echo $text_enabled; ?></option>
-                  <?php } ?>
-                  <?php if (!$filter_image && !is_null($filter_image)) { ?>
-                  <option value="0" selected="selected"><?php echo $text_disabled; ?></option>
-                  <?php } else { ?>
-                  <option value="0"><?php echo $text_disabled; ?></option>
-                  <?php } ?>
-                </select>
-              </div>
-              <button type="button" id="button-filter" class="btn btn-primary pull-right"><i class="fa fa-filter"></i> <?php echo $button_filter; ?></button>
+
+
             </div>
           </div>
         </div>
@@ -220,7 +255,7 @@
 
   <script type="text/javascript"><!--
 $('#button-filter').on('click', function() {
-	var url = 'index.php?route=catalog/product&token=<?php echo $token; ?>';
+	var url = 'index.php?route=catalog/arhive&token=<?php echo $token; ?>';
 
 	var filter_name = $('input[name=\'filter_name\']').val();
 
@@ -258,12 +293,12 @@ $('#button-filter').on('click', function() {
 	if (filter_status != '*') {
 		url += '&filter_status=' + encodeURIComponent(filter_status);
 	}
-
+  /*
   var filter_image = $('select[name=\'filter_image\']').val();
 
   if (filter_image != '*') {
     url += '&filter_image=' + encodeURIComponent(filter_image);
-  }
+  }*/
 
 	location = url;
 });
@@ -289,6 +324,11 @@ $('input[name=\'filter_name\']').autocomplete({
 	}
 });
 
+$('#button-clear').on('click', function() {
+  window.location.href = 'https://d4.by/admin/index.php?route=catalog/arhive&token=<?php echo $_GET['token'];?>';
+});
+
+/*
 $('input[name=\'filter_model\']').autocomplete({
 	'source': function(request, response) {
 		$.ajax({
@@ -307,6 +347,12 @@ $('input[name=\'filter_model\']').autocomplete({
 	'select': function(item) {
 		$('input[name=\'filter_model\']').val(item['label']);
 	}
-});
+});*/
 //--></script></div>
+
+<style>
+  .form-group + .form-group {
+      border-top: none !important;
+  }
+</style>
 <?php echo $footer; ?>
