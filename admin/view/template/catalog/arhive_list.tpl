@@ -146,12 +146,19 @@
                 <?php foreach ($products as $product) { ?>
                 <tr>
                   <td>
-                    <?php if($product['popup'] != ""){ ?>
+                    <?php /*if($product['popup'] != ""){ ?>
                       <a data-lightbox="image<?php echo $product['product_id']; ?>" href="https://d4.by/image/<?php echo $product['popup']; ?>">
                         <img src="<?php echo $product['image']; ?>" alt="<?php echo $product['name']; ?>" class="img-thumbnail" />
                       </a>
                     <?php }else{ ?>
                       <img src="<?php echo $product['image']; ?>" alt="<?php echo $product['name']; ?>" class="img-thumbnail" />
+                    <?php }*/ ?>
+                    <?php if(!empty($product['images'])){ ?>
+                      <?php foreach($product['images'] as $item){ ?>
+                        <a data-lightbox="image<?php echo $product['product_id']; ?>" href="https://d4.by/image/<?php echo $item['image']; ?>">
+                          <img src="<?php echo $item['image']; ?>" class="img-thumbnail" />
+                        </a>
+                      <?php } ?>
                     <?php } ?>
                   </td>
                   <td><?php echo $product['category']; ?></td>

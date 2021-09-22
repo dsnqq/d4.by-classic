@@ -613,7 +613,27 @@ class ControllerCatalogArhive extends Controller {
 					break;
 				}
 			}*/
+			$product_images_array = $this->model_catalog_arhive->getProductImages($result['product_id']);
 
+			$this->load->model('tool/image');
+
+			$product_images = array();
+
+			foreach ($product_images_array as $product_image) {
+				/*if (is_file(DIR_IMAGE . $product_image['image'])) {
+					$image = $product_image['image'];
+					$thumb = $product_image['image'];
+				} else {
+					$image = '';
+					$thumb = 'no_image.png';
+				}*/
+
+				$product_images[] = array(
+					'image'      => $image,
+					'thumb'      => $this->model_tool_image->resize($thumb, 50, 50),
+					'sort_order' => $product_image['sort_order']
+				);
+			}
 			if($result['manufacturer_id']){
 				$this->load->model('catalog/manufacturer');
 				$manufacturer_info = $this->model_catalog_manufacturer->getManufacturer($result['manufacturer_id']);
@@ -625,6 +645,7 @@ class ControllerCatalogArhive extends Controller {
 			$data['products'][] = array(
 				'product_id' => $result['product_id'],
 				'image'      => $image,
+				'images'     => $product_images,
 				'popup'      => $image_pop,
 				'manufacturer' => $manufacturer_name,
 				'name'       => $result['name'],
