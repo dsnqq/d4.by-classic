@@ -167,8 +167,10 @@
                   <td><?php echo $product['description']; ?></td>
                   <td>
                     <a style="width: 100%;" href="<?php echo $product['edit']; ?>" class="btn btn-primary">Смотреть</a>
-                    <br>
-                    <a style="width: 100%;"  data-textrest="Вы точно хотите восстановить запчасть '<?php echo $product['manufacturer']; ?>' - <?php echo preg_replace('/<.+>/U', ' ', $product['category']); ?>?" href="<?php echo $product['restore']; ?>" class="restoreButton btn btn-success">Восстановить</a>
+                    <?php if($product['date_delete'] != ""){ ?>
+                      <br>
+                      <a style="width: 100%;"  data-textrest="Вы точно хотите восстановить запчасть '<?php echo $product['manufacturer']; ?>' - <?php echo preg_replace('/<.+>/U', ' ', $product['category']); ?>?" href="<?php echo $product['restore']; ?>" class="restoreButton btn btn-success">Восстановить</a>
+                    <?php } ?>
                   </td>
                 </tr>
                 <?php } ?>
