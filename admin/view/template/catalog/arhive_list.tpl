@@ -39,7 +39,7 @@
                   <div class="col-sm-2 padding-r-2">
                     <select id="main__jan" name="jan" class=" selectpicker" data-live-search="true">
                           <option value="" <?php echo ($jan == "") ? "selected='selected'" : "" ; ?>>Марка и модель</option>
-                          <?php foreach($width_shiny as $width_shiny_item){ ?>
+                          <?php foreach($location_array as $width_shiny_item){ ?>
                             <option value="<?php echo $width_shiny_item; ?>" <?php echo ($width_shiny_item == $jan) ? "selected='selected'" : "" ; ?>><?php echo $width_shiny_item; ?></option>
                           <?php } ?>
                     </select>
@@ -52,7 +52,7 @@
                   <div class="col-sm-2 padding-r-2">
                     <select id="main__jan" name="jan" class=" selectpicker" data-live-search="true">
                           <option value="" <?php echo ($jan == "") ? "selected='selected'" : "" ; ?>>Год</option>
-                          <?php foreach($width_shiny as $width_shiny_item){ ?>
+                          <?php foreach($location_array as $width_shiny_item){ ?>
                             <option value="<?php echo $width_shiny_item; ?>" <?php echo ($width_shiny_item == $jan) ? "selected='selected'" : "" ; ?>><?php echo $width_shiny_item; ?></option>
                           <?php } ?>
                     </select>
@@ -73,7 +73,7 @@
                   <div class="col-sm-2 padding-r-2">
                     <select id="main__jan" name="jan" class=" selectpicker" data-live-search="true">
                           <option value="" <?php echo ($jan == "") ? "selected='selected'" : "" ; ?>>Тип топлива</option>
-                          <?php foreach($width_shiny as $width_shiny_item){ ?>
+                          <?php foreach($location_array as $width_shiny_item){ ?>
                             <option value="<?php echo $width_shiny_item; ?>" <?php echo ($width_shiny_item == $jan) ? "selected='selected'" : "" ; ?>><?php echo $width_shiny_item; ?></option>
                           <?php } ?>
                     </select>
@@ -86,7 +86,7 @@
                   <div class="col-sm-2 padding-r-2">
                     <select id="main__jan" name="jan" class=" selectpicker" data-live-search="true">
                           <option value="" <?php echo ($jan == "") ? "selected='selected'" : "" ; ?>>Название запчасти</option>
-                          <?php foreach($width_shiny as $width_shiny_item){ ?>
+                          <?php foreach($location_array as $width_shiny_item){ ?>
                             <option value="<?php echo $width_shiny_item; ?>" <?php echo ($width_shiny_item == $jan) ? "selected='selected'" : "" ; ?>><?php echo $width_shiny_item; ?></option>
                           <?php } ?>
                     </select>
@@ -115,7 +115,7 @@
                   <div class="col-sm-2 padding-r-2">
                     <select id="main__jan" name="jan" class=" selectpicker" data-live-search="true">
                           <option value="" <?php echo ($jan == "") ? "selected='selected'" : "" ; ?>>Статус</option>
-                          <?php foreach($width_shiny as $width_shiny_item){ ?>
+                          <?php foreach($location_array as $width_shiny_item){ ?>
                             <option value="<?php echo $width_shiny_item; ?>" <?php echo ($width_shiny_item == $jan) ? "selected='selected'" : "" ; ?>><?php echo $width_shiny_item; ?></option>
                           <?php } ?>
                     </select>
