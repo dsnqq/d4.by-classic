@@ -595,11 +595,11 @@ class ControllerCatalogArhive extends Controller {
 			$category_paths = implode("<br />", $category_paths);
 
 			if (is_file(DIR_IMAGE . $result['image'])) {
-				$image = $this->model_tool_image->resize($result['image'], 150, 150);
-                $image_pop = $result['image'];
+				$thumb_mini = $this->model_tool_image->resize($result['image'], 150, 150);
+                $thumb_mini_pop = $result['image'];
 			} else {
-				$image = $this->model_tool_image->resize('no_image.png', 150, 150);
-                $image_pop = "";
+				$thumb_mini = $this->model_tool_image->resize('no_image.png', 150, 150);
+                $thumb_mini_pop = "";
 			}
 
 			$special = false;
@@ -644,9 +644,10 @@ class ControllerCatalogArhive extends Controller {
 
 			$data['products'][] = array(
 				'product_id' => $result['product_id'],
-				'image'      => $image,
+				'image'      => $thumb_mini,
 				'images'     => $product_images,
-				'popup'      => $image_pop,
+				'popup'      => $thumb_mini_pop,
+				'imgfix'	 => $result['image'],
 				'manufacturer' => $manufacturer_name,
 				'name'       => $result['name'],
 				'model'      => $result['model'],

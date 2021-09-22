@@ -180,14 +180,29 @@
                 <?php if ($products) { ?>
                 <?php foreach ($products as $product) { ?>
                 <tr>
+                <td style="display: grid;grid-template-columns: 1fr 1fr 1fr;min-width:170px;"class="<?php echo $column_info[$col]['align']; ?><?php echo ($column_info[$col]['qe_status']) ? ' ' . $column_info[$col]['type'] : ''; ?>" id="<?php echo $col . "-" . $product['product_id']; ?>">
+									<div style=" grid-column: 1 / -1;">
+										<a data-lightbox="image<?php echo $product['product_id']; ?>" href="/image/<?php echo $product['popup']; ?>">
+											<img src="<?php echo $product['image']; ?>" width="150px" alt="<?php echo $product['name']; ?>" class="img-thumbnail" data-id="<?php echo $product['product_id']; ?>" data-image="<?php echo $product['image']; ?>" />
+										</a>
+									</div>
+									<?php foreach($product['images'] as $images__itm){ ?>
+										<?php if($images__itm['image'] != $product['imgfix']){ ?>
+											<a data-lightbox="image<?php echo $product['product_id']; ?>" href="/image/<?php echo $images__itm['image']; ?>">
+												<img src="/image/<?php echo $images__itm['image']; ?>" width="50px" alt="<?php echo $product['name']; ?>" class="img-thumbnail" data-id="<?php echo $product['product_id']; ?>" data-image="<?php echo $product['image']; ?>" />
+											</a>	
+										<?php } ?>	
+									<?php } ?>		
+								</td>
+                <?php /*
                   <td>
-                    <?php /*if($product['popup'] != ""){ ?>
+                    <?php if($product['popup'] != ""){ ?>
                       <a data-lightbox="image<?php echo $product['product_id']; ?>" href="https://d4.by/image/<?php echo $product['popup']; ?>">
                         <img src="<?php echo $product['image']; ?>" alt="<?php echo $product['name']; ?>" class="img-thumbnail" />
                       </a>
                     <?php }else{ ?>
                       <img src="<?php echo $product['image']; ?>" alt="<?php echo $product['name']; ?>" class="img-thumbnail" />
-                    <?php }*/ ?>
+                    <?php } ?>
                     <?php if(!empty($product['images'])){ ?>
                       <?php foreach($product['images'] as $item){ ?>
                         <a data-lightbox="image<?php echo $product['product_id']; ?>" href="https://d4.by/image/<?php echo $item['image']; ?>">
@@ -195,7 +210,7 @@
                         </a>
                       <?php } ?>
                     <?php } ?>
-                  </td>
+                  </td> */ ?>
                   <td><?php echo $product['category']; ?></td>
                   <td><?php echo $product['length']; ?></td>
                   <td><?php echo $product['objem']; ?></td>
