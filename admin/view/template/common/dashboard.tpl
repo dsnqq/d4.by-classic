@@ -58,7 +58,7 @@
                       <td width="65%">
                         <div style="padding-bottom:3px">Юридическое лицо: <b>ИП Шпак С.С.</b></div>
                         <div style="padding-bottom: 5px">1 место в г.Дрогичин</div>
-                        <div style="padding-bottom: 5px">7 место в РБ</div>
+                        <div style="padding-bottom: 5px">8 место в РБ</div>
                         <div>
                           <a href="<?=$link_logout?>" class="btn btn-default btn-xs"><i class="fa fa-sign-out" aria-hidden="true"></i>  Выход</a>
                           <br><a class="btn btn-default btn-xs" style="margin-top: 5px;" href="https://d4.by" target="_blank"><i style="font-size: 11px;" class="fa fa-home fa-lg"></i> Посмотреть мой сайт</a>
@@ -150,7 +150,17 @@
             <h4 style="font-weight:bold;">Что делается и сделано по сайту с 01.03.21</h4>
             <a target="_blank" class="btn btn-warning btn-sm abtn" href="https://docs.google.com/spreadsheets/d/1nwpMFXGY8uX-5_kVTreBBWqrawgbB8qn0O4h2eZZhSQ/edit?usp=sharing"><i class="fa fa-check-circle" aria-hidden="true"></i>Смотреть excel онлайн</a>
 -->
-<h4 style="font-weight:bold;margin-top:10px;"></h4>
+<h4 style="font-weight:bold;margin-top:10px;">Добавлены новые наименования запчастей 20.09.21</h4>
+- Горелка автономного отопителя<br>
+- Датчик температуры автономного отопителя<br>
+- Датчик пламени автономного отопителя<br>
+- Карданный вал передний<br>
+- Крепление ковриков салона<br>
+- Кронштейн датчика положения кузова<br>
+- Направляющая задней распашной двери<br>
+- Радиатор гидроподвески<br>
+- Ротор генератора<br>
+- Тяга датчика положения кузова<br>
 <!--- CONTENT  -->
           </div>
           <div class="clear"></div>

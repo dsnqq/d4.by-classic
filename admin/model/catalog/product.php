@@ -339,9 +339,9 @@ class ModelCatalogProduct extends Model {
 		$this->db->query("INSERT INTO  " . DB_PREFIX . "arhive_to_category SELECT * FROM " . DB_PREFIX . "product_to_category WHERE product_id = '" . (int)$product_id . "'");
 		/* End copy in arhive */
 
-        /*$date_now = date('Y-m-d');
-        $this->db->query("UPDATE  " . DB_PREFIX . "arhive SET date_delete = ". $date_now ." WHERE product_id = '" . (int)$product_id . "'");
-        */
+		/* Add date delete product */
+        $this->db->query("UPDATE  " . DB_PREFIX . "arhive SET date_delete = NOW() WHERE product_id = '" . (int)$product_id . "'");
+        
 
 		$this->db->query("DELETE FROM " . DB_PREFIX . "product_special WHERE product_id = '" . (int)$product_id . "'");
 		$this->db->query("DELETE FROM " . DB_PREFIX . "product_image WHERE product_id = '" . (int)$product_id . "'");

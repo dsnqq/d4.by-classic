@@ -9,7 +9,6 @@ if (is_file('config.php')) {
 
 // special comment
 //phpinfo();
-
 // Install
 if (!defined('DIR_APPLICATION')) {
 	header('Location: install/index.php');
