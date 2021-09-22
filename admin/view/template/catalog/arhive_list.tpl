@@ -135,7 +135,7 @@
                  <td>Артикул</td>
                  <td>Цена</td>
                  <td>Номер запчасти</td>
-                 <td>Дата создания</td>
+                 <td>Дата удаления</td>
                  <td>Статус</td>
                  <td>Описание</td>
                  <td>Действия</td>
@@ -162,7 +162,7 @@
                   <td><?php echo $product['model']; ?></td>
                   <td><?php echo $product['price']; ?>$</td>
                   <td><?php echo $product['sku']; ?></td>
-                  <td><?php echo $product['date_added']; ?></td>
+                  <td><?php echo $product['date_delete']; ?></td>
                   <td><?php echo $product['status']; ?></td>
                   <td><?php echo $product['description']; ?></td>
                   <td>

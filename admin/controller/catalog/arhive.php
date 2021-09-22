@@ -639,6 +639,7 @@ class ControllerCatalogArhive extends Controller {
 				'category'   => $category_paths,
 				'special'    => $special,
 				'quantity'   => $result['quantity'],
+				'date_delete' => $result['date_delete'],
 				'status'     => $result['status'] ? $this->language->get('text_enabled') : $this->language->get('text_disabled'),
 				'edit'       => $this->url->link('catalog/arhive/edit', 'token=' . $this->session->data['token'] . '&product_id=' . $result['product_id'] . $url, true)
 			);
