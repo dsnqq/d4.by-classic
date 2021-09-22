@@ -629,7 +629,7 @@ class ControllerCatalogArhive extends Controller {
 				}*/
 
 				$product_images[] = array(
-					'image'      => $image,
+					'image'      => $product_image,
 					'thumb'      => $this->model_tool_image->resize($thumb, 50, 50),
 					'sort_order' => $product_image['sort_order']
 				);
