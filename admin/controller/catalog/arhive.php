@@ -620,16 +620,16 @@ class ControllerCatalogArhive extends Controller {
 			$product_images = array();
 
 			foreach ($product_images_array as $product_image) {
-				/*if (is_file(DIR_IMAGE . $product_image['image'])) {
+				if (is_file(DIR_IMAGE . $product_image['image'])) {
 					$image = $product_image['image'];
 					$thumb = $product_image['image'];
 				} else {
 					$image = '';
 					$thumb = 'no_image.png';
-				}*/
+				}
 
 				$product_images[] = array(
-					'image'      => $product_image,
+					'image'      => $image,
 					'thumb'      => $this->model_tool_image->resize($thumb, 50, 50),
 					'sort_order' => $product_image['sort_order']
 				);

@@ -156,7 +156,7 @@
                     <?php if(!empty($product['images'])){ ?>
                       <?php foreach($product['images'] as $item){ ?>
                         <a data-lightbox="image<?php echo $product['product_id']; ?>" href="https://d4.by/image/<?php echo $item['image']; ?>">
-                          <img src="<?php echo $item['image']; ?>" class="img-thumbnail" />
+                          <img src="https://d4.by/image/<?php echo $item['image']; ?>" class="img-thumbnail" />
                         </a>
                       <?php } ?>
                     <?php } ?>
