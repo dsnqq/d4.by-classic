@@ -238,6 +238,10 @@ class ModelCatalogArhive extends Model {
 		if (!empty($data['filter_name'])) {
 			$sql .= " AND pd.name LIKE '" . $this->db->escape($data['filter_name']) . "%'";
 		}
+		
+		if (!empty($data['filter_manufacturer'])) {
+			$sql .= " AND p.manufacturer_id LIKE '" . $this->db->escape($data['filter_manufacturer']) . "%'";
+		}
 
 		if (!empty($data['filter_model'])) {
 			$sql .= " AND p.model LIKE '" . $this->db->escape($data['filter_model']) . "%'";
@@ -579,6 +583,10 @@ class ModelCatalogArhive extends Model {
 			$sql .= " AND p.jan LIKE '" . $this->db->escape($data['filter_jan']) . "%'";
 		}
 
+		if (!empty($data['filter_manufacturer'])) {
+			$sql .= " AND p.manufacturer_id LIKE '" . $this->db->escape($data['filter_manufacturer']) . "%'";
+		}
+		
 		if (!empty($data['filter_length'])) {
 			$sql .= " AND p.length LIKE '" . $this->db->escape($data['filter_length']) . "%'";
 		}

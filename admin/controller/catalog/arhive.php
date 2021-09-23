@@ -485,6 +485,12 @@ class ControllerCatalogArhive extends Controller {
 			$filter_category = NULL;
 		}
 
+		if (isset($this->request->get['filter_manufacturer'])) {
+			$filter_manufacturer = $this->request->get['filter_manufacturer'];
+		} else {
+			$filter_manufacturer = NULL;
+		}
+		
 		if (isset($this->request->get['filter_status'])) {
 			$filter_status = $this->request->get['filter_status'];
 		} else {
@@ -560,6 +566,10 @@ class ControllerCatalogArhive extends Controller {
 		if (isset($this->request->get['filter_length'])) {
 			$url .= '&filter_length=' . $this->request->get['filter_length'];
 		}
+
+		if (isset($this->request->get['filter_manufacturer'])) {
+			$url .= '&filter_manufacturer=' . $this->request->get['filter_manufacturer'];
+		}
 		
 		if (isset($this->request->get['filter_image'])) {
 			$url .= '&filter_image=' . $this->request->get['filter_image'];
@@ -603,6 +613,7 @@ class ControllerCatalogArhive extends Controller {
             'filter_category' => $filter_category,
 			'filter_status'   => $filter_status,
 			'filter_image'    => $filter_image,
+			'filter_manufacturer'    => $filter_manufacturer,
 			'filter_sku'      => $filter_sku,
 			'filter_jan'      => $filter_jan,
 			'filter_length'   => $filter_length,
@@ -620,6 +631,7 @@ class ControllerCatalogArhive extends Controller {
 		$results = $this->model_catalog_arhive->getProducts($filter_data);
 
 		$this->load->model('catalog/category');
+		$this->load->model('catalog/manufacturer');
 
 		$filter_data = array(
 			'sort'        => 'name',
@@ -627,13 +639,13 @@ class ControllerCatalogArhive extends Controller {
 		);
 
 		$data['categories'] = $this->model_catalog_category->getCategories($filter_data);
+		$data['manufacturers'] = $this->model_catalog_manufacturer->getManufacturers($filter_data);
 
 		foreach ($results as $result) {
 
 	  
 			$this->load->model('catalog/category');
 
-			//$category =  $this->model_catalog_arhive->getProductCategories($result['product_id']);
 			$categories = $this->model_catalog_arhive->getProductCategories($result['product_id']);
 			$category_paths = array();
 			foreach($categories as $cat) {
@@ -703,7 +715,7 @@ class ControllerCatalogArhive extends Controller {
 				'objem'      => $result['jan'],
 				'sku'        => $result['sku'],
 				'date_added' => $result['date_added'],
-				'year'       => $result['length'],
+				'length'       => $result['length'],
 				'price'      => $result['price'],
 				'description'=> $result['description'],
 				'category'   => $category_paths,

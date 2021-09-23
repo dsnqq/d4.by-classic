@@ -37,11 +37,17 @@
                   <?php /* Марка и модель */ ?>
                   <label class="col-sm-2 control-label" for="input-jan" style="font-weight:bold;">Марка и модель</span></label>
                   <div class="col-sm-2 padding-r-2">
-                    <select id="main__jan" name="jan" class=" selectpicker" data-live-search="true">
-                          <option value="" <?php echo ($jan == "") ? "selected='selected'" : "" ; ?>>Марка и модель</option>
-                          <?php foreach($location_array as $width_shiny_item){ ?>
-                            <option value="<?php echo $width_shiny_item; ?>" <?php echo ($width_shiny_item == $jan) ? "selected='selected'" : "" ; ?>><?php echo $width_shiny_item; ?></option>
-                          <?php } ?>
+                    <select name="filter_category" id="input-category" class=" selectpicker" data-live-search="true">
+                      <option value="*">Марка и модель</option>
+                      <?php foreach ($categories as $category) { ?>
+                      <?php if ($category['product_count'] >= 1) { ?>
+                      <?php if ($category['category_id']==$filter_category) { ?>
+                      <option value="<?php echo $category['category_id']; ?>" selected="selected"><?php echo $category['name']; ?>&nbsp;&nbsp;&nbsp;&nbsp;</option>
+                      <?php } else { ?>
+                      <option value="<?php echo $category['category_id']; ?>">&nbsp;&nbsp;<?php echo $category['name']; ?>&nbsp;&nbsp;&nbsp;&nbsp;</option>
+                      <?php } ?>
+                      <?php } ?>
+                      <?php } ?>
                     </select>
                   </div>
                 </div>
@@ -62,7 +68,7 @@
 
                 <div class="form-group ">
                   <?php /* Объем */ ?>
-                  <label class="col-sm-2 control-label" for="input-jan" style="font-weight:bold;">Объем (+)</span></label>
+                  <label class="col-sm-2 control-label" for="input-jan" style="font-weight:bold;">Объем</span></label>
                   <div class="col-sm-2 padding-r-2">
                   <input type="text" name="jan" value="<?php echo $jan; ?>" placeholder="Объем" id="input-jan" class="" />
                   </div>
@@ -70,7 +76,7 @@
 
                 <div class="form-group ">
                   <?php /* Тип топлива */ ?>
-                  <label class="col-sm-2 control-label" for="input-isbn" style="font-weight:bold;">Тип топлива (+)</span></label>
+                  <label class="col-sm-2 control-label" for="input-isbn" style="font-weight:bold;">Тип топлива</span></label>
                   <div class="col-sm-2 padding-r-2">
                     <select id="input-isbn" name="isbn" class=" selectpicker" data-live-search="true">
                           <option value="*" <?php echo ($isbn == "") ? "selected='selected'" : "" ; ?>>Тип топлива</option>
@@ -83,12 +89,12 @@
                 
                 <div class="form-group ">
                   <?php /* Название запчасти */ ?>
-                  <label class="col-sm-2 control-label" for="input-jan" style="font-weight:bold;">Название запчасти</span></label>
+                  <label class="col-sm-2 control-label" for="input-manufacturer" style="font-weight:bold;">Название запчасти</span></label>
                   <div class="col-sm-2 padding-r-2">
-                    <select id="main__jan" name="jan" class=" selectpicker" data-live-search="true">
-                          <option value="" <?php echo ($jan == "") ? "selected='selected'" : "" ; ?>>Название запчасти</option>
-                          <?php foreach($location_array as $width_shiny_item){ ?>
-                            <option value="<?php echo $width_shiny_item; ?>" <?php echo ($width_shiny_item == $jan) ? "selected='selected'" : "" ; ?>><?php echo $width_shiny_item; ?></option>
+                    <select id="main__manufacturer" name="manufacturer" class=" selectpicker" data-live-search="true">
+                          <option value="*" <?php echo ($manufacturer == "") ? "selected='selected'" : "" ; ?>>Название запчасти</option>
+                          <?php foreach($manufacturers as $item){ ?>
+                            <option value="<?php echo $item['manufacturer_id']; ?>" <?php echo ($item['name'] == $manufacturer) ? "selected='selected'" : "" ; ?>><?php echo $item['name']; ?></option>
                           <?php } ?>
                     </select>
                   </div>
@@ -96,7 +102,7 @@
                 
                 <div class="form-group ">
                   <?php /* Артикул */ ?>
-                  <label class="col-sm-2 control-label" for="input-model" style="font-weight:bold;">Артикул (+)</span></label>
+                  <label class="col-sm-2 control-label" for="input-model" style="font-weight:bold;">Артикул</span></label>
                   <div class="col-sm-2 padding-r-2">
                     <input type="text" name="model" value="<?php echo $model; ?>" placeholder="Артикул" id="input-model" class="" />
                   </div>
@@ -104,7 +110,7 @@
                 
                 <div class="form-group ">
                   <?php /* Номер запчасти */ ?>
-                  <label class="col-sm-2 control-label" for="input-sku" style="font-weight:bold;">Номер запчасти (+)</span></label>
+                  <label class="col-sm-2 control-label" for="input-sku" style="font-weight:bold;">Номер запчасти</span></label>
                   <div class="col-sm-2 padding-r-2">
                     <input type="text" name="sku" value="<?php echo $sku; ?>" placeholder="Номер запчасти" id="input-sku" class="" />
                   </div>
@@ -216,7 +222,6 @@
     </div>
   </div>
 
-
   <?php /* javascript for bootstrap select */ ?>
   <script src="view/javascript/bootstrap-select.min.js"></script>
   <script src="view/javascript/jquery.chained.js"></script>
@@ -276,13 +281,18 @@ $('#button-filter').on('click', function() {
 		url += '&filter_price=' + encodeURIComponent(filter_price);
 	}
 
-
 	var filter_category = $('select[name=\'filter_category\']').val();
 
   if (filter_category != '*') {
 		url += '&filter_category=' + encodeURIComponent(filter_category);
 	}
 
+  var filter_manufacturer = $('#main__manufacturer').val();
+
+  if (filter_manufacturer != '*') {
+    url += '&filter_manufacturer=' + encodeURIComponent(filter_manufacturer);
+  }
+  
 	var filter_quantity = $('input[name=\'filter_quantity\']').val();
 
 	if (filter_quantity) {
@@ -329,26 +339,6 @@ $('#button-clear').on('click', function() {
   window.location.href = 'https://d4.by/admin/index.php?route=catalog/arhive&token=<?php echo $_GET['token'];?>';
 });
 
-/*
-$('input[name=\'filter_model\']').autocomplete({
-	'source': function(request, response) {
-		$.ajax({
-			url: 'index.php?route=catalog/product/autocomplete&token=<?php echo $token; ?>&filter_model=' +  encodeURIComponent(request),
-			dataType: 'json',
-			success: function(json) {
-				response($.map(json, function(item) {
-					return {
-						label: item['model'],
-						value: item['product_id']
-					}
-				}));
-			}
-		});
-	},
-	'select': function(item) {
-		$('input[name=\'filter_model\']').val(item['label']);
-	}
-});*/
 //--></script></div>
 
 <style>
