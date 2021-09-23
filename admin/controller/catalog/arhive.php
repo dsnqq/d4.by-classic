@@ -431,70 +431,68 @@ class ControllerCatalogArhive extends Controller {
 	}
 	protected function getList() {
 
-		if (isset($this->request->get['filter_name'])) {
-			$filter_name = $this->request->get['filter_name'];
-		} else {
-			$filter_name = null;
-		}
-
 		if (isset($this->request->get['filter_sku'])) {
 			$filter_sku = $this->request->get['filter_sku'];
+			$data['filter_sku'] = $filter_sku;
 		} else {
 			$filter_sku = null;
+			$data['filter_sku'] = '';
 		}
 
 		if (isset($this->request->get['filter_model'])) {
 			$filter_model = $this->request->get['filter_model'];
+			$data['filter_model'] = $filter_model;
 		} else {
 			$filter_model = null;
+			$data['filter_model'] = '';
 		}
 
 		if (isset($this->request->get['filter_jan'])) {
 			$filter_jan = $this->request->get['filter_jan'];
+			$data['filter_jan'] = $filter_jan;
 		} else {
 			$filter_jan = null;
+			$data['filter_jan'] = '';
 		}
 		
 		if (isset($this->request->get['filter_isbn'])) {
 			$filter_isbn = $this->request->get['filter_isbn'];
+			$data['filter_isbn'] = $filter_isbn;
 		} else {
 			$filter_isbn = null;
-		}
-
-		if (isset($this->request->get['filter_price'])) {
-			$filter_price = $this->request->get['filter_price'];
-		} else {
-			$filter_price = null;
+			$data['filter_isbn'] = '';
 		}
 
 		if (isset($this->request->get['filter_length'])) {
 			$filter_length = $this->request->get['filter_length'];
+			$data['filter_length'] = $filter_length;
 		} else {
 			$filter_length = null;
-		}
-
-		if (isset($this->request->get['filter_quantity'])) {
-			$filter_quantity = $this->request->get['filter_quantity'];
-		} else {
-			$filter_quantity = null;
+			$data['filter_length'] = '';
 		}
 
 		if (isset($this->request->get['filter_category'])) {
 			$filter_category = $this->request->get['filter_category'];
+			$data['filter_category'] = $filter_category;
 		} else {
 			$filter_category = NULL;
+			$data['filter_category'] = '';
 		}
 
 		if (isset($this->request->get['filter_manufacturer'])) {
 			$filter_manufacturer = $this->request->get['filter_manufacturer'];
+			$data['filter_manufacturer'] = $filter_manufacturer;
 		} else {
 			$filter_manufacturer = NULL;
+			$data['filter_manufacturer'] = '';
 		}
 		
 		if (isset($this->request->get['filter_status'])) {
 			$filter_status = $this->request->get['filter_status'];
+			$data['filter_status'] = $filter_status;
 		} else {
 			$filter_status = null;
+			$data['filter_status'] = '';
 		}
 
 		if (isset($this->request->get['filter_image'])) {
