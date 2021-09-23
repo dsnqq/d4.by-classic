@@ -26,127 +26,7 @@
       <button type="button" class="close" data-dismiss="alert">&times;</button>
     </div>
     <?php } ?>
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title"><i class="fa fa-list"></i> <?php echo $text_list; ?></h3>
-      </div>
-      <div class="panel-body">
-        <div class="well " >
-          <div class="row"> 
-                <div class="form-group ">
-                  <?php /* Марка и модель */ ?>
-                  <label class="col-sm-2 control-label" for="input-jan" style="font-weight:bold;">Марка и модель</span></label>
-                  <div class="col-sm-2 padding-r-2">
-                    <select name="filter_category" id="input-category" class=" selectpicker" data-live-search="true">
-                      <option value="*">Марка и модель</option>
-                      <?php foreach ($categories as $category) { ?>
-                      <?php if ($category['product_count'] >= 1) { ?>
-                      <?php if ($category['category_id']==$filter_category) { ?>
-                      <option value="<?php echo $category['category_id']; ?>" selected="selected"><?php echo $category['name']; ?>&nbsp;&nbsp;&nbsp;&nbsp;</option>
-                      <?php } else { ?>
-                      <option value="<?php echo $category['category_id']; ?>">&nbsp;&nbsp;<?php echo $category['name']; ?>&nbsp;&nbsp;&nbsp;&nbsp;</option>
-                      <?php } ?>
-                      <?php } ?>
-                      <?php } ?>
-                    </select>
-                  </div>
-                </div>
-
-                <div class="form-group ">
-                  <?php /* Год */ ?>
-                  <label class="col-sm-2 control-label" for="input-length" style="font-weight:bold;">Год</span></label>
-                  <div class="col-sm-2 padding-r-2">
-                  <select id="select-length" name="length" class=" selectpicker" data-live-search="true">
-                        <option value="*" <?php echo (round($filter_length, 2) == "") ? "selected='selected'" : "" ; ?>>Выберите год</option>
-                        <?php $year_max = date('Y');$year_max = (int)$year_max; ?>
-                        <?php for($year_iteration = 1980; $year_iteration <= $year_max; $year_iteration++){ ?>
-                          <option value="<?php echo $year_iteration; ?>"  <?php echo (round($filter_length, 2) == $year_iteration) ? "selected='selected'" : "" ; ?>><?php echo $year_iteration; ?></option>
-                        <?php } ?>
-                  </select>
-                  </div>
-                </div>
-
-                <div class="form-group ">
-                  <?php /* Объем */ ?>
-                  <label class="col-sm-2 control-label" for="input-jan" style="font-weight:bold;">Объем</span></label>
-                  <div class="col-sm-2 padding-r-2">
-                  <input type="text" name="jan" value="<?php echo $filter_jan; ?>" placeholder="Объем" id="input-jan" class="" />
-                  </div>
-                </div>
-
-                <div class="form-group ">
-                  <?php /* Тип топлива */ ?>
-                  <label class="col-sm-2 control-label" for="input-isbn" style="font-weight:bold;">Тип топлива</span></label>
-                  <div class="col-sm-2 padding-r-2">
-                    <select id="input-isbn" name="isbn" class=" selectpicker" data-live-search="true">
-                          <option value="*" <?php echo ($filter_isbn == "") ? "selected='selected'" : "" ; ?>>Тип топлива</option>
-                          <?php foreach($oil_type as $oil_type_item){ ?>
-                            <option value="<?php echo $oil_type_item; ?>" <?php echo ($oil_type_item == $filter_isbn) ? "selected='selected'" : "" ; ?>><?php echo $oil_type_item; ?></option>
-                          <?php } ?>
-                    </select>
-                  </div>
-                </div>
-                
-                <div class="form-group ">
-                  <?php /* Название запчасти */ ?>
-                  <label class="col-sm-2 control-label" for="input-manufacturer" style="font-weight:bold;">Название запчасти</span></label>
-                  <div class="col-sm-2 padding-r-2">
-                    <select id="main__manufacturer" name="manufacturer" class=" selectpicker" data-live-search="true">
-                          <option value="*" <?php echo ($filter_manufacturer == "") ? "selected='selected'" : "" ; ?>>Название запчасти</option>
-                          <?php foreach($manufacturers as $item){ ?>
-                            <option value="<?php echo $item['manufacturer_id']; ?>" <?php echo ($item['manufacturer_id'] == $filter_manufacturer) ? "selected='selected'" : "" ; ?>><?php echo $item['name']; ?></option>
-                          <?php } ?>
-                    </select>
-                  </div>
-                </div>
-                
-                <div class="form-group ">
-                  <?php /* Артикул */ ?>
-                  <label class="col-sm-2 control-label" for="input-model" style="font-weight:bold;">Артикул</span></label>
-                  <div class="col-sm-2 padding-r-2">
-                    <input type="text" name="model" value="<?php echo $filter_model; ?>" placeholder="Артикул" id="input-model"/>
-                  </div>
-                </div>
-                
-                <div class="form-group ">
-                  <?php /* Номер запчасти */ ?>
-                  <label class="col-sm-2 control-label" for="input-sku" style="font-weight:bold;">Номер запчасти</span></label>
-                  <div class="col-sm-2 padding-r-2">
-                    <input type="text" name="sku" value="<?php echo $filter_sku; ?>" placeholder="Номер запчасти" id="input-sku" />
-                  </div>
-                </div>
-                
-                <div class="form-group ">
-                  <?php /* Статус */ ?>
-                  <label class="col-sm-2 control-label" for="input-status" style="font-weight:bold;">Статус</span></label>
-                  <div class="col-sm-2 padding-r-2">
-                    <select name="status" id="input-status" class="">
-                      <?php if ($filter_status && $filter_status == 1) { ?>
-                        <option value="*">Выберите</option>
-                        <option value="1" selected="selected">Активно</option>
-                        <option value="0">Неактивно</option>
-                      <?php } elseif($filter_status && $filter_status == 0) { ?>
-                        <option value="*">Выберите</option>
-                        <option value="1">Активно</option>
-                        <option value="0" selected="selected">Неактивно</option>
-                      <?php } else { ?>
-                        <option value="*" selected="selected">Выберите</option>
-                        <option value="1">Активно</option>
-                        <option value="0">Неактивно</option>
-                      <?php } ?>
-                    </select>
-                  </div>
-                </div>
-              </div>
-              <div class="form-group ">
-                <button type="button" style="font-weight: bold;background: #67d55c;font-size: 20px;" id="button-filter" class="btn  "><i class="fa fa-filter"></i> <?php echo $button_filter; ?></button>
-                <button type="button" style="font-weight: bold;background: #FFEB3B;font-size: 20px;" id="button-clear" class="btn  ">Сбросить</button>
-              </div>
-
-
-            </div>
-          </div>
-        </div>
+    <div class="">
         <form action="<?php echo $delete; ?>" method="post" enctype="multipart/form-data" id="form-product">
           <div class="table-responsive">
             <table class="table table-bordered table-hover">
@@ -168,6 +48,95 @@
                 </tr>
               </thead>
               <tbody>
+
+                <?php /* FILTER START */ ?>
+                  <tr>
+                  <td>-</td>
+                  <td>
+                    <?php /* Марка и модель */ ?>
+                    <select name="filter_category" id="input-category" class=" selectpicker" data-live-search="true">
+                      <option value="*">Выберите</option>
+                      <?php foreach ($categories as $category) { ?>
+                      <?php if ($category['product_count'] >= 1) { ?>
+                      <?php if ($category['category_id']==$filter_category) { ?>
+                      <option value="<?php echo $category['category_id']; ?>" selected="selected"><?php echo $category['name']; ?>&nbsp;&nbsp;&nbsp;&nbsp;</option>
+                      <?php } else { ?>
+                      <option value="<?php echo $category['category_id']; ?>">&nbsp;&nbsp;<?php echo $category['name']; ?>&nbsp;&nbsp;&nbsp;&nbsp;</option>
+                      <?php } ?>
+                      <?php } ?>
+                      <?php } ?>
+                    </select>
+                  </td>
+                  <td>
+                    <?php /* Год */ ?>
+                    <select id="select-length" name="length" class=" selectpicker" data-live-search="true">
+                          <option value="*" <?php echo (round($filter_length, 2) == "") ? "selected='selected'" : "" ; ?>>Год</option>
+                          <?php $year_max = date('Y');$year_max = (int)$year_max; ?>
+                          <?php for($year_iteration = 1980; $year_iteration <= $year_max; $year_iteration++){ ?>
+                            <option value="<?php echo $year_iteration; ?>"  <?php echo (round($filter_length, 2) == $year_iteration) ? "selected='selected'" : "" ; ?>><?php echo $year_iteration; ?></option>
+                          <?php } ?>
+                    </select>
+                  </td>
+                  <td>
+                    <?php /* Объем */ ?>
+                    <div class="">
+                      <input type="text" name="jan" value="<?php echo $filter_jan; ?>" placeholder="Объем" id="input-jan" class="" />
+                    </div>
+                  </td>
+                  <td>
+                    <select id="input-isbn" name="isbn" class=" selectpicker" data-live-search="true">
+                          <option value="*" <?php echo ($filter_isbn == "") ? "selected='selected'" : "" ; ?>>Тип топлива</option>
+                          <?php foreach($oil_type as $oil_type_item){ ?>
+                            <option value="<?php echo $oil_type_item; ?>" <?php echo ($oil_type_item == $filter_isbn) ? "selected='selected'" : "" ; ?>><?php echo $oil_type_item; ?></option>
+                          <?php } ?>
+                    </select>
+                  </td>
+                  <td>
+                    <select id="main__manufacturer" name="manufacturer" class=" selectpicker" data-live-search="true">
+                          <option value="*" <?php echo ($filter_manufacturer == "") ? "selected='selected'" : "" ; ?>>Название запчасти</option>
+                          <?php foreach($manufacturers as $item){ ?>
+                            <option value="<?php echo $item['manufacturer_id']; ?>" <?php echo ($item['manufacturer_id'] == $filter_manufacturer) ? "selected='selected'" : "" ; ?>><?php echo $item['name']; ?></option>
+                          <?php } ?>
+                    </select>
+                  </td>
+                  <td>
+                    <div class="">
+                      <input type="text" name="model" value="<?php echo $filter_model; ?>" placeholder="Артикул" id="input-model"/>
+                    </div>
+                  </td>
+                  <td>-</td>
+                  <td>
+                    <div class="">
+                      <input type="text" name="sku" value="<?php echo $filter_sku; ?>" placeholder="Номер запчасти" id="input-sku" />
+                    </div>
+                  </td>
+                  <td>-</td>
+                  <td>
+                    <div class="">
+                      <select name="status" id="input-status" class="">
+                        <?php if ($filter_status && $filter_status == 1) { ?>
+                          <option value="*">Выберите</option>
+                          <option value="1" selected="selected">Активно</option>
+                          <option value="0">Неактивно</option>
+                        <?php } elseif($filter_status && $filter_status == 0) { ?>
+                          <option value="*">Выберите</option>
+                          <option value="1">Активно</option>
+                          <option value="0" selected="selected">Неактивно</option>
+                        <?php } else { ?>
+                          <option value="*" selected="selected">Выберите</option>
+                          <option value="1">Активно</option>
+                          <option value="0">Неактивно</option>
+                        <?php } ?>
+                      </select>
+                  </td>
+                  <td>-</td>
+                  <td>
+                    <button type="button" style="padding: 2px 13px;font-weight: bold;background: #67d55c;font-size: 20px;" id="button-filter" class="btn">Поиск</button><br>
+                    <button type="button" style="padding: 2px 13px;font-weight: bold;background: #FFEB3B;font-size: 20px;" id="button-clear" class="btn">Сброс</button>
+                  </td>
+                  </tr>
+                <?php /* FILTER END */ ?>
+
                 <?php if ($products) { ?>
                 <?php foreach ($products as $product) { ?>
                 <tr>
@@ -303,10 +272,10 @@ $('#button-filter').on('click', function() {
 });
 //--></script>
   <script type="text/javascript"><!--
-$('input[name=\'filter_name\']').autocomplete({
+$('#input-model').autocomplete({
 	'source': function(request, response) {
 		$.ajax({
-			url: 'index.php?route=catalog/product/autocomplete&token=<?php echo $token; ?>&filter_name=' +  encodeURIComponent(request),
+			url: 'index.php?route=catalog/arhive/autocomplete&token=<?php echo $token; ?>&filter_model=' +  encodeURIComponent(request),
 			dataType: 'json',
 			success: function(json) {
 				response($.map(json, function(item) {
@@ -333,11 +302,15 @@ $('#button-clear').on('click', function() {
   .form-group + .form-group {
       border-top: none !important;
   }
-  .well input, .well select{
-    width: 220px;
+  input,  select{
+    width: auto !important;
     border: 1px solid #000;
     border-radius: 3px;
     color:#000;
+  }
+  input{
+    
+    max-width: 60px;
   }
   .well input::placeholder{
     color:#000;
@@ -346,9 +319,21 @@ $('#button-clear').on('click', function() {
     border-color: #000;
   }
   .btn-default:hover{
-    
     background-color: #fff !important; 
      border-color: #000;
+  }
+  .bootstrap-select .dropdown-menu{
+    min-width:auto !important;
+  }
+  .bootstrap-select .dropdown-menu{
+    right:unset !important;
+  }
+  .bs-searchbox input{
+    width: 100% !important;
+    max-width:100% !important;
+  }
+  .bootstrap-select:not([class*="col-"]):not([class*="form-control"]):not(.input-group-btn) {
+      width: 100px;
   }
 </style>
 <?php echo $footer; ?>

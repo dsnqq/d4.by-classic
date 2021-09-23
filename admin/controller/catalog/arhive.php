@@ -1908,7 +1908,7 @@ class ControllerCatalogArhive extends Controller {
 		$json = array();
 
 		if (isset($this->request->get['filter_name']) || isset($this->request->get['filter_model'])) {
-			$this->load->model('catalog/product');
+			$this->load->model('catalog/arhive');
 			$this->load->model('catalog/option');
 
 			if (isset($this->request->get['filter_name'])) {
