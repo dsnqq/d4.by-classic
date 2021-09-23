@@ -437,16 +437,40 @@ class ControllerCatalogArhive extends Controller {
 			$filter_name = null;
 		}
 
+		if (isset($this->request->get['filter_sku'])) {
+			$filter_sku = $this->request->get['filter_sku'];
+		} else {
+			$filter_sku = null;
+		}
+
 		if (isset($this->request->get['filter_model'])) {
 			$filter_model = $this->request->get['filter_model'];
 		} else {
 			$filter_model = null;
 		}
 
+		if (isset($this->request->get['filter_jan'])) {
+			$filter_jan = $this->request->get['filter_jan'];
+		} else {
+			$filter_jan = null;
+		}
+		
+		if (isset($this->request->get['filter_isbn'])) {
+			$filter_isbn = $this->request->get['filter_isbn'];
+		} else {
+			$filter_isbn = null;
+		}
+
 		if (isset($this->request->get['filter_price'])) {
 			$filter_price = $this->request->get['filter_price'];
 		} else {
 			$filter_price = null;
+		}
+
+		if (isset($this->request->get['filter_length'])) {
+			$filter_length = $this->request->get['filter_length'];
+		} else {
+			$filter_length = null;
 		}
 
 		if (isset($this->request->get['filter_quantity'])) {
@@ -500,11 +524,23 @@ class ControllerCatalogArhive extends Controller {
 		if (isset($this->request->get['filter_category'])) {
 			$url .= '&filter_category=' . urlencode(html_entity_decode($this->request->get['filter_category'], ENT_QUOTES, 'UTF-8'));
 		}
+		
+		if (isset($this->request->get['filter_length'])) {
+			$url .= '&filter_length=' . urlencode(html_entity_decode($this->request->get['filter_length'], ENT_QUOTES, 'UTF-8'));
+		}
 
 		if (isset($this->request->get['filter_model'])) {
 			$url .= '&filter_model=' . urlencode(html_entity_decode($this->request->get['filter_model'], ENT_QUOTES, 'UTF-8'));
 		}
 
+		if (isset($this->request->get['filter_sku'])) {
+			$url .= '&filter_sku=' . urlencode(html_entity_decode($this->request->get['filter_sku'], ENT_QUOTES, 'UTF-8'));
+		}
+
+		if (isset($this->request->get['filter_jan'])) {
+			$url .= '&filter_jan=' . urlencode(html_entity_decode($this->request->get['filter_jan'], ENT_QUOTES, 'UTF-8'));
+		}
+		
 		if (isset($this->request->get['filter_price'])) {
 			$url .= '&filter_price=' . $this->request->get['filter_price'];
 		}
@@ -517,6 +553,14 @@ class ControllerCatalogArhive extends Controller {
 			$url .= '&filter_status=' . $this->request->get['filter_status'];
 		}
 
+		if (isset($this->request->get['filter_isbn'])) {
+			$url .= '&filter_isbn=' . $this->request->get['filter_isbn'];
+		}
+
+		if (isset($this->request->get['filter_length'])) {
+			$url .= '&filter_length=' . $this->request->get['filter_length'];
+		}
+		
 		if (isset($this->request->get['filter_image'])) {
 			$url .= '&filter_image=' . $this->request->get['filter_image'];
 		}
@@ -559,6 +603,10 @@ class ControllerCatalogArhive extends Controller {
             'filter_category' => $filter_category,
 			'filter_status'   => $filter_status,
 			'filter_image'    => $filter_image,
+			'filter_sku'      => $filter_sku,
+			'filter_jan'      => $filter_jan,
+			'filter_length'   => $filter_length,
+			'filter_isbn'     => $filter_isbn,
 			'sort'            => $sort,
 			'order'           => $order,
 			'start'           => ($page - 1) * $this->config->get('config_limit_admin'),

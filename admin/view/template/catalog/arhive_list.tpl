@@ -48,20 +48,21 @@
 
                 <div class="form-group ">
                   <?php /* Год */ ?>
-                  <label class="col-sm-2 control-label" for="input-jan" style="font-weight:bold;">Год</span></label>
+                  <label class="col-sm-2 control-label" for="input-length" style="font-weight:bold;">Год</span></label>
                   <div class="col-sm-2 padding-r-2">
-                    <select id="main__jan" name="jan" class=" selectpicker" data-live-search="true">
-                          <option value="" <?php echo ($jan == "") ? "selected='selected'" : "" ; ?>>Год</option>
-                          <?php foreach($location_array as $width_shiny_item){ ?>
-                            <option value="<?php echo $width_shiny_item; ?>" <?php echo ($width_shiny_item == $jan) ? "selected='selected'" : "" ; ?>><?php echo $width_shiny_item; ?></option>
-                          <?php } ?>
-                    </select>
+                  <select id="select-length" name="length" class=" selectpicker" data-live-search="true">
+                        <option value="*" <?php echo (round($length, 2) == "") ? "selected='selected'" : "" ; ?>>Выберите год</option>
+                        <?php $year_max = date('Y');$year_max = (int)$year_max; ?>
+                        <?php for($year_iteration = 1980; $year_iteration <= $year_max; $year_iteration++){ ?>
+                          <option value="<?php echo $year_iteration; ?>"  <?php echo (round($length, 2) == $year_iteration) ? "selected='selected'" : "" ; ?>><?php echo $year_iteration; ?></option>
+                        <?php } ?>
+                  </select>
                   </div>
                 </div>
 
                 <div class="form-group ">
                   <?php /* Объем */ ?>
-                  <label class="col-sm-2 control-label" for="input-jan" style="font-weight:bold;">Объем</span></label>
+                  <label class="col-sm-2 control-label" for="input-jan" style="font-weight:bold;">Объем (+)</span></label>
                   <div class="col-sm-2 padding-r-2">
                   <input type="text" name="jan" value="<?php echo $jan; ?>" placeholder="Объем" id="input-jan" class="" />
                   </div>
@@ -69,12 +70,12 @@
 
                 <div class="form-group ">
                   <?php /* Тип топлива */ ?>
-                  <label class="col-sm-2 control-label" for="input-jan" style="font-weight:bold;">Тип топлива</span></label>
+                  <label class="col-sm-2 control-label" for="input-isbn" style="font-weight:bold;">Тип топлива (+)</span></label>
                   <div class="col-sm-2 padding-r-2">
-                    <select id="main__jan" name="jan" class=" selectpicker" data-live-search="true">
-                          <option value="" <?php echo ($jan == "") ? "selected='selected'" : "" ; ?>>Тип топлива</option>
-                          <?php foreach($location_array as $width_shiny_item){ ?>
-                            <option value="<?php echo $width_shiny_item; ?>" <?php echo ($width_shiny_item == $jan) ? "selected='selected'" : "" ; ?>><?php echo $width_shiny_item; ?></option>
+                    <select id="input-isbn" name="isbn" class=" selectpicker" data-live-search="true">
+                          <option value="*" <?php echo ($isbn == "") ? "selected='selected'" : "" ; ?>>Тип топлива</option>
+                          <?php foreach($oil_type as $oil_type_item){ ?>
+                            <option value="<?php echo $oil_type_item; ?>" <?php echo ($oil_type_item == $isbn) ? "selected='selected'" : "" ; ?>><?php echo $oil_type_item; ?></option>
                           <?php } ?>
                     </select>
                   </div>
@@ -95,7 +96,7 @@
                 
                 <div class="form-group ">
                   <?php /* Артикул */ ?>
-                  <label class="col-sm-2 control-label" for="input-model" style="font-weight:bold;">Артикул</span></label>
+                  <label class="col-sm-2 control-label" for="input-model" style="font-weight:bold;">Артикул (+)</span></label>
                   <div class="col-sm-2 padding-r-2">
                     <input type="text" name="model" value="<?php echo $model; ?>" placeholder="Артикул" id="input-model" class="" />
                   </div>
@@ -103,7 +104,7 @@
                 
                 <div class="form-group ">
                   <?php /* Номер запчасти */ ?>
-                  <label class="col-sm-2 control-label" for="input-sku" style="font-weight:bold;">Номер запчасти</span></label>
+                  <label class="col-sm-2 control-label" for="input-sku" style="font-weight:bold;">Номер запчасти (+)</span></label>
                   <div class="col-sm-2 padding-r-2">
                     <input type="text" name="sku" value="<?php echo $sku; ?>" placeholder="Номер запчасти" id="input-sku" class="" />
                   </div>
@@ -111,13 +112,22 @@
                 
                 <div class="form-group ">
                   <?php /* Статус */ ?>
-                  <label class="col-sm-2 control-label" for="input-jan" style="font-weight:bold;">Статус</span></label>
+                  <label class="col-sm-2 control-label" for="input-status" style="font-weight:bold;">Статус(+)</span></label>
                   <div class="col-sm-2 padding-r-2">
-                    <select id="main__jan" name="jan" class=" selectpicker" data-live-search="true">
-                          <option value="" <?php echo ($jan == "") ? "selected='selected'" : "" ; ?>>Статус</option>
-                          <?php foreach($location_array as $width_shiny_item){ ?>
-                            <option value="<?php echo $width_shiny_item; ?>" <?php echo ($width_shiny_item == $jan) ? "selected='selected'" : "" ; ?>><?php echo $width_shiny_item; ?></option>
-                          <?php } ?>
+                    <select name="status" id="input-status" class="">
+                      <?php if ($status && $status == 1) { ?>
+                        <option value="*">Выберите</option>
+                        <option value="1" selected="selected">Активно</option>
+                        <option value="0">Неактивно</option>
+                      <?php } elseif($status && $status == 0) { ?>
+                        <option value="*">Выберите</option>
+                        <option value="1">Активно</option>
+                        <option value="0" selected="selected">Неактивно</option>
+                      <?php } else { ?>
+                        <option value="*" selected="selected">Выберите</option>
+                        <option value="1">Активно</option>
+                        <option value="0">Неактивно</option>
+                      <?php } ?>
                     </select>
                   </div>
                 </div>
@@ -169,23 +179,6 @@
 										<?php } ?>	
 									<?php } ?>		
 								</td>
-                <?php /*
-                  <td>
-                    <?php if($product['popup'] != ""){ ?>
-                      <a data-lightbox="image<?php echo $product['product_id']; ?>" href="https://d4.by/image/<?php echo $product['popup']; ?>">
-                        <img src="<?php echo $product['image']; ?>" alt="<?php echo $product['name']; ?>" class="img-thumbnail" />
-                      </a>
-                    <?php }else{ ?>
-                      <img src="<?php echo $product['image']; ?>" alt="<?php echo $product['name']; ?>" class="img-thumbnail" />
-                    <?php } ?>
-                    <?php if(!empty($product['images'])){ ?>
-                      <?php foreach($product['images'] as $item){ ?>
-                        <a data-lightbox="image<?php echo $product['product_id']; ?>" href="https://d4.by/image/<?php echo $item['image']; ?>">
-                          <img src="https://d4.by/image/<?php echo $item['image']; ?>" class="img-thumbnail" />
-                        </a>
-                      <?php } ?>
-                    <?php } ?>
-                  </td> */ ?>
                   <td><?php echo $product['category']; ?></td>
                   <td><?php echo $product['length']; ?></td>
                   <td><?php echo $product['objem']; ?></td>
@@ -253,11 +246,29 @@ $('#button-filter').on('click', function() {
 		url += '&filter_name=' + encodeURIComponent(filter_name);
 	}
 
-	var filter_model = $('input[name=\'filter_model\']').val();
+	var filter_length = $('#select-length').val();
+
+	if (filter_length != '*') {
+		url += '&filter_length=' + encodeURIComponent(filter_length);
+	}
+  
+	var filter_model = $('#input-model').val();
 
 	if (filter_model) {
 		url += '&filter_model=' + encodeURIComponent(filter_model);
 	}
+ 
+  var filter_jan = $('#input-jan').val();
+
+  if (filter_jan) {
+    url += '&filter_jan=' + encodeURIComponent(filter_jan);
+  }
+
+  var filter_sku = $('#input-sku').val();
+
+  if (filter_sku) {
+    url += '&filter_sku=' + encodeURIComponent(filter_sku);
+  }
 
 	var filter_price = $('input[name=\'filter_price\']').val();
 
@@ -277,18 +288,18 @@ $('#button-filter').on('click', function() {
 	if (filter_quantity) {
 		url += '&filter_quantity=' + encodeURIComponent(filter_quantity);
 	}
+  
+	var filter_isbn = $('#input-isbn').val();
 
-	var filter_status = $('select[name=\'filter_status\']').val();
+	if (filter_isbn != '*') {
+		url += '&filter_isbn=' + encodeURIComponent(filter_isbn);
+	}
+
+	var filter_status = $('#input-status').val();
 
 	if (filter_status != '*') {
 		url += '&filter_status=' + encodeURIComponent(filter_status);
 	}
-  /*
-  var filter_image = $('select[name=\'filter_image\']').val();
-
-  if (filter_image != '*') {
-    url += '&filter_image=' + encodeURIComponent(filter_image);
-  }*/
 
 	location = url;
 });

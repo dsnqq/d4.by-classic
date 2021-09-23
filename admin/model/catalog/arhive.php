@@ -243,6 +243,22 @@ class ModelCatalogArhive extends Model {
 			$sql .= " AND p.model LIKE '" . $this->db->escape($data['filter_model']) . "%'";
 		}
 
+		if (!empty($data['filter_sku'])) {
+			$sql .= " AND p.sku LIKE '" . $this->db->escape($data['filter_sku']) . "%'";
+		}
+
+		if (!empty($data['filter_isbn'])) {
+			$sql .= " AND p.isbn LIKE '" . $this->db->escape($data['filter_isbn']) . "%'";
+		}
+
+		if (!empty($data['filter_jan'])) {
+			$sql .= " AND p.jan LIKE '" . $this->db->escape($data['filter_jan']) . "%'";
+		}
+
+		if (!empty($data['filter_length'])) {
+			$sql .= " AND p.length LIKE '" . $this->db->escape($data['filter_length']) . "%'";
+		}
+		
 		if (isset($data['filter_price']) && !is_null($data['filter_price'])) {
 			$sql .= " AND p.price LIKE '" . $this->db->escape($data['filter_price']) . "%'";
 		}
@@ -559,6 +575,22 @@ class ModelCatalogArhive extends Model {
 			$sql .= " AND pd.name LIKE '" . $this->db->escape($data['filter_name']) . "%'";
 		}
 
+		if (!empty($data['filter_jan'])) {
+			$sql .= " AND p.jan LIKE '" . $this->db->escape($data['filter_jan']) . "%'";
+		}
+
+		if (!empty($data['filter_length'])) {
+			$sql .= " AND p.length LIKE '" . $this->db->escape($data['filter_length']) . "%'";
+		}
+		
+		if (!empty($data['filter_sku'])) {
+			$sql .= " AND p.sku LIKE '" . $this->db->escape($data['filter_sku']) . "%'";
+		}
+
+		if (!empty($data['filter_isbn'])) {
+			$sql .= " AND p.isbn LIKE '" . $this->db->escape($data['filter_isbn']) . "%'";
+		}
+		
 		if (!empty($data['filter_model'])) {
 			$sql .= " AND p.model LIKE '" . $this->db->escape($data['filter_model']) . "%'";
 		}
