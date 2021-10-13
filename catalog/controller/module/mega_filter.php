@@ -216,6 +216,7 @@ class ControllerModuleMegaFilter extends Controller {
 			
 		}
 		
+
 		$this->document->setTitle($this->language->get('heading_title'));					
 
 		/**
