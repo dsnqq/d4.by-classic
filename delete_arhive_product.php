@@ -37,7 +37,7 @@ function delete_image($path) {
 
 }
 
-$query = "SELECT * FROM `oc_arhive` LIMIT 10" ;
+$query = "SELECT * FROM `oc_arhive`" ;
 $result = mysqli_query($link, $query) or die("Ошибка " . mysqli_error($link));
 
 while($result_item = mysqli_fetch_array($result)){
