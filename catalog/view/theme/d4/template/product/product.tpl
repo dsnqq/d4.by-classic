@@ -195,7 +195,10 @@
 {
   "@context": "http://www.schema.org",
   "@type": "Product",
-  "brand": "D4.by",
+  "brand": {
+        "@type": "Brand",
+        "name": "D4.by"
+      },
   "name": "<?php echo $manufacturer; ?> к <?php echo $catprod2[0]['name']; ?> <?php echo $catprod[0]['name']; ?>, <?php echo $year; ?>г.",
   "image": "<?php echo $thumb; ?>",
   "description": "<?php echo strip_tags($description); ?>",
@@ -214,7 +217,7 @@
     "ratingValue": "4.9",
     "reviewCount": "50"	
   },
-  "review":{"@type":"Review","author":{"@type":"Person"}}
+  "review":{"@type":"Review","author":{"@type":"Person", "name": "D4.by"}}
 }
  </script>
 <script>
