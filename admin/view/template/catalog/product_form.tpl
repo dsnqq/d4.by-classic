@@ -2170,6 +2170,19 @@
                 $('.disk_hide').fadeIn();
             }else{
                 $('.disk_hide').fadeOut();
+
+                $('#main__location option:first').prop('selected', true);
+                $('#main__width option:first').prop('selected', true);
+                $('#main__height option:first').prop('selected', true);
+                $('#main__weight option:first').prop('selected', true);
+                $('#main__diadiametr option:first').prop('selected', true);
+                $('#input-etvylet').val('');
+
+                $('#main__location').selectpicker('refresh');
+                $('#main__width').selectpicker('refresh');
+                $('#main__height').selectpicker('refresh');
+                $('#main__weight').selectpicker('refresh');
+                $('#main__diadiametr').selectpicker('refresh');
             }
         }
         $('#input-manufacturer').change(function(){
@@ -2177,6 +2190,19 @@
                 $('.disk_hide').fadeIn();
             }else{
                 $('.disk_hide').fadeOut();
+
+                $('#main__location option:first').prop('selected', true);
+                $('#main__width option:first').prop('selected', true);
+                $('#main__height option:first').prop('selected', true);
+                $('#main__weight option:first').prop('selected', true);
+                $('#main__diadiametr option:first').prop('selected', true);
+                $('#input-etvylet').val('');
+                
+                $('#main__location').selectpicker('refresh');
+                $('#main__width').selectpicker('refresh');
+                $('#main__height').selectpicker('refresh');
+                $('#main__weight').selectpicker('refresh');
+                $('#main__diadiametr').selectpicker('refresh');
             }
         });
     });

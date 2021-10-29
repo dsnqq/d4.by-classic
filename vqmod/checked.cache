@@ -601,3 +601,4 @@ system\library\mfilter_core.php
 system\library\mfilter_helper.php
 system\library\mfilter_module.php
 catalog\controller\startup\seo_url.php
+catalog\model\module\mega_filter.php
