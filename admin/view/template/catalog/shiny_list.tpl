@@ -38,9 +38,9 @@
                 <label class="col-sm-2 control-label" for="input-jan" style="font-weight:bold;">Ширина *, высота *, R * </span></label>
                 <div class="col-sm-1 padding-r-2">
                   <select id="main__jan" name="jan" class="form-control selectpicker" data-live-search="true">
-                        <option value="" <?php echo ($jan == "") ? "selected='selected'" : "" ; ?>>Ширина *</option>
+                        <option value="*" <?php echo ($filter_shirina == "") ? "selected='selected'" : "" ; ?>>Ширина *</option>
                         <?php foreach($width_shiny as $width_shiny_item){ ?>
-                          <option value="<?php echo $width_shiny_item; ?>" <?php echo ($width_shiny_item == $jan) ? "selected='selected'" : "" ; ?>><?php echo $width_shiny_item; ?></option>
+                          <option value="<?php echo $width_shiny_item; ?>" <?php echo ($width_shiny_item == $filter_shirina) ? "selected='selected'" : "" ; ?>><?php echo $width_shiny_item; ?></option>
                         <?php } ?>
                   </select>
                 </div>
@@ -48,9 +48,9 @@
                 <?php /* Высота */ ?>
                 <div class="col-sm-2 padding-l-r-2">
                   <select id="main__isbn" name="isbn" class="form-control selectpicker" data-live-search="true">
-                        <option value="" <?php echo ($jan == "") ? "selected='selected'" : "" ; ?>>Высота *</option>
+                        <option value="*" <?php echo ($filter_vysota == "") ? "selected='selected'" : "" ; ?>>Высота *</option>
                         <?php foreach($height_shiny as $height_shiny_item){ ?>
-                          <option value="<?php echo $height_shiny_item; ?>" <?php echo ($height_shiny_item == $isbn) ? "selected='selected'" : "" ; ?>><?php echo $height_shiny_item; ?></option>
+                          <option value="<?php echo $height_shiny_item; ?>" <?php echo ($height_shiny_item == $filter_vysota) ? "selected='selected'" : "" ; ?>><?php echo $height_shiny_item; ?></option>
                         <?php } ?>
                   </select>
                 </div>
@@ -58,9 +58,9 @@
                 <?php /* R */ ?>
                 <div class="col-sm-2 padding-l-r-2">
                   <select id="main__mpn" name="mpn" class="form-control selectpicker" data-live-search="true">
-                        <option value="" <?php echo ($mpn == "") ? "selected='selected'" : "" ; ?>>R *</option>
+                        <option value="*" <?php echo ($filter_r == "") ? "selected='selected'" : "" ; ?>>R *</option>
                         <?php foreach($location_array as $location_array_item){ ?>
-                          <option value="<?php echo $location_array_item; ?>" <?php echo ($location_array_item == $mpn) ? "selected='selected'" : "" ; ?>><?php echo $location_array_item; ?></option>
+                          <option value="<?php echo $location_array_item; ?>" <?php echo ($location_array_item == $filter_r) ? "selected='selected'" : "" ; ?>><?php echo $location_array_item; ?></option>
                         <?php } ?>
                   </select>
                 </div> 
@@ -70,9 +70,9 @@
                 <label class="col-sm-2 control-label" style="font-weight:bold;">Марка *, модель </label>
                 <div class="col-sm-2  padding-r-2">
                   <select id="ean_main" name="ean" class="form-control selectpicker" data-live-search="true">
-                        <option value="" <?php echo ($ean == "") ? "selected='selected'" : "" ; ?>>Марка *</option>
+                        <option value="*" <?php echo ($filter_ean == "") ? "selected='selected'" : "" ; ?>>Марка *</option>
                         <?php foreach($marka_shiny as $marka_shiny_item){ ?>
-                          <option value="<?php echo $marka_shiny_item; ?>" <?php echo ($marka_shiny_item == $ean) ? "selected='selected'" : "" ; ?>><?php echo $marka_shiny_item; ?></option>
+                          <option value="<?php echo $marka_shiny_item; ?>" <?php echo ($marka_shiny_item == $filter_ean) ? "selected='selected'" : "" ; ?>><?php echo $marka_shiny_item; ?></option>
                         <?php } ?>
                   </select>
                 </div>
@@ -88,20 +88,20 @@
 
                 <?php /* Состояние */ ?>
                 <div class="col-sm-2">
-                  <select id="" name="location" class="form-control selectpicker" data-live-search="true">
-                        <option value="" <?php echo ($location == "") ? "selected='selected'" : "" ; ?>>Состояние *</option>
+                  <select id="location_select" name="location" class="form-control selectpicker" data-live-search="true">
+                        <option value="*" <?php echo ($filter_location == "") ? "selected='selected'" : "" ; ?>>Состояние *</option>
                         <?php foreach($sostojanije as $sostojanije_item){ ?>
-                          <option value="<?php echo $sostojanije_item; ?>" <?php echo ($sostojanije_item == $location) ? "selected='selected'" : "" ; ?>><?php echo $sostojanije_item; ?></option>
+                          <option value="<?php echo $sostojanije_item; ?>" <?php echo ($sostojanije_item == $filter_location) ? "selected='selected'" : "" ; ?>><?php echo $sostojanije_item; ?></option>
                         <?php } ?>
                   </select>
                 </div>
 
                 <?php /* Сезон */ ?>
                 <div class="col-sm-2 padding-l-r-2">
-                  <select id="" name="sku" class="form-control selectpicker" data-live-search="true">
-                        <option value="" <?php echo ($sku == "") ? "selected='selected'" : "" ; ?>>Сезон *</option>
+                  <select id="sku_season" name="sku" class="form-control selectpicker" data-live-search="true">
+                        <option value="*" <?php echo ($sku_season == "") ? "selected='selected'" : "" ; ?>>Сезон *</option>
                         <?php foreach($season as $season__item){ ?>
-                          <option value="<?php echo $season__item; ?>" <?php echo ($season__item == $sku) ? "selected='selected'" : "" ; ?>><?php echo $season__item; ?></option>
+                          <option value="<?php echo $season__item; ?>" <?php echo ($season__item == $sku_season) ? "selected='selected'" : "" ; ?>><?php echo $season__item; ?></option>
                         <?php } ?>
                   </select>
                 </div>
@@ -117,8 +117,8 @@
             <div class="form-group">
                 <label class="col-sm-2 control-label">Тип авто, год выпуска шин</label>
                 <div class="col-sm-2  padding-r-2">
-                  <select id="" name="version" class="form-control selectpicker" data-live-search="true">
-                        <option value="" <?php echo ($version == "") ? "selected='selected'" : "" ; ?>>Тип авто</option>
+                  <select id="version" name="version" class="form-control selectpicker" data-live-search="true">
+                        <option value="*" <?php echo ($version == "") ? "selected='selected'" : "" ; ?>>Тип авто</option>
                         <?php foreach($versions as $version_item){ ?>
                           <option value="<?php echo $version_item; ?>" <?php echo ($version_item == $version) ? "selected='selected'" : "" ; ?>><?php echo $version_item; ?></option>
                         <?php } ?>
@@ -127,8 +127,8 @@
 
                 <?php /* модель */ ?>
                 <div class="col-sm-2 padding-l-r-2">
-                  <select id="" name="length" class="form-control selectpicker" data-live-search="true">
-                        <option value="" <?php echo (round($length, 2) == "") ? "selected='selected'" : "" ; ?>>Выберите год</option>
+                  <select id="length" name="length" class="form-control selectpicker" data-live-search="true">
+                        <option value="*" <?php echo (round($length, 2) == "") ? "selected='selected'" : "" ; ?>>Выберите год</option>
                         <?php $year_max = date('Y');$year_max = (int)$year_max; ?>
                         <?php for($year_iteration = 1980; $year_iteration <= $year_max; $year_iteration++){ ?>
                           <option value="<?php echo $year_iteration; ?>"  <?php echo (round($length, 2) == $year_iteration) ? "selected='selected'" : "" ; ?>><?php echo $year_iteration; ?></option>
@@ -223,11 +223,6 @@
           </table>
           </div>
         </form>
-        <?php /*
-        <pre>
-          <?php print_r($products); ?>
-        </pre> 
-        */ ?>
 
         <div class="row">
           <div class="col-sm-6 text-left"><?php echo $pagination; ?></div>
@@ -244,49 +239,72 @@
 $('#button-filter').on('click', function() {
 	var url = 'index.php?route=catalog/shiny&token=<?php echo $token; ?>';
 
-	var filter_name = $('input[name=\'filter_name\']').val();
+  var filter_upc = $('#input-upc').val();
 
-	if (filter_name) {
-		url += '&filter_name=' + encodeURIComponent(filter_name);
+	if (filter_upc) {
+		url += '&filter_upc=' + encodeURIComponent(filter_upc);
 	}
+  var filter_quantity = $('#input-quantity').val();
 
+	if (filter_quantity) {
+		url += '&filter_quantity=' + encodeURIComponent(filter_quantity);
+	}
+  
 	var filter_model = $('input[name=\'filter_model\']').val();
 
 	if (filter_model) {
 		url += '&filter_model=' + encodeURIComponent(filter_model);
 	}
+  
+	var filter_location = $('#location_select').val();
 
-	var filter_price = $('input[name=\'filter_price\']').val();
-
-	if (filter_price) {
-		url += '&filter_price=' + encodeURIComponent(filter_price);
+	if (filter_location != '*') {
+		url += '&filter_location=' + encodeURIComponent(filter_location);
 	}
 
+	var filter_shirina = $('#main__jan').val();
 
-	var filter_category = $('select[name=\'filter_category\']').val();
-
-  if (filter_category != '*') {
-		url += '&filter_category=' + encodeURIComponent(filter_category);
+	if (filter_shirina != '*') {
+		url += '&filter_shirina=' + encodeURIComponent(filter_shirina);
 	}
 
-	var filter_quantity = $('input[name=\'filter_quantity\']').val();
+	var length = $('#length').val();
 
-	if (filter_quantity) {
-		url += '&filter_quantity=' + encodeURIComponent(filter_quantity);
+	if (length != '*') {
+		url += '&length=' + encodeURIComponent(length);
 	}
+  
+  var filter_vysota = $('#main__isbn').val();
 
-	var filter_status = $('select[name=\'filter_status\']').val();
+  if (filter_vysota != '*') {
+    url += '&filter_vysota=' + encodeURIComponent(filter_vysota);
+  }
+  
+  var version = $('#version').val();
 
-	if (filter_status != '*') {
-		url += '&filter_status=' + encodeURIComponent(filter_status);
-	}
-
-  var filter_image = $('select[name=\'filter_image\']').val();
-
-  if (filter_image != '*') {
-    url += '&filter_image=' + encodeURIComponent(filter_image);
+  if (version != '*') {
+    url += '&version=' + encodeURIComponent(version);
   }
 
+  var sku_season = $('#sku_season').val();
+
+  if (sku_season != '*') {
+    url += '&sku_season=' + encodeURIComponent(sku_season);
+  }
+  
+  var filter_r = $('#main__mpn').val();
+
+  if (filter_r != '*') {
+    url += '&filter_r=' + encodeURIComponent(filter_r);
+  }
+
+  var filter_ean = $('#ean_main').val();
+
+  if (filter_ean != '*') {
+    url += '&filter_ean=' + encodeURIComponent(filter_ean);
+  }
+  
+  
 	location = url;
 });
 

@@ -309,7 +309,45 @@ class ModelCatalogShiny extends Model {
 */
 		if (!empty($data['filter_model'])) {
 			$sql .= " AND model LIKE '" . $this->db->escape($data['filter_model']) . "%'";
-		}/*
+		}
+		
+		if (!empty($data['filter_shirina'])) {
+			$sql .= " AND jan LIKE '" . $this->db->escape($data['filter_shirina']) . "%'";
+		}
+
+		if (!empty($data['filter_vysota'])) {
+			$sql .= " AND isbn LIKE '" . $this->db->escape($data['filter_vysota']) . "%'";
+		}
+
+		if (!empty($data['filter_r'])) {
+			$sql .= " AND mpn LIKE '" . $this->db->escape($data['filter_r']) . "%'";
+		}
+
+		if (!empty($data['filter_ean'])) {
+			$sql .= " AND ean LIKE '" . $this->db->escape($data['filter_ean']) . "%'";
+		}
+
+		if (!empty($data['filter_upc'])) {
+			$sql .= " AND upc LIKE '" . $this->db->escape($data['filter_upc']) . "%'";
+		}
+
+		if (!empty($data['filter_location'])) {
+			$sql .= " AND `location` LIKE '" . $this->db->escape($data['filter_location']) . "%'";
+		}
+		if (!empty($data['sku_season'])) {
+			$sql .= " AND `sku` LIKE '" . $this->db->escape($data['sku_season']) . "%'";
+		}
+		if (!empty($data['filter_quantity'])) {
+			$sql .= " AND `quantity` LIKE '" . $this->db->escape($data['filter_quantity']) . "%'";
+		}
+		if (!empty($data['version'])) {
+			$sql .= " AND `version` LIKE '" . $this->db->escape($data['version']) . "%'";
+		}
+		if (!empty($data['length'])) {
+			$sql .= " AND `length` LIKE '" . $this->db->escape($data['length']) . "%'";
+		}
+		
+		/*
 
 		if (isset($data['filter_price']) && !is_null($data['filter_price'])) {
 			$sql .= " AND p.price LIKE '" . $this->db->escape($data['filter_price']) . "%'";
