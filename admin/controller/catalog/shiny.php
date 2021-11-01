@@ -1839,7 +1839,7 @@ class ControllerCatalogShiny extends Controller {
 		if($this->request->post['sku'] == ""){$this->error['warning'] = "Укажите сезон!";}
 		if($this->request->post['quantity'] == "" || $this->request->post['quantity'] == 0){$this->error['warning'] = "Укажите количество!";}
 		if($this->request->post['ean'] == ""){$this->error['warning'] = "Укажите марку!";}
-		if($this->request->post['upc'] == ""){$this->error['warning'] = "Укажите модель!";}
+		//if($this->request->post['upc'] == ""){$this->error['warning'] = "Укажите модель!";}
 		if($this->request->post['jan'] == ""){$this->error['warning'] = "Укажите ширину!";}
 		if($this->request->post['isbn'] == ""){$this->error['warning'] = "Укажите высоту!";}
 		if($this->request->post['mpn'] == ""){$this->error['warning'] = "Укажите радиус!";}

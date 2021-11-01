@@ -374,10 +374,14 @@
 														}
 													}
 												});
+												//alert(first_year);
 												if(first_year != "" && last_year != ""){
 													$('#filter_yeaerChangeData').val(first_year + "<=" + last_year);
 													$('#filter_yeaerChangeData').attr("value", first_year + "<=" + last_year);
-												} else{ 
+												} else if(first_year != "" && last_year == ""){
+													$('#filter_yeaerChangeData').val(first_year + "<=");
+													$('#filter_yeaerChangeData').attr("value", first_year + "<=");
+												}else{ 
 													$('#filter_yeaerChangeData').val("");
 													$('#filter_yeaerChangeData').attr("value", "");
 												}
@@ -407,6 +411,9 @@
 												if(first_year != "" && last_year != ""){
 													$('#filter_yeaerChangeData').val(first_year + "<=" + last_year);
 													$('#filter_yeaerChangeData').attr("value", first_year + "<=" + last_year);
+												} else if(first_year == "" && last_year != ""){
+													$('#filter_yeaerChangeData').val("<=" + last_year);
+													$('#filter_yeaerChangeData').attr("value", "<=" + last_year);
 												} else{ 
 													$('#filter_yeaerChangeData').val("");
 													$('#filter_yeaerChangeData').attr("value", "");
