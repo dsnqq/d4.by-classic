@@ -635,31 +635,47 @@ class ModelCatalogShiny extends Model {
 	public function getTotalProducts($data = array()) {
     $sql = "SELECT COUNT(DISTINCT p.product_id) AS total FROM " . DB_PREFIX . "shiny p LEFT JOIN " . DB_PREFIX . "shiny_description pd ON (p.product_id = pd.product_id) LEFT JOIN " . DB_PREFIX . "product_to_category p2c ON (p.product_id = p2c.product_id)";
 
-		//$sql .= " WHERE pd.language_id = '" . (int)$this->config->get('config_language_id') . "'";
+		$sql .= " WHERE 1 = 1";
 
-		if (!empty($data['filter_name'])) {
-			$sql .= " AND pd.name LIKE '" . $this->db->escape($data['filter_name']) . "%'";
-		}
+        if (!empty($data['filter_model'])) {
+            $sql .= " AND model LIKE '" . $this->db->escape($data['filter_model']) . "%'";
+        }
 
-		if (!empty($data['filter_model'])) {
-			$sql .= " AND p.model LIKE '" . $this->db->escape($data['filter_model']) . "%'";
-		}
+        if (!empty($data['filter_shirina'])) {
+            $sql .= " AND jan LIKE '" . $this->db->escape($data['filter_shirina']) . "%'";
+        }
 
-		if (isset($data['filter_price']) && !is_null($data['filter_price'])) {
-			$sql .= " AND p.price LIKE '" . $this->db->escape($data['filter_price']) . "%'";
-		}
+        if (!empty($data['filter_vysota'])) {
+            $sql .= " AND isbn LIKE '" . $this->db->escape($data['filter_vysota']) . "%'";
+        }
 
-		if (isset($data['filter_quantity']) && !is_null($data['filter_quantity'])) {
-			$sql .= " AND p.quantity = '" . (int)$data['filter_quantity'] . "'";
-		}
+        if (!empty($data['filter_r'])) {
+            $sql .= " AND mpn LIKE '" . $this->db->escape($data['filter_r']) . "%'";
+        }
 
-    if (isset($data['filter_category']) && !is_null($data['filter_category'])) {
-			$sql .= " AND p2c.category_id = '" . (int)$data['filter_category'] . "'";
-		}
+        if (!empty($data['filter_ean'])) {
+            $sql .= " AND ean LIKE '" . $this->db->escape($data['filter_ean']) . "%'";
+        }
 
-		if (isset($data['filter_status']) && !is_null($data['filter_status'])) {
-			$sql .= " AND p.status = '" . (int)$data['filter_status'] . "'";
-		}
+        if (!empty($data['filter_upc'])) {
+            $sql .= " AND upc LIKE '" . $this->db->escape($data['filter_upc']) . "%'";
+        }
+
+        if (!empty($data['filter_location'])) {
+            $sql .= " AND `location` LIKE '" . $this->db->escape($data['filter_location']) . "%'";
+        }
+        if (!empty($data['sku_season'])) {
+            $sql .= " AND `sku` LIKE '" . $this->db->escape($data['sku_season']) . "%'";
+        }
+        if (!empty($data['filter_quantity'])) {
+            $sql .= " AND `quantity` LIKE '" . $this->db->escape($data['filter_quantity']) . "%'";
+        }
+        if (!empty($data['version'])) {
+            $sql .= " AND `version` LIKE '" . $this->db->escape($data['version']) . "%'";
+        }
+        if (!empty($data['length'])) {
+            $sql .= " AND `length` LIKE '" . $this->db->escape($data['length']) . "%'";
+        }
 
 		if (isset($data['filter_image']) && !is_null($data['filter_image'])) {
 			if ($data['filter_image'] == 1) {

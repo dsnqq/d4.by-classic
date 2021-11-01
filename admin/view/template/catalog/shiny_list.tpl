@@ -414,6 +414,20 @@ $(document).ready(function() { //
   $('.selectpicker').selectpicker();
 });
 </script>
+<style>
+    body{
+        color:#000;
+        font-size: 13px !important;
+    }
+    body input::placeholder{
+        color:#000 !important;
+        font-size: 13px !important;
+
+    }
+    input.form-control{
+        color:#000 !important;
+    }
+</style>
 <link type="text/css" href="view/stylesheet/bootstrap-select.css" rel="stylesheet" media="screen" />
 <style>
 #input-upc,#input-quantity,#input-model{height: 26px;background: #fff;}

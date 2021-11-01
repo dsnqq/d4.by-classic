@@ -74,7 +74,7 @@
     $link = mysqli_connect($hostname, $username, $password, $dbName) 
     or die("Ошибка " . mysqli_error($link));
     
-    $query = "SELECT * FROM `oc_shiny` WHERE status != '0' LIMIT 10";
+    $query = "SELECT * FROM `oc_shiny` WHERE status != '0'";
     $result = mysqli_query($link, $query) or die("Ошибка " . mysqli_error($link)); 
 
     // наш массив создаем с заголовками
