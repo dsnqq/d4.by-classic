@@ -25,7 +25,6 @@
           <div class="click_phone_this"><a href="tel:+375298000736" style="color: #fff;text-decoration: none;">+375 (29) 800-07-36</a></div>
           <div class="click_phone_this"><a href="tel:+375296416496" style="color: #fff;text-decoration: none;">+375 (29) 641-64-96</a></div>
           <div class="click_phone_this"><a href="tel:+375297953619" style="color: #fff;text-decoration: none;">+375 (29) 795-36-19</a></div>
-          <div class="click_phone_this"><a href="tel:+375295270239" style="color: #fff;text-decoration: none;">+375 (29) 527-02-39</a></div>
 <br>
           <div style="color:#fff;">Дрогичин, Заводская 20<br> ПН-СБ 9.00-18.00, ВС 10.00-13.00</div><br>
           <div style="color:#fff;">Брест, ул. Московская 364, ряд 5а пав.5/1<br>

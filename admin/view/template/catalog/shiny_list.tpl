@@ -33,10 +33,10 @@
       <div class="panel-body">
         <div class="well " >
           <div class="row"> 
-            <div class="form-group required">
+            <div class="form-group ">
                 <?php /* Ширина */ ?>
-                <label class="col-sm-2 control-label" for="input-jan" style="font-weight:bold;">Ширина *, высота *, R * </span></label>
-                <div class="col-sm-1 padding-r-2">
+                <label class="col-md-2 col-xs-4 control-label" for="input-jan" style="font-weight:bold;">Ширина *, высота *, R * </span></label>
+                <div class="col-sm-2 padding-r-2">
                   <select id="main__jan" name="jan" class="form-control selectpicker" data-live-search="true">
                         <option value="*" <?php echo ($filter_shirina == "") ? "selected='selected'" : "" ; ?>>Ширина *</option>
                         <?php foreach($width_shiny as $width_shiny_item){ ?>
@@ -66,8 +66,8 @@
                 </div> 
             </div>
             <?php /* Марка */ ?>
-            <div class="form-group required">
-                <label class="col-sm-2 control-label" style="font-weight:bold;">Марка *, модель </label>
+            <div class="form-group ">
+                <label class="col-md-2 col-xs-4 control-label" style="font-weight:bold;">Марка *, модель </label>
                 <div class="col-sm-2  padding-r-2">
                   <select id="ean_main" name="ean" class="form-control selectpicker" data-live-search="true">
                         <option value="*" <?php echo ($filter_ean == "") ? "selected='selected'" : "" ; ?>>Марка *</option>
@@ -83,8 +83,8 @@
                 </div>
             </div>
 
-            <div class="form-group required">
-                <label class="col-sm-2 control-label" style="font-weight:bold;"> Состояние *, сезон *, количество *</label>
+            <div class="form-group ">
+                <label class="col-md-2 col-xs-4 control-label" style="font-weight:bold;"> Состояние *, сезон *, количество *</label>
 
                 <?php /* Состояние */ ?>
                 <div class="col-sm-2">
@@ -107,7 +107,7 @@
                 </div>
                 
                 <?php /* Количество */ ?>
-                <div class="col-sm-1">
+                <div class="col-sm-2">
                     <input type="text" name="quantity" value="<?php echo $quantity; ?>" placeholder="<?php echo $entry_quantity; ?>" id="input-quantity" class="form-control" />
                 </div>
 
@@ -115,7 +115,7 @@
 
             <?php /* Тип авто, год выпуска шин */ ?>
             <div class="form-group">
-                <label class="col-sm-2 control-label">Тип авто, год выпуска шин</label>
+                <label class="col-md-2 col-xs-4 control-label">Тип авто, год выпуска шин</label>
                 <div class="col-sm-2  padding-r-2">
                   <select id="version" name="version" class="form-control selectpicker" data-live-search="true">
                         <option value="*" <?php echo ($version == "") ? "selected='selected'" : "" ; ?>>Тип авто</option>
@@ -137,7 +137,7 @@
                 </div>
             </div>
               <div class="form-group ">
-                <label class="col-sm-2 control-label" for="input-model"><?php echo $entry_model; ?></label>
+                <label class="col-md-2 col-xs-4 control-label" for="input-model"><?php echo $entry_model; ?></label>
                 <div class="col-sm-3">
                   <input type="text" name="filter_model" value="<?php echo $filter_model; ?>" placeholder="<?php echo $entry_model; ?>" id="input-model" class="form-control" />
                   <?php if ($error_model) { ?>
@@ -193,7 +193,7 @@
                     <?php } ?>
                   </td>
                   <td>
-                    <nobr><?php echo $product['price']; ?> USD</nobr>
+                      <nobr><?php echo $product['price']; ?> USD<br><span style="font-size:12px;">Цена за шт.</span></nobr>
                   </td>
                   <td>
                     <span title="<?php echo mb_substr($product['date_added'], 10); ?>"><nobr><?php echo mb_substr($product['date_added'], 0, -8); ?></nobr></span>
@@ -441,7 +441,7 @@ $(document).ready(function() { //
     color: red;
   }
   .well .form-group{
-    
+    clear: both;
     display: block;
     min-height: 60px;
   }

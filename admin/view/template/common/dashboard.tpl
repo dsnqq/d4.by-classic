@@ -53,12 +53,10 @@
 
                 <table class="table control-form">
                   <tbody>
+
                     <tr>
-                      <td>Личные данные</td>
+                      <td>Действия</td>
                       <td width="65%">
-                        <div style="padding-bottom:3px">Юридическое лицо: <b>ИП Шпак С.С.</b></div>
-                        <div style="padding-bottom: 5px">1 место в г.Дрогичин</div>
-                        <div style="padding-bottom: 5px">8 место в РБ</div>
                         <div>
                           <a href="<?=$link_logout?>" class="btn btn-default btn-xs"><i class="fa fa-sign-out" aria-hidden="true"></i>  Выход</a>
                           <br><a class="btn btn-default btn-xs" style="margin-top: 5px;" href="https://d4.by" target="_blank"><i style="font-size: 11px;" class="fa fa-home fa-lg"></i> Посмотреть мой сайт</a>
@@ -66,14 +64,14 @@
                       </td>
                     </tr>
                     <tr>
-                      <td>Сколько у меня объявлений запчастей</td>
+                      <td>Сколько объявлений запчастей</td>
                       <td>
                         всего <b><?=$productCount?></b> шт
                         <span class="gray">(<b><?php echo $activeProduct = (int)$productCount - (int)$productCountNo; ?></b> активных и <b><?=$productCountNo?></b> неактивных)</span>
                       </td>
                     </tr>
                     <tr>
-                      <td>Сколько у меня объявлений шин</td>
+                      <td>Сколько объявлений шин</td>
                       <td>
                         всего <b><?=$shinyCount?></b> шт
                         <span class="gray">(<b><?php echo $activeShiny = (int)$shinyCount - (int)$shinyCountNo; ?></b> активных и <b><?=$shinyCountNo?></b> неактивных)</span>
@@ -94,7 +92,7 @@
                     <tr>
                       <td>Показать статистику </td>
                       <td>
-                        <a class="btn btn-default btn-xs abtn" href="<?=$link_statistics?>"> <i class="fa fa-shopping-cart "></i> Что хотели купить у меня</a>
+                        <a class="btn btn-default btn-xs abtn" href="<?=$link_statistics?>"> <i class="fa fa-shopping-cart "></i> Что хотели купить у нас</a>
                       </td>
                     </tr>
                     <tr>
@@ -118,7 +116,7 @@
                       <td>Запчасти <span title="активных/неактивных">(<?=$activeProduct?>/<?=$productCountNo?>)</span></td>
                       <td>
                         <a class="btn btn-success btn-sm abtn" href="<?=$link_zch_add?>"><i class="fa fa-plus-circle" aria-hidden="true"></i> Добавить объявление</a>
-                        <a class="btn btn-warning btn-sm abtn" href="<?=$link_zch?>"><i class="fa fa-list-ol" aria-hidden="true"></i> Показать мои з/ч</a>
+                        <a class="btn btn-warning btn-sm abtn" href="<?=$link_zch?>"><i class="fa fa-list-ol" aria-hidden="true"></i> Показать наши з/ч</a>
                         <?php /*<a class="btn btn-default btn-xs abtn" href="/personal/import/"><i class="fa fa-download" aria-hidden="true"></i> Импорт Excel Сайт</a>
                         <a class="btn btn-default btn-xs abtn" href="/personal/export/"><i class="fa fa-upload" aria-hidden="true"></i> Экспорт Сайт Excel</a>*/ ?>
                       </td>
@@ -128,14 +126,15 @@
                       <td>Шины <span title="активных/неактивных">(<?php echo $activeShiny = (int)$shinyCount - (int)$shinyCountNo; ?>/<?=$shinyCountNo?>)</span></td>
                       <td>
                         <a class="btn btn-success btn-sm abtn" href="<?=$link_shiny_add?>"><i class="fa fa-plus-circle" aria-hidden="true"></i>  Добавить объявление</a>
-                        <a class="btn btn-warning btn-sm abtn" href="<?=$link_shiny?>"><i class="fa fa-list-ol" aria-hidden="true"></i> Мои шины</a>
+                        <a class="btn btn-warning btn-sm abtn" href="<?=$link_shiny?>"><i class="fa fa-list-ol" aria-hidden="true"></i> Показать наши шины</a>
                       </td>
                     </tr>
                     <tr>
                       <td>Доп.информация</td>
                       <td>
                         <ul class="lk-li">
-                          <li><a href="https://d4.by/bamper/csv_for_bamper.csv">Последняя выгрузка на bamper.by</a></li>
+                          <li><a href="https://d4.by/bamper/csv_for_bamper.csv">Последняя выгрузка на bamper.by (з/ч)</a></li>
+                          <li><a href="https://d4.by/bamper/csv_for_bamper_shiny.csv">Последняя выгрузка на bamper.by (шины)</a></li>
                           <li><a href="<?=$link_zch_name?>">Cписок марок и моделей автомобилей</a></li>
                           <li><a href="<?=$link_modification?>">Список всех модицикаций для фильтра</a></li>
                           <li><a href="<?=$link_auto?>">Список всех марок и моделей</a></li>

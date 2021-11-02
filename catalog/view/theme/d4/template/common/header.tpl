@@ -121,7 +121,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                     <div class="header_top_flex_item">
                         <address class="top_flex_item_text">г.Дрогичин, Заводская 20</address>
                         <div class="top_flex_item_text">info@d4.by</div>
-                        <div class="top_flex_item_text">+375 (29) 800-07-36, +375 (29) 795-36-19, +375 (29) 527-02-39</div>
+                        <div class="top_flex_item_text">+375 (29) 800-07-36, +375 (29) 795-36-19</div>
                     </div>
                    <!---- <div class="header_top_flex_item currency_header">
                       <?php echo $currency; ?>
