@@ -64,14 +64,14 @@
                       </td>
                     </tr>
                     <tr>
-                      <td>Сколько объявлений запчастей</td>
+                      <td>Количество объявлений запчастей</td>
                       <td>
                         всего <b><?=$productCount?></b> шт
                         <span class="gray">(<b><?php echo $activeProduct = (int)$productCount - (int)$productCountNo; ?></b> активных и <b><?=$productCountNo?></b> неактивных)</span>
                       </td>
                     </tr>
                     <tr>
-                      <td>Сколько объявлений шин</td>
+                      <td>Количество объявлений шин</td>
                       <td>
                         всего <b><?=$shinyCount?></b> шт
                         <span class="gray">(<b><?php echo $activeShiny = (int)$shinyCount - (int)$shinyCountNo; ?></b> активных и <b><?=$shinyCountNo?></b> неактивных)</span>
