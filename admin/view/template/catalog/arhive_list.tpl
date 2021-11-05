@@ -42,7 +42,6 @@
                  <td>Цена</td>
                  <td>Номер запчасти</td>
                  <td>Дата удаления</td>
-                 <td>Статус</td>
                  <td>Описание</td>
                  <td>Действия</td>
                 </tr>
@@ -111,24 +110,6 @@
                     </div>
                   </td>
                   <td>-</td>
-                  <td>
-                    <div class="">
-                      <select name="status" id="input-status" class="">
-                        <?php if ($filter_status && $filter_status == 1) { ?>
-                          <option value="*">Выберите</option>
-                          <option value="1" selected="selected">Активно</option>
-                          <option value="0">Неактивно</option>
-                        <?php } elseif($filter_status && $filter_status == 0) { ?>
-                          <option value="*">Выберите</option>
-                          <option value="1">Активно</option>
-                          <option value="0" selected="selected">Неактивно</option>
-                        <?php } else { ?>
-                          <option value="*" selected="selected">Выберите</option>
-                          <option value="1">Активно</option>
-                          <option value="0">Неактивно</option>
-                        <?php } ?>
-                      </select>
-                  </td>
                   <td>-</td>
                   <td>
                     <button type="button" style="padding: 2px 13px;font-weight: bold;background: #67d55c;font-size: 20px;" id="button-filter" class="btn">Поиск</button><br>
@@ -161,9 +142,8 @@
                   <td><?php echo $product['manufacturer']; ?></td>
                   <td><?php echo $product['model']; ?></td>
                   <td><?php echo $product['price']; ?>$</td>
-                  <td><?php echo $product['sku']; ?></td>
+                  <td class="sku_qe_br"><?php echo $product['sku']; ?></td>
                   <td><?php echo $product['date_delete']; ?></td>
-                  <td><?php echo $product['status']; ?></td>
                   <td><?php echo $product['description']; ?></td>
                   <td>
                     <a style="width: 100%;" href="<?php echo $product['edit']; ?>" class="btn btn-primary">Смотреть</a>
@@ -194,7 +174,28 @@
   <?php /* javascript for bootstrap select */ ?>
   <script src="view/javascript/bootstrap-select.min.js"></script>
   <script src="view/javascript/jquery.chained.js"></script>
-  
+
+  <style>
+    .sku_qe_br{white-space:pre}
+  </style>
+  <script>
+      $(document).ready(function() { //
+          $('.same_pick').selectpicker();
+          $('.select2-selection__clear').on('click', function(){
+              $(this).next().find('select').val('default');
+              $(this).next().find('select').selectpicker("refresh");
+              $(this).next().val('');
+          });
+          window.onload = function() {
+              $('.sku_qe_br').each(function () {
+                  var tags = $(this).text();
+                  var newString = tags.replace(/,/g, ",\n");
+                  $(this).text(newString);
+              });
+          }
+      });
+  </script>
+
   <script>
     $(document).ready(function() {
       $(".restoreButton").on("click", function () {
