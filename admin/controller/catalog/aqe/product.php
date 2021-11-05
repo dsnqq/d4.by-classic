@@ -558,6 +558,7 @@ class ControllerCatalogAqeProduct extends Controller {
 						$row['isbn'] = $result['isbn'];
 						$row['mpn'] = $result['mpn'];
 						$row['upc'] = $result['upc'];
+                        $row['version'] = $result['version'];
 						if($result['location'] != ''){
 							$row['location'] = $result['location'].'; ';
 						}else{

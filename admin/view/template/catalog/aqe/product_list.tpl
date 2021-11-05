@@ -595,6 +595,9 @@
 										<td style="line-height: 22px;font-weight:bold;" class="<?php echo $column_info[$col]['align']; ?>
 										<?php echo ($column_info[$col]['qe_status']) ? ' ' . $column_info[$col]['type'] : ''; ?>" id="<?php echo $col . "-" . $product['product_id']; ?>">
 										<?php echo $product[$col]; ?>
+										<?php if($product['version'] != ""){ ?>
+										<div style="font-weight: 500;">(<?php echo $product['version']; ?>)</div>
+										<?php } ?>
 										<div style="font-size: 11px;">
 										<?php // R15; 6.0j; 4-114.3; ET-46; DIA - 56.1 ?>
 										<span><?php echo $product['location']; ?></span>
@@ -619,7 +622,7 @@
 										<?php if($product['upc'] != ""){ ?>
 										<div style="font-weight: 500;"><?php echo $product['upc']; ?></div>
 										<?php } ?>
-										
+
 										</div>
 										</td>
 										<?php /*<td style="max-width:150px;"><?php echo $product['jan']; ?></td>
