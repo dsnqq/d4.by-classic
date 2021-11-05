@@ -645,6 +645,9 @@ class ControllerCatalogAqeProduct extends Controller {
 						$row[$column] = $date->format("Y-m-d");
 					} else if ($column == 'id') {
 						$row[$column] = $result['product_id'];
+                    } else if ($column == 'sku') {
+                        //$a = nl2br(str_replace(',',' ',$result['sku'])); //Меняем точку на запятую
+                        $row[$column] = $result['sku'];
 					} else if ($column == 'action') {
 
 						$this->load->model('catalog/category');

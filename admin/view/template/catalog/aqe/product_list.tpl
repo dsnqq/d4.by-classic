@@ -649,6 +649,11 @@
 										<?php case 'date_added': ?>
 											<td class="<?php echo $column_info[$col]['align']; ?><?php echo ($column_info[$col]['qe_status']) ? ' ' . $column_info[$col]['type'] : ''; ?>" id="<?php echo $col . "-" . $product['product_id']; ?>"><?php echo $product[$col]; ?><?php if($product['date_mod'] != "0000-00-00 00:00:00"){ ?><br><span style="font-size:10px;">Последнее изменение:</span><br><?php echo $product['date_mod']; ?><?php } ?></td>
 										<?php break; ?>
+
+
+										<?php case 'sku': ?>
+				<td class="<?php echo $column_info[$col]['align']; ?><?php echo ($column_info[$col]['qe_status']) ? ' ' . $column_info[$col]['type'] : ''; ?> sku_qe_br" id="<?php echo $col . "-" . $product['product_id']; ?>"><?php echo $product[$col]; ?></td>
+										<?php break; ?>
 													<?php 
 											default: ?>
 								<td class="<?php echo $column_info[$col]['align']; ?><?php echo ($column_info[$col]['qe_status']) ? ' ' . $column_info[$col]['type'] : ''; ?>" id="<?php echo $col . "-" . $product['product_id']; ?>"><?php echo $product[$col]; ?></td>
@@ -842,6 +847,9 @@ $(document).ready(function() {
         }, 500);
       });
   </script>
+<style>
+	.sku_qe_br{white-space:pre}
+</style>
 <script>
 $(document).ready(function() { // 
   $('.same_pick').selectpicker();
@@ -850,7 +858,13 @@ $(document).ready(function() { //
 	$(this).next().find('select').selectpicker("refresh");
 	$(this).next().val('');
   });
-        
+  window.onload = function() {
+      $('.sku_qe_br').each(function () {
+          var tags = $(this).text();
+          var newString = tags.replace(/,/g, ",\n");
+          $(this).text(newString);
+      });
+  }
 });
 </script>
 <script type="text/javascript"><!--
