@@ -46,7 +46,7 @@
       <div class="flex_bottom_foot">
           <div>© 2006-2021 Компания «D4.by», УНП 290794808</div>
           <div><a href="/privacy">Политика конфиденциальности</a></div>
-          <div><a href="https://internetsozdateli.by/seo-prodvizhenie-sajtov-v-breste">Продвижение и создание сайтов - InternetSozdateli</a></div>
+          <div><a href="https://internetsozdateli.by/">Продвижение и создание сайтов - InternetSozdateli</a></div>
       </div>
     </div>
   </div>

@@ -68,7 +68,10 @@
 								<span class="icon-bar"></span>
 								<span class="icon-bar"></span>
 							</button>
-							<h1 class="bull5i-navbar-brand"><i class="fa fa-cubes fa-fw ext-icon"></i> <?php echo $heading_title; ?></h1> <span style="font-size: 18px;font-weight: bold;line-height: 39px;"><?php echo $all_product_count; ?> штук</span>
+							<h1 class="bull5i-navbar-brand"><i class="fa fa-cubes fa-fw ext-icon"></i> <?php echo $heading_title; ?></h1> <span style="font-size: 18px;font-weight: bold;line-height: 39px;">Всего: <?php echo $all_product_count; ?> штук
+								<span>(<span style="color:green;">активные: <?php echo $active_product=(int)$all_product_count-(int)$all_product_count_status_false;?></span>, <span style="color:red;">неактивные: <?php echo $all_product_count_status_false; ?></span>)</span>
+								
+							</span>
 						</div>
 						<div class="collapse navbar-collapse" id="bull5i-navbar-collapse">
 							<div class="navbar-right">
@@ -707,6 +710,35 @@
 <link rel="stylesheet" href="/admin/view/stylesheet/dropzone.css" />
 <script src="/admin/view/javascript/dropzone.js"></script>
 
+
+<?php
+  $site_url_photo = "https://d4.by/upload.php";
+?>
+
+<!-- HTML-код модального окна -->
+<div id="myModalBox" class="modal fade">
+<div class="modal-dialog">
+  <div class="modal-content">
+	<!-- Заголовок модального окна -->
+	<div class="modal-header">
+	  <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+	  <h4 class="modal-title">Загрузка изображения</h4>
+	</div>
+	<!-- Основное содержимое модального окна -->
+	<div class="modal-body">
+	  <div class="modalShowAddPhoto">
+		<form action="<?=$site_url_photo?>" class="dropzone" id="dropzoneFrom"></form>
+		<br><br>
+		<div style="text-align:center;">
+		  <button type="button" class="btn btn-info" id="submit-all">Загрузить изображения</button>
+		</div>
+	  </div>
+	</div>
+  </div>
+</div>
+</div>
+  
+  
 <script>
 
 $(document).ready(function() {
@@ -719,7 +751,14 @@ $(document).ready(function() {
 	});
 
 });
-/*
+
+// 
+/*$(document).ready(function() {
+	$('.addPhotoButton').on('click', function(){
+		$("#myModalBox").modal('show');
+	});
+});
+
 // add photo
 $(document).ready(function() {
 	Dropzone.options.dropzoneFrom = {
@@ -735,7 +774,7 @@ $(document).ready(function() {
 			return newName;
 		},
 		init: function() {
-				var submitButton = document.querySelectorAll('.addPhotoButton');
+				var submitButton = document.querySelectorAll('#submit-all');
 				myDropzone = this;
 				submitButton.addEventListener("click", function() {
 					myDropzone.processQueue();

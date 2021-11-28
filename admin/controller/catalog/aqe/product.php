@@ -938,7 +938,9 @@ class ControllerCatalogAqeProduct extends Controller {
 
 		$data['pagination'] = $pagination->render();
 
+        //$this->load->model('catalog/product');
 		$data['all_product_count'] = $product_total;
+		$data['all_product_count_status_false'] = $this->model_catalog_product->getProductCountStatusNo();
 		$data['results'] = sprintf($this->language->get('text_pagination'), ($product_total) ? (($page - 1) * $this->config->get('config_limit_admin')) + 1 : 0, ((($page - 1) * $this->config->get('config_limit_admin')) > ($product_total - $this->config->get('config_limit_admin'))) ? $product_total : ((($page - 1) * $this->config->get('config_limit_admin')) + $this->config->get('config_limit_admin')), $product_total, ceil($product_total / $this->config->get('config_limit_admin')));
 
 		if (isset($this->session->data['error'])) {

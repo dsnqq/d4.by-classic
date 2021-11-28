@@ -328,6 +328,12 @@ class ModelCatalogAqeProduct extends Model {
 		return $this->productCount;
 	}
 
+	public function getTotalProductsStatusFalse() {
+
+        $count = $this->db->query("SELECT FOUND_ROWS() AS count WHERE STATUS = 0");
+        return $count;
+    }
+
 	public function getProductSeoKeywords($product_id) {
 		$data = array();
 

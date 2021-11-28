@@ -1562,7 +1562,7 @@
                       $('#special_class').append('<div class="table-responsive"> Цена для сайта: <table id="special" class=""> <thead class="hide"> <tr> <td class="text-left">Группа покупателей:</td> <td class="text-right">Приоритет:</td> <td class="text-right">Цена в долларах:</td> <td class="text-left">Дата начала:</td> <td class="text-left">Дата окончания:</td> <td></td> </tr> </thead> <tbody> <tr id="special-row0"> <td class="text-left hide"> <select name="product_special[0][customer_group_id]" class="form-control"> <option value="1">Default</option> </select> </td> <td class="text-right hide"> <input type="text" name="product_special[0][priority]" value="<?php $product_specials[0]['priority']; ?>" placeholder="Приоритет:" class="form-control"> </td> <td class="text-right"> <input type="text" name="product_special[0][price]" value="<?php echo (!$product_specials[0]['price']) ? " 0 ": $product_specials[0]['price']; ?>" placeholder="" class="itogo_price" style="border:none;outline:none;"> </td> <td class="text-left hide" style="width: 20%;"> <div class="input-group date"> <input type="text" name="product_special[0][date_start]" value="<?php $product_specials[0]['date_start']; ?>" placeholder="Дата начала:" data-date-format="YYYY-MM-DD" class="form-control"><span class="input-group-btn"><button type="button" class="btn btn-default"><i class="fa fa-calendar"></i></button></span></div> </td> <td class="text-left hide" style="width: 20%;"> <div class="input-group date"> <input type="text" name="product_special[0][date_end]" value="<?php $product_specials[0]['date_end']; ?>" placeholder="Дата окончания:" data-date-format="YYYY-MM-DD" class="form-control"><span class="input-group-btn"><button type="button" class="btn btn-default"><i class="fa fa-calendar"></i></button></span></div> </td> <td class="text-left hide"> <button type="button" data-toggle="tooltip" title="Удалить" class="btn btn-danger"><i class="fa fa-minus-circle"></i></button> </td> </tr> </tbody> </table></div>');
                   }
                   if(parseInt($(this).val()) >= 5){
-                      $('.itogo_price').val(itogo);
+                      $('.itogo_price').val(itogo.toFixed());
                   } else{
                       $('#special_class').html("");
                       $('.itogo_price').val(parseInt($('#input-price').val()));
@@ -1584,7 +1584,7 @@
                       $('#special_class').append('<div class="table-responsive"> Цена для сайта: <table id="special" class=""> <thead class="hide"> <tr> <td class="text-left">Группа покупателей:</td> <td class="text-right">Приоритет:</td> <td class="text-right">Цена в долларах:</td> <td class="text-left">Дата начала:</td> <td class="text-left">Дата окончания:</td> <td></td> </tr> </thead> <tbody> <tr id="special-row0"> <td class="text-left hide"> <select name="product_special[0][customer_group_id]" class="form-control"> <option value="1">Default</option> </select> </td> <td class="text-right hide"> <input type="text" name="product_special[0][priority]" value="<?php $product_specials[0]['priority']; ?>" placeholder="Приоритет:" class="form-control"> </td> <td class="text-right"> <input type="text" name="product_special[0][price]" value="<?php echo (!$product_specials[0]['price']) ? " 0 ": $product_specials[0]['price']; ?>" placeholder="" class="itogo_price" style="border:none;outline:none;"> </td> <td class="text-left hide" style="width: 20%;"> <div class="input-group date"> <input type="text" name="product_special[0][date_start]" value="<?php $product_specials[0]['date_start']; ?>" placeholder="Дата начала:" data-date-format="YYYY-MM-DD" class="form-control"><span class="input-group-btn"><button type="button" class="btn btn-default"><i class="fa fa-calendar"></i></button></span></div> </td> <td class="text-left hide" style="width: 20%;"> <div class="input-group date"> <input type="text" name="product_special[0][date_end]" value="<?php $product_specials[0]['date_end']; ?>" placeholder="Дата окончания:" data-date-format="YYYY-MM-DD" class="form-control"><span class="input-group-btn"><button type="button" class="btn btn-default"><i class="fa fa-calendar"></i></button></span></div> </td> <td class="text-left hide"> <button type="button" data-toggle="tooltip" title="Удалить" class="btn btn-danger"><i class="fa fa-minus-circle"></i></button> </td> </tr> </tbody> </table></div>');
                   }
                   if(parseInt($('.procent_price').val()) >= 5){
-                      $('.itogo_price').val(itogo);
+                      $('.itogo_price').val(itogo.toFixed());
                   } else{
                       $('#special_class').html("");
                       $('.itogo_price').val(parseInt($('#input-price').val()));
@@ -2122,6 +2122,7 @@
 <?php /* javascript for bootstrap select */ ?>
 <script src="view/javascript/bootstrap-select.min.js"></script>
 <script src="view/javascript/jquery.chained.js"></script>
+
 <script>
     $(document).ready(function() { //
         $('.selectpicker').selectpicker();

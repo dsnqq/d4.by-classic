@@ -819,7 +819,7 @@ class ControllerCatalogShiny extends Controller {
 		}
 
 		$url = '';
-		
+
 		if (isset($this->request->get['sku_season'])) {
 			$url .= '&sku_season=' . urlencode(html_entity_decode($this->request->get['sku_season'], ENT_QUOTES, 'UTF-8'));
 		}
@@ -906,7 +906,7 @@ class ControllerCatalogShiny extends Controller {
 		if (isset($this->request->get['filter_location'])) {
 			$url .= '&filter_location=' . urlencode(html_entity_decode($this->request->get['filter_location'], ENT_QUOTES, 'UTF-8'));
 		}
-		
+
 		if (isset($this->request->get['sort'])) {
 			$url .= '&sort=' . $this->request->get['sort'];
 		}
