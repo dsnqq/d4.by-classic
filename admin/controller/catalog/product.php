@@ -42,6 +42,15 @@ class ControllerCatalogProduct extends Controller {
 	
 		mysqli_close($link); 
 	}
+
+	public function addImageListPage(){
+		$this->load->model('catalog/product');
+
+		if ($this->request->server['REQUEST_METHOD'] == 'POST') {
+			$this->model_catalog_product->addImageForProduct($this->request->post['product_id'], $this->request->post['image']);
+		}
+		
+	}
 	public function add() {
 		$this->load->language('catalog/product');
 

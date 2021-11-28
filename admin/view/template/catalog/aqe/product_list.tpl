@@ -511,7 +511,7 @@
 								<td class="<?php echo $column_info[$col]['align']; ?> action">
 									<div class="btn-group btn-group-flex">
 									<a style="display: flex;align-items: center;" class="btn-default btn-xs btn-danger deletedButton" href="https://d4.by/admin/index.php?route=catalog/product/deleted&amp;product_id=<?php echo $product['product_id']; ?>&amp;token=<?php echo $token; ?><?php echo $product['url_deleted']; ?>"><i class="fa fa-trash-o"></i></a>
-									<a style="display: flex;align-items: center;border: 1px solid #ccc;" class="btn-default btn-xs addPhotoButton"><i class="fa fa-camera"></i></a>
+									<a data-productid="<?php echo $product['product_id']; ?>" style="display: flex;align-items: center;border: 1px solid #ccc;" class="btn-default btn-xs addPhotoButton"><i class="fa fa-camera"></i></a>
 									<?php foreach ($product['action'] as $action) { ?>
 									<?php if ($action['url']) { ?>
 										<a href="<?php echo $action['url']; ?>" <?php echo ($action['type'] == 'view') ? "target='_blank'" : ""; ?> class="btn btn-default btn-xs <?php echo $action['type']; ?> <?php echo $action['class']; ?>" id="<?php echo $action['action'] . "-" . $product['product_id']; ?>" data-toggle="tooltip" data-container="body" title="<?php echo $action['title']; ?>"><i class="fa fa-<?php echo $action['icon']; ?>"></i><?php echo $action['name']; ?></a>
@@ -752,10 +752,13 @@ $(document).ready(function() {
 
 });
 
-// 
-/*$(document).ready(function() {
+
+$(document).ready(function() {
 	$('.addPhotoButton').on('click', function(){
 		$("#myModalBox").modal('show');
+
+		var productid = $(this).data('productid');
+		$('#submit-all').attr('data-productid',productid);
 	});
 });
 
@@ -771,62 +774,57 @@ $(document).ready(function() {
 		acceptedFiles: ".png,.jpg,.gif,.bmp,.jpeg",
 		renameFile: function (file) {
 			let newName = new Date().getTime() + '_' + file.name;
+
 			return newName;
 		},
 		init: function() {
-				var submitButton = document.querySelectorAll('#submit-all');
+				var submitButton = document.querySelector('#submit-all');
 				myDropzone = this;
 				submitButton.addEventListener("click", function() {
 					myDropzone.processQueue();
 				});
 				this.on("queuecomplete", function(data) {
-					//console.log(myDropzone.files); // name
+				
 					<?php 
-					$date_now = date("d.m.Y");
-					$time = strtotime($date_now);
+						$date_now = date("d.m.Y");
+						$time = strtotime($date_now);
 					?>
 					var imgUpload = "";
 					var path = 'image/catalog/d4_img';
 					var folder_name = path + "/<?=$time?>/";
 					var mask_name = 'catalog/d4_img/' + "<?=$time?>/";
-					if($('.itemsBlock').length > 0){
-					var sameFile = $('.itemsBlock').length;
-					} else{
-					var sameFile = 0;
-					}
+
+					for(var cheker = 0;cheker <= myDropzone.files.length; cheker++){
+                          if(myDropzone.files[cheker]){
+							// начало ajax добавление изображения в БД
+							$.ajax({
+								url: 'index.php?route=catalog/product/addImageListPage&token=<?php echo $token; ?>',
+								dataType: 'html',
+								data: {
+									"product_id" : $('#submit-all').attr('data-productid'),
+									"image": mask_name + myDropzone.files[cheker].upload.filename
+								},
+								cache: false,
+								method: 'POST',
+								success: function(html) {
+									//alert('фотка добавлена в БД!');
+								},
+								error: function(xhr, ajaxOptions, thrownError) {
+									alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+								}
+							});
+							// конец ajax добавление изображения
+                          }
+                      }
+
 					this.removeAllFiles();
-				$("#myModalBox").modal('hide');
+					$("#myModalBox").modal('hide');
 				});
 				
 		},
 	};
 
-	function list_image() {
-		$.ajax({
-				url: "<?=$site_url_photo?>",
-				success: function(data) {
-				if( $('#preview').html().trim() === '') {
-					$('#preview').html('<div class="row">'+data+'</div>');
-				} else{
-					$('#preview').find('.row').html(data);
-				}
-					
-				}
-		});
-	}
-
-	$(document).on('click', '.remove_image', function() {
-		$(this).parent('.itemsBlock').remove();
-	});
-
-	$('.procent_price').on('input', function(){
-	if($('#input-price').val() !== ""){
-		var itogo = parseInt($('#input-price').val()) - (parseInt($('#input-price').val())/100)*parseInt($(this).val());
-		$('.itogo_price').val(itogo);
-	}
-	});
-
-});*/
+});
 // end add photo
 
 
