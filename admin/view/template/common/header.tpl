@@ -12,6 +12,47 @@
 <?php } ?><!----
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />--->
 <script type="text/javascript" src="view/javascript/jquery/jquery-2.1.1.min.js"></script>
+<?php  if (strpos($_SERVER['REQUEST_URI'], "index.php?route=catalog/product/edit") != false) { ?>
+  <script src="view/javascript/jquery-ui.min.js"></script>
+  <script type="text/javascript">
+      function touchHandler(event) {
+          var touch = event.changedTouches[0];
+
+          var simulatedEvent = document.createEvent("MouseEvent");
+          simulatedEvent.initMouseEvent({
+                  touchstart: "mousedown",
+                  touchmove: "mousemove",
+                  touchend: "mouseup"
+              }[event.type], true, true, window, 1,
+              touch.screenX, touch.screenY,
+              touch.clientX, touch.clientY, false,
+              false, false, false, 0, null);
+
+          touch.target.dispatchEvent(simulatedEvent);
+          //event.preventDefault();
+      }
+
+      function touch_init() {
+          document.addEventListener("touchstart", touchHandler, true);
+          document.addEventListener("touchmove", touchHandler, true);
+          document.addEventListener("touchend", touchHandler, true);
+          document.addEventListener("touchcancel", touchHandler, true);
+      }
+      $(function() {
+          touch_init();
+          $('#preview .row.itemsBlockFlex').sortable({
+              update: function() {
+                  $('.itemsBlock').each(function() {
+                      $(this).find('.sort_order').val($(this).index());
+                      if($(this).index() == 1){
+                          $(this).find('button.main_image').trigger('click');
+                      }
+                  });
+              }
+          });
+      });
+  </script>
+  <?php } ?>
 <script type="text/javascript" src="view/javascript/bootstrap/js/bootstrap.min.js"></script>
 <link href="view/stylesheet/bootstrap.css" type="text/css" rel="stylesheet" />
 <link href="view/javascript/font-awesome/css/font-awesome.min.css" type="text/css" rel="stylesheet" />

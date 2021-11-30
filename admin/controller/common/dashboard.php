@@ -38,9 +38,11 @@ class ControllerCommonDashboard extends Controller {
 		$data['setting_valute'] = $this->url->link('localisation/currency', 'token=' . $this->session->data['token'], true);
 		$data['setting_valute_te'] = $this->url->link('extension/module/ucur', 'token=' . $this->session->data['token'], true);
 		$user_id = $this->session->data['user_id'];
-		
 
-		
+        $this->load->model('localisation/currency');
+
+        $data['currencies'] = $this->model_localisation_currency->getCurrencies();
+
 
 		$data['link_category'] = $this->url->link('catalog/category', 'token=' . $this->session->data['token'], true);
 		$data['link_product'] = $this->url->link('catalog/product', 'token=' . $this->session->data['token'], true);

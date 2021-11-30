@@ -4,6 +4,8 @@
 <link rel="stylesheet" href="/admin/view/stylesheet/dropzone.css" />
 <script src="/admin/view/javascript/dropzone.js"></script>
 
+
+
 <style>
   html, body{
     color:#000;

@@ -102,7 +102,11 @@
                           <li><a href="<?=$setting_valute?>">Список валют</a></li>
                           <li><a href="<?=$setting_valute_te?>">Настройка процента от НБРБ</a></li>
                         </ul>
-                        
+                        <?php foreach($currencies as $cur){ ?>
+                          <?php if($cur['code'] == "BYN"){ ?>
+                            <strong style="color:#000;font-weight:bold;">Курс доллара: <?php echo round($cur['value'], 4); ?></strong>
+                          <?php } ?>
+                        <?php } ?>
                       </td>
                     </tr>
                     <tr>

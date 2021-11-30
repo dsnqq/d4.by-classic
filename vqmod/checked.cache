@@ -839,3 +839,4 @@ admin/language/en-gb/common/filemanager.php
 admin/language/ru-ru/common/filemanager.php
 admin/view/template/common/filemanager.tpl
 catalog/controller/module/mega_filter.php
+admin/model/catalog/option.php
