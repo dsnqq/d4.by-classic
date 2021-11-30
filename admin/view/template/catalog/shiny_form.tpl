@@ -1018,100 +1018,101 @@
 
 
           <br><br><br>
-            <div class="form-group hide">
-              <div class="col-xs-12">Список атрибутов по желанию ("Имя для связи", "Складская информация", "Телефон,если другой")</div>
+  <div class="form-group"><br>
+    <div class="col-xs-12">Список атрибутов по желанию ("Имя для связи", "Складская информация", "Телефон,если другой")</div>
+  </div>
+  <div class="tab-pane active" id="tab-attribute">
+    <div class="table-responsive">
+      <table id="attribute" class="table table-striped table-bordered table-hover">
+        <thead>
+        <tr>
+          <td class="text-left"><?php echo $entry_attribute; ?></td>
+          <td class="text-left"><?php echo $entry_text; ?></td>
+          <td></td>
+        </tr>
+        </thead>
+        <tbody>
+        <?php $attribute_row = 0; ?>
+        <?php foreach ($product_attributes as $product_attribute) { ?>
+        <tr id="attribute-row<?php echo $attribute_row; ?>">
+          <td class="text-left" style="width: 40%;"><input type="text" name="product_attribute[<?php echo $attribute_row; ?>][name]" value="<?php echo $product_attribute['name']; ?>" placeholder="<?php echo $entry_attribute; ?>" class="form-control" />
+            <input type="hidden" name="product_attribute[<?php echo $attribute_row; ?>][attribute_id]" value="<?php echo $product_attribute['attribute_id']; ?>" /></td>
+          <td class="text-left"><?php foreach ($languages as $language) { ?>
+            <div class="input-group"><span class="input-group-addon" style="padding:3px;"><img src="language/<?php echo $language['code']; ?>/<?php echo $language['code']; ?>.png" title="<?php echo $language['name']; ?>" /></span>
+              <?php /*<textarea name="product_attribute[<?php echo $attribute_row; ?>][product_attribute_description][<?php echo $language['language_id']; ?>][text]" rows="5" placeholder="<?php echo $entry_text; ?>" class="form-control"><?php echo isset($product_attribute['product_attribute_description'][$language['language_id']]) ? $product_attribute['product_attribute_description'][$language['language_id']]['text'] : ''; ?></textarea> */ ?>
+              <input autocomplete="on" name="product_attribute[<?php echo $attribute_row; ?>][product_attribute_description][<?php echo $language['language_id']; ?>][text]" placeholder="<?php echo $entry_text; ?>" value="<?php echo isset($product_attribute['product_attribute_description'][$language['language_id']]) ? $product_attribute['product_attribute_description'][$language['language_id']]['text'] : ''; ?>">
             </div>
-            <div class="tab-pane active hide" id="tab-attribute">
-              <div class="table-responsive">
-                <table id="attribute" class="table table-striped table-bordered table-hover">
-                  <thead>
-                    <tr>
-                      <td class="text-left"><?php echo $entry_attribute; ?></td>
-                      <td class="text-left"><?php echo $entry_text; ?></td>
-                      <td></td>
-                    </tr>
-                  </thead>
+            <?php } ?></td>
+          <td class="text-left"><button type="button" onclick="$('#attribute-row<?php echo $attribute_row; ?>').remove();" data-toggle="tooltip" title="<?php echo $button_remove; ?>" class="btn btn-danger"><i class="fa fa-minus-circle"></i></button></td>
+        </tr>
+        <?php $attribute_row++; ?>
+        <?php } ?>
+        </tbody>
+        <?php /*
                   <tbody>
-                    <?php $attribute_row = 0; ?>
-                    <?php foreach ($product_attributes as $product_attribute) { ?>
-                    <tr id="attribute-row<?php echo $attribute_row; ?>">
-                      <td class="text-left" style="width: 40%;"><input type="text" name="product_attribute[<?php echo $attribute_row; ?>][name]" value="<?php echo $product_attribute['name']; ?>" placeholder="<?php echo $entry_attribute; ?>" class="form-control" />
-                        <input type="hidden" name="product_attribute[<?php echo $attribute_row; ?>][attribute_id]" value="<?php echo $product_attribute['attribute_id']; ?>" /></td>
-                      <td class="text-left"><?php foreach ($languages as $language) { ?>
-                        <div class="input-group"><span class="input-group-addon" style="padding:3px;"><img src="language/<?php echo $language['code']; ?>/<?php echo $language['code']; ?>.png" title="<?php echo $language['name']; ?>" /></span>
-                          <textarea name="product_attribute[<?php echo $attribute_row; ?>][product_attribute_description][<?php echo $language['language_id']; ?>][text]" rows="5" placeholder="<?php echo $entry_text; ?>" class="form-control"><?php echo isset($product_attribute['product_attribute_description'][$language['language_id']]) ? $product_attribute['product_attribute_description'][$language['language_id']]['text'] : ''; ?></textarea>
-                        </div>
-                        <?php } ?></td>
-                      <td class="text-left"><button type="button" onclick="$('#attribute-row<?php echo $attribute_row; ?>').remove();" data-toggle="tooltip" title="<?php echo $button_remove; ?>" class="btn btn-danger"><i class="fa fa-minus-circle"></i></button></td>
-                    </tr>
-                    <?php $attribute_row++; ?>
-                    <?php } ?>
-                  </tbody>
-                  <?php /*
-                  <tbody>
-                    <!-- складская информация -->
-                    <tr id="attribute-row0">
-                        <td class="text-left" style="width: 40%;">
-                            <input type="text" name="product_attribute[0][name]" value="Складская информация (заметка)" placeholder="Атрибут:" class="form-control" autocomplete="off" />
-                            <ul class="dropdown-menu" style="top: 1248px; left: 280px; display: none;">
-                                <li class="dropdown-header">Информация</li>
-                                <li data-value="12"><a href="#">&nbsp;&nbsp;&nbsp;Складская информация (заметка)</a></li>
-                            </ul>
-                            <input type="hidden" name="product_attribute[0][attribute_id]" value="12" />
-                        </td>
-                        <td class="text-left">
-                            <div class="input-group">
-                                <span class="input-group-addon" style="padding: 3px;"></span>
-                                <textarea name="product_attribute[0][product_attribute_description][1][text]" rows="5" placeholder="Текст:" class="form-control">Запчасть Захара</textarea>
-                            </div>
-                        </td>
-                        <td class="text-left"></td>
-                    </tr>
-                    <!-- конец складская информация -->
-                    
-                    <!-- телефон если другой -->
-                    <tr id="attribute-row1">
-                        <td class="text-left" style="width: 40%;">
-                            <input type="text" name="product_attribute[1][name]" value="Телефон, если другой" placeholder="Атрибут:" class="form-control" autocomplete="off" />
-                            <ul class="dropdown-menu"></ul>
-                            <input type="hidden" name="product_attribute[1][attribute_id]" value="13" />
-                        </td>
-                        <td class="text-left">
-                            <div class="input-group">
-                                <span class="input-group-addon" style="padding: 3px;"></span>
-                                <textarea name="product_attribute[1][product_attribute_description][1][text]" rows="5" placeholder="Текст:" class="form-control">+375(29) 824-89-27 Viber WhatsApp Telegram</textarea>
-                            </div>
-                        </td>
-                        <td class="text-left"></td>
-                    </tr>
-                    <!-- конец телефон если другой -->
+        <!-- складская информация -->
+        <tr id="attribute-row0">
+          <td class="text-left" style="width: 40%;">
+            <input type="text" name="product_attribute[0][name]" value="Складская информация (заметка)" placeholder="Атрибут:" class="form-control" autocomplete="off" />
+            <ul class="dropdown-menu" style="top: 1248px; left: 280px; display: none;">
+              <li class="dropdown-header">Информация</li>
+              <li data-value="12"><a href="#">&nbsp;&nbsp;&nbsp;Складская информация (заметка)</a></li>
+            </ul>
+            <input type="hidden" name="product_attribute[0][attribute_id]" value="12" />
+          </td>
+          <td class="text-left">
+            <div class="input-group">
+              <span class="input-group-addon" style="padding: 3px;"></span>
+              <textarea name="product_attribute[0][product_attribute_description][1][text]" rows="5" placeholder="Текст:" class="form-control">Запчасть Захара</textarea>
+            </div>
+          </td>
+          <td class="text-left"></td>
+        </tr>
+        <!-- конец складская информация -->
 
-                    <!-- город -->
-                    <tr id="attribute-row2">
-                        <td class="text-left" style="width: 40%;">
-                            <input type="text" name="product_attribute[2][name]" value="Город" placeholder="Атрибут:" class="form-control" autocomplete="off" />
-                            <ul class="dropdown-menu"></ul>
-                            <input type="hidden" name="product_attribute[2][attribute_id]" value="17" />
-                        </td>
-                        <td class="text-left">
-                            <div class="input-group">
-                                <span class="input-group-addon" style="padding: 3px;"></span>
-                                <textarea name="product_attribute[2][product_attribute_description][1][text]" rows="5" placeholder="Текст:" class="form-control">Брест</textarea>
-                            </div>
-                        </td>
-                        <td class="text-left"></td>
-                    </tr>
-                    <!-- конец город -->
-                </tbody> */?>
-                  <tfoot class="hide">
-                    <tr>
-                      <td colspan="2"></td>
-                      <td class="text-left"><button type="button" onclick="addAttribute();" data-toggle="tooltip" title="<?php echo $button_attribute_add; ?>" class="btn btn-primary">Добавить атрибут</button></td>
-                    </tr>
-                  </tfoot>
-                </table>
-              </div>
+        <!-- телефон если другой -->
+        <tr id="attribute-row1">
+          <td class="text-left" style="width: 40%;">
+            <input type="text" name="product_attribute[1][name]" value="Телефон, если другой" placeholder="Атрибут:" class="form-control" autocomplete="off" />
+            <ul class="dropdown-menu"></ul>
+            <input type="hidden" name="product_attribute[1][attribute_id]" value="13" />
+          </td>
+          <td class="text-left">
+            <div class="input-group">
+              <span class="input-group-addon" style="padding: 3px;"></span>
+              <textarea name="product_attribute[1][product_attribute_description][1][text]" rows="5" placeholder="Текст:" class="form-control">+375(29) 824-89-27 Viber WhatsApp Telegram</textarea>
             </div>
+          </td>
+          <td class="text-left"></td>
+        </tr>
+        <!-- конец телефон если другой -->
+
+        <!-- город -->
+        <tr id="attribute-row2">
+          <td class="text-left" style="width: 40%;">
+            <input type="text" name="product_attribute[2][name]" value="Город" placeholder="Атрибут:" class="form-control" autocomplete="off" />
+            <ul class="dropdown-menu"></ul>
+            <input type="hidden" name="product_attribute[2][attribute_id]" value="17" />
+          </td>
+          <td class="text-left">
+            <div class="input-group">
+              <span class="input-group-addon" style="padding: 3px;"></span>
+              <textarea name="product_attribute[2][product_attribute_description][1][text]" rows="5" placeholder="Текст:" class="form-control">Брест</textarea>
+            </div>
+          </td>
+          <td class="text-left"></td>
+        </tr>
+        <!-- конец город -->
+        </tbody> */?>
+        <tfoot>
+        <tr>
+          <td colspan="2"></td>
+          <td class="text-left"><button type="button" onclick="addAttribute();" data-toggle="tooltip" title="<?php echo $button_attribute_add; ?>" class="btn btn-primary">Добавить атрибут</button></td>
+        </tr>
+        </tfoot>
+      </table>
+    </div>
+  </div>
             <div class="tab-pane hide" id="tab-reward">
               <div class="form-group">
                 <label class="col-sm-2 control-label" for="input-points"><span data-toggle="tooltip" title="<?php echo $help_points; ?>"><?php echo $entry_points; ?></span></label>
@@ -1495,7 +1496,7 @@ function addAttribute() {
 	html += '  <td class="text-left" style="width: 20%;"><input type="text" name="product_attribute[' + attribute_row + '][name]" value="" placeholder="<?php echo $entry_attribute; ?>" class="form-control" /><input type="hidden" name="product_attribute[' + attribute_row + '][attribute_id]" value="" /></td>';
 	html += '  <td class="text-left">';
 	<?php foreach ($languages as $language) { ?>
-	html += '<div class="input-group"><span class="input-group-addon" style="padding:3px;"><img src="language/<?php echo $language['code']; ?>/<?php echo $language['code']; ?>.png" title="<?php echo $language['name']; ?>" /></span><textarea name="product_attribute[' + attribute_row + '][product_attribute_description][<?php echo $language['language_id']; ?>][text]" rows="5" placeholder="<?php echo $entry_text; ?>" class="form-control"></textarea></div>';
+	html += '<div class="input-group"><span class="input-group-addon" style="padding:3px;"><img src="language/<?php echo $language['code']; ?>/<?php echo $language['code']; ?>.png" title="<?php echo $language['name']; ?>" /></span><input autocomplete="on" name="product_attribute[' + attribute_row + '][product_attribute_description][<?php echo $language['language_id']; ?>][text]" rows="5" placeholder="<?php echo $entry_text; ?>" class=""></div>';
     <?php } ?>
 	html += '  </td>';
 	html += '  <td class="text-left"><button type="button" onclick="$(\'#attribute-row' + attribute_row + '\').remove();" data-toggle="tooltip" title="<?php echo $button_remove; ?>" class="btn btn-danger">Удалить атрибут</button></td>';

@@ -840,3 +840,7 @@ admin/language/ru-ru/common/filemanager.php
 admin/view/template/common/filemanager.tpl
 catalog/controller/module/mega_filter.php
 admin/model/catalog/option.php
+admin/controller/catalog/shiny.php
+admin/model/catalog/filter.php
+admin/model/design/layout.php
+admin/model/setting/setting.php

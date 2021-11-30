@@ -12,7 +12,7 @@
 <?php } ?><!----
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />--->
 <script type="text/javascript" src="view/javascript/jquery/jquery-2.1.1.min.js"></script>
-<?php  if (strpos($_SERVER['REQUEST_URI'], "index.php?route=catalog/product/edit") != false) { ?>
+<?php  if ((strpos($_SERVER['REQUEST_URI'], "index.php?route=catalog/product/edit") != false) || (strpos($_SERVER['REQUEST_URI'], "index.php?route=catalog/shiny/edit") != false)) { ?>
   <script src="view/javascript/jquery-ui.min.js"></script>
   <script type="text/javascript">
       function touchHandler(event) {
