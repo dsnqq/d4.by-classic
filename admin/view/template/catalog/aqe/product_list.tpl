@@ -830,7 +830,7 @@ $(document).ready(function() {
 
 
       $(document).ready(function() {
-		/*$("body").on("keydown", function (e) {
+		/*$("thead .filters").on("keydown", function (e) {
 			if(13 == e.keyCode){
 				$('#filter').trigger('click');
 			}

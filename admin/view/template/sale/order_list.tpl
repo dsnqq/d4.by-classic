@@ -102,6 +102,7 @@
                   <td class="text-left"><?php echo $column_customer; ?></td>
                     <td>E-mail</td>
                     <td>Телефон</td>
+                  <td>Адрес</td>
                     <td>Состав заказа</td>
                     <td>Комментарий</td>
                   <td class="text-right">Полная стоимость</td>
@@ -122,6 +123,7 @@
                   <td class="text-left"><?php echo $order['firstname']; ?> <?php echo $order['lastname']; ?></td>
                   <td class="text-right"><?php echo $order['email1']; ?></td>
                   <td class="text-right"><?php echo $order['telephone']; ?></td>
+                  <td class="text-right"><?php echo $order['shipping_adress']; ?></td>
                   <td>
                       <?php $i = 1; ?>
                       <?php foreach($order['product_order'] as $item){ ?>

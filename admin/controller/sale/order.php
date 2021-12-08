@@ -208,7 +208,8 @@ class ControllerSaleOrder extends Controller {
 		$results = $this->model_sale_order->getOrders($filter_data);
 		
 		$status_complited = $this->model_sale_order->setOrderStatusNull();
-		
+
+		//print_r($results);
 	
 		foreach ($results as $result) {
 			$order_info = $this->model_sale_order->getOrderProducts($result['order_id']);
@@ -220,6 +221,7 @@ class ControllerSaleOrder extends Controller {
 				'telephone'	    => $result['telephone'],
 				'firstname'		=> $result['firstname'],
 				'lastname'		=> $result['lastname'],
+				'shipping_adress'=> $result['shipping_address_1'],
 				'comment'		=> $result['comment'],
 				'order_status'  => $result['order_status'] ? $result['order_status'] : $this->language->get('text_missing'),
 				'total'         => $this->currency->format($result['total'], $result['currency_code'], $result['currency_value']),
