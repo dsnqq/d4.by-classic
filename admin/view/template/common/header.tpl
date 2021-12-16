@@ -73,9 +73,6 @@
 <?php } ?>
 </head>
 <body>
-<!---
-<div style="background:red;color:#fff;text-align:center;font-size:18px;">Ведутся тех.работы. Возможные временные перебои в работе сайта</div>
---->
 <style>
 .status_favourite{
   cursor:pointer;

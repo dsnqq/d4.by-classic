@@ -167,12 +167,14 @@
                   <select id="main_category_id" name="main_category_id" class="form-control selectpicker" data-live-search="true">
                     <option value="0" selected="selected"><?php echo $text_none; ?></option>
                     <?php foreach($categories as $category) { ?>
-                    <?php if($category['category_id'] == $main_category_id) { ?>
-                    <?php $cat_qr = $category['name']; ?>
-                    <option value="<?php echo $category['category_id']; ?>" selected="selected"><?php echo $category['name']; ?></option>
-                    <?php } else { ?>
-                    <option value="<?php echo $category['category_id']; ?>"><?php echo $category['name']; ?></option>
-                    <?php } ?>
+						<?php if( strpos($category['name'],'&nbsp;&nbsp;&gt;&nbsp;&nbsp;') !== false ){ ?>
+							<?php if($category['category_id'] == $main_category_id) { ?>
+							<?php $cat_qr = $category['name']; ?>
+							<option value="<?php echo $category['category_id']; ?>" selected="selected"><?php echo $category['name']; ?></option>
+							<?php } else { ?>
+							<option value="<?php echo $category['category_id']; ?>"><?php echo $category['name']; ?></option>
+							<?php } ?>
+						<?php } ?>
                     <?php } ?>
                   </select>
                 </div>
@@ -186,10 +188,12 @@
                 <select id="main_category_id" name="main_category_dop[]" class="form-control selectpicker addMoreSection<?=$main_cate?>" data-live-search="true">
                 <option value="0" selected="selected"><?php echo $text_none; ?></option>
                 <?php foreach($categories as $category) { ?>
+				<?php if( strpos($category['name'],'&nbsp;&nbsp;&gt;&nbsp;&nbsp;') !== false ){ ?>
                 <?php if($category['category_id'] == $main_category_dop__item) { ?>
                 <option value="<?php echo $category['category_id']; ?>" selected="selected"><?php echo $category['name']; ?></option>
                 <?php } else { ?>
                 <option value="<?php echo $category['category_id']; ?>"><?php echo $category['name']; ?></option>
+                <?php } ?>
                 <?php } ?>
                 <?php } ?>
                 </select>

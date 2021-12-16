@@ -709,4 +709,12 @@ class ModelCatalogArhive extends Model {
 		return $query->row['total'];
 
 	}
+
+    public function getSubCategories($category_id) {
+        $sql = "SELECT DISTINCT category_id FROM " . DB_PREFIX . "category_path WHERE path_id = '" . (int)$category_id . "'";
+
+        $query = $this->db->query($sql);
+
+        return $query->rows;
+    }
 }

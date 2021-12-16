@@ -200,50 +200,116 @@ class ControllerProductManufacturer extends Controller {
 
 			$results = $this->model_catalog_product->getProducts($filter_data);
 
-			foreach ($results as $result) {
-				if ($result['image']) {
-					$image = $this->model_tool_image->resize($result['image'], $this->config->get($this->config->get('config_theme') . '_image_product_width'), $this->config->get($this->config->get('config_theme') . '_image_product_height'));
-				} else {
-					$image = $this->model_tool_image->resize('placeholder.png', $this->config->get($this->config->get('config_theme') . '_image_product_width'), $this->config->get($this->config->get('config_theme') . '_image_product_height'));
-				}
+            foreach ($results as $result) {
+                if ($result['image']) {
+                    $image = $this->model_tool_image->resize($result['image'], $this->config->get($this->config->get('config_theme') . '_image_product_width'), $this->config->get($this->config->get('config_theme') . '_image_product_height'), 'product_popup');
+                } else {
+                    $image = $this->model_tool_image->resize('placeholder.png', $this->config->get($this->config->get('config_theme') . '_image_product_width'), $this->config->get($this->config->get('config_theme') . '_image_product_height'));
+                }
 
-				if ($this->customer->isLogged() || !$this->config->get('config_customer_price')) {
-					$price = $this->currency->format($this->tax->calculate($result['price'], $result['tax_class_id'], $this->config->get('config_tax')), $this->session->data['currency']);
-				} else {
-					$price = false;
-				}
+                if ($this->customer->isLogged() || !$this->config->get('config_customer_price')) {
+                    $price = $this->currency->format($this->tax->calculate($result['price'], $result['tax_class_id'], $this->config->get('config_tax')), $this->session->data['currency']);
+                } else {
+                    $price = false;
+                }
 
-				if ((float)$result['special']) {
-					$special = $this->currency->format($this->tax->calculate($result['special'], $result['tax_class_id'], $this->config->get('config_tax')), $this->session->data['currency']);
-				} else {
-					$special = false;
-				}
+                if ((float)$result['special']) {
+                    $special = $this->currency->format($this->tax->calculate($result['special'], $result['tax_class_id'], $this->config->get('config_tax')), $this->session->data['currency']);
+                } else {
+                    $special = false;
+                }
 
-				if ($this->config->get('config_tax')) {
-					$tax = $this->currency->format((float)$result['special'] ? $result['special'] : $result['price'], $this->session->data['currency']);
-				} else {
-					$tax = false;
-				}
+                if ($this->config->get('config_tax')) {
+                    $tax = $this->currency->format((float)$result['special'] ? $result['special'] : $result['price'], $this->session->data['currency']);
+                } else {
+                    $tax = false;
+                }
 
-				if ($this->config->get('config_review_status')) {
-					$rating = (int)$result['rating'];
-				} else {
-					$rating = false;
-				}
+                if ($this->config->get('config_review_status')) {
+                    $rating = (int)$result['rating'];
+                } else {
+                    $rating = false;
+                }
 
-				$data['products'][] = array(
-					'product_id'  => $result['product_id'],
-					'thumb'       => $image,
-					'name'        => $result['name'],
-					'description' => utf8_substr(strip_tags(html_entity_decode($result['description'], ENT_QUOTES, 'UTF-8')), 0, $this->config->get($this->config->get('config_theme') . '_product_description_length')) . '..',
-					'price'       => $price,
-					'special'     => $special,
-					'tax'         => $tax,
-					'minimum'     => ($result['minimum'] > 0) ? $result['minimum'] : 1,
-					'rating'      => $rating,
-					'href'        => $this->url->link('product/product', 'manufacturer_id=' . $result['manufacturer_id'] . '&product_id=' . $result['product_id'] . $url)
-				);
-			}
+
+                $this->load->model('catalog/category');
+
+
+                $catprod = array();
+                $catprod2 = array();
+
+                $product_category = $this->model_catalog_product->getCategories($result['product_id']);
+
+                foreach ($product_category as $prodcat) {
+                    $category_info = $this->model_catalog_category->getCategory($prodcat['category_id']);
+                    if ($category_info) {
+                        $catprod[] = array(
+                            'name'     => $category_info['name'],
+                            'parent_id'     => $category_info['parent_id']
+                        );
+                    }
+                }
+
+                $category_info2 = $this->model_catalog_category->getCategory($category_info['parent_id']);
+                if ($category_info2) {
+                    $catprod2[] = array(
+                        'name'     => $category_info2['name']
+                    );
+                }
+
+
+                $datetime1 = date_create($result['date_added']);
+                if($currency_code == "BYN"){
+                    $price_2 = "$".round($result['price'], '0');
+                    $price_3 = round($this->currency->convert($result['price'], "USD", 'EUR'), '0')."€";
+                } elseif($currency_code == "EUR"){
+                    $price_2 = round($this->currency->convert($price, $currency_code, 'BYN'), '0')."BYN";
+                    $price_3 = "$".round($this->currency->convert($price, $currency_code, 'USD'), '0');
+                } elseif($currency_code == "USD"){
+                    $price_2 = round($this->currency->convert(substr($price, 1), $currency_code, 'BYN'), '0')."BYN";
+                    $price_3 = round($this->currency->convert(substr($price, 1), $currency_code, 'EUR'), '0')."€";
+                }
+
+                $data['products'][] = array(
+                    'product_id'  => $result['product_id'],
+                    'thumb'       => $image,
+                    'name'        => $result['name'],
+
+
+                    'location'        => $result['location'],
+                    'width'           => $result['width'],
+                    'height'          => $result['height'],
+                    'weight'          => $result['weight'],
+                    'etvylet'         => $result['etvylet'],
+                    'diadiametr'      => $result['diadiametr'],
+                    'jan'             => $result['jan'],
+                    'isbn'            => $result['isbn'],
+                    'mpn'             => $result['mpn'],
+
+
+                    'description' => utf8_substr(strip_tags(html_entity_decode($result['description'], ENT_QUOTES, 'UTF-8')), 0, $this->config->get($this->config->get('config_theme') . '_product_description_length')) . '..',
+                    'price'       => $price,
+                    'year'        => $result['length'],
+                    'model'        => $result['model'],
+                    'objem'		  => $result['jan'],
+                    'upc'		  => $result['upc'],
+                    'type_fuel'	  => $result['isbn'],
+                    'injection'	  => $result['mpn'],
+                    'sku'	  => $result['sku'],
+                    'ean'	  => $result['ean'],
+                    'special'     => $special,
+                    'auto'		  => $catprod,
+                    'price_2'	  => $price_2,
+                    'price_3'     => $price_3,
+                    'date'        => date_format($datetime1,"d.m.Y"),
+                    'auto_name'	  => $catprod2,
+                    'manufacturer'=> $result['manufacturer'],
+                    'tax'         => $tax,
+                    'minimum'     => ($result['minimum'] > 0) ? $result['minimum'] : 1,
+                    'rating'      => $rating,
+                    'href'        => $this->url->link('product/product', 'path=' . $this->request->get['path'] . '&product_id=' . $result['product_id'] . $url)
+                );
+            }
 
 			$url = '';
 

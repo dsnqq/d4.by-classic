@@ -862,3 +862,10 @@ system/storage/modification/admin/view/template/catalog/download_list.tpl
 admin/view/template/catalog/filter_form.tpl
 admin/view/template/module/mega_filter_about.tpl
 catalog/controller/startup/seo_pro.php
+system/storage/modification/catalog/controller/account/wishlist.php
+catalog/language/en-gb/account/wishlist.php
+catalog/language/ru-ru/account/wishlist.php
+catalog/controller/product/manufacturer.php
+catalog/model/catalog/manufacturer.php
+catalog/controller/product/category.php
+admin/language/ru-ru/catalog/product.php

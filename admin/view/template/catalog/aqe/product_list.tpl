@@ -69,8 +69,9 @@
 								<span class="icon-bar"></span>
 							</button>
 							<h1 class="bull5i-navbar-brand"><i class="fa fa-cubes fa-fw ext-icon"></i> <?php echo $heading_title; ?></h1> <span style="font-size: 18px;font-weight: bold;line-height: 39px;">Всего: <?php echo $all_product_count; ?> штук
+								<?php if(strpos($_SERVER['REQUEST_URI'],'filter_') === false){ ?>
 								<span>(<span style="color:green;">активные: <?php echo $active_product=(int)$all_product_count-(int)$all_product_count_status_false;?></span>, <span style="color:red;">неактивные: <?php echo $all_product_count_status_false; ?></span>)</span>
-								
+								<?php } ?>
 							</span>
 						</div>
 						<div class="collapse navbar-collapse" id="bull5i-navbar-collapse">
@@ -449,14 +450,14 @@
 									?>
 									<!---<th style="position:relative;" class="<?php echo $column_info[$col]['align']; ?>"><span class="select2-selection__clear"><span>Очистить </span>×</span><input type="text" name="filter_<?php echo $col; ?>" class="form-control input-sm search_init fltr <?php echo $col; ?> typeahead" placeholder="<?php echo $text_autocomplete; ?>" value="<?php echo !is_null($filters[$col]) ? $filters[$col] : ''; ?>" data-column="<?php echo $col; ?>"></th>--->
 									<th class="<?php echo $column_info[$col]['align']; ?>">
-									<select name="filter_<?php echo $col; ?>" class=" form-control input-sm isbn_toplivo fltr <?php echo $col; ?> typeahead" data-column="<?php echo $col; ?>">
+									<select  class=" form-control input-sm isbn_toplivo fltr <?php echo $col; ?> typeahead" data-column="<?php echo $col; ?>">
 											<option value=""<?php echo (is_null($filters[$col])) ? ' selected' : ''; ?>>--- Не выбрано ---</option>
 											<option value="дизель"<?php echo (!is_null($filters[$col]) && 'дизель' == $filters[$col]) ? ' selected' : ''; ?>>дизель</option>
 											<option value="бензин"<?php echo (!is_null($filters[$col]) && 'бензин' == $filters[$col]) ? ' selected' : ''; ?>>бензин</option>
 											<option value="гибрид"<?php echo (!is_null($filters[$col]) && 'гибрид' == $filters[$col]) ? ' selected' : ''; ?>>гибрид</option>
 											<option value="электро"<?php echo (!is_null($filters[$col]) && 'электро' == $filters[$col]) ? ' selected' : ''; ?>>электро</option>
 										</select>
-										<input type="text" id="isbn_toplivo" name="filter_<?php echo $col; ?>" style="opacity:0;position:absolute;left:-999999px;" value="">
+										<input type="text" id="isbn_toplivo" name="filter_<?php echo $col; ?>" style="opacity:0;position:absolute;left:-999999px;" value="<?php echo !is_null($filters[$col]) ? $filters[$col] : ''; ?>" data-column="<?php echo $col; ?>">
 									</th>
 									<?php break;
 									case 'jan':
@@ -747,6 +748,7 @@ $(document).ready(function() {
 		return confirm("Вы действительно хотите удалить З/Ч ?");
 	});
 	$('.isbn_toplivo').on('change', function(){
+		//alert($(this).val());
 		$('#isbn_toplivo').val($(this).val());
 	});
 

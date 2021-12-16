@@ -153,7 +153,6 @@
 	  <?php }else{ ?>
             <div class="product_this_price__main"><?php echo $product['price']; ?></div>
 	  <?php } ?>
-                        <div class="product_this_price__main"><?php echo $product['price']; ?></div>
                         <!----<div class="this_price__flex">
                           <div class="this_price_flex_item">~<?php echo $product['price_2']; ?></div>
                           <div class="this_price_flex_item">~<?php echo $product['price_3']; ?></div>

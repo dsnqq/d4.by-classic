@@ -56,13 +56,13 @@
                     <select name="filter_category" id="input-category" class=" selectpicker" data-live-search="true">
                       <option value="*">Выберите</option>
                       <?php foreach ($categories as $category) { ?>
-                      <?php if ($category['product_count'] >= 1) { ?>
+                      <?php //if ($category['product_count'] >= 1) { ?>
                       <?php if ($category['category_id']==$filter_category) { ?>
                       <option value="<?php echo $category['category_id']; ?>" selected="selected"><?php echo $category['name']; ?>&nbsp;&nbsp;&nbsp;&nbsp;</option>
                       <?php } else { ?>
                       <option value="<?php echo $category['category_id']; ?>">&nbsp;&nbsp;<?php echo $category['name']; ?>&nbsp;&nbsp;&nbsp;&nbsp;</option>
                       <?php } ?>
-                      <?php } ?>
+                      <?php //} ?>
                       <?php } ?>
                     </select>
                   </td>
