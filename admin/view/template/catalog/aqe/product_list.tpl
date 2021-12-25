@@ -451,7 +451,7 @@
 									<!---<th style="position:relative;" class="<?php echo $column_info[$col]['align']; ?>"><span class="select2-selection__clear"><span>Очистить </span>×</span><input type="text" name="filter_<?php echo $col; ?>" class="form-control input-sm search_init fltr <?php echo $col; ?> typeahead" placeholder="<?php echo $text_autocomplete; ?>" value="<?php echo !is_null($filters[$col]) ? $filters[$col] : ''; ?>" data-column="<?php echo $col; ?>"></th>--->
 									<th class="<?php echo $column_info[$col]['align']; ?>">
 									<select  class=" form-control input-sm isbn_toplivo fltr <?php echo $col; ?> typeahead" data-column="<?php echo $col; ?>">
-											<option value=""<?php echo (is_null($filters[$col])) ? ' selected' : ''; ?>>--- Не выбрано ---</option>
+											<option value="*"<?php echo (is_null($filters[$col])) ? ' selected' : ''; ?>>--- Не выбрано ---</option>
 											<option value="дизель"<?php echo (!is_null($filters[$col]) && 'дизель' == $filters[$col]) ? ' selected' : ''; ?>>дизель</option>
 											<option value="бензин"<?php echo (!is_null($filters[$col]) && 'бензин' == $filters[$col]) ? ' selected' : ''; ?>>бензин</option>
 											<option value="гибрид"<?php echo (!is_null($filters[$col]) && 'гибрид' == $filters[$col]) ? ' selected' : ''; ?>>гибрид</option>
@@ -748,8 +748,11 @@ $(document).ready(function() {
 		return confirm("Вы действительно хотите удалить З/Ч ?");
 	});
 	$('.isbn_toplivo').on('change', function(){
-		//alert($(this).val());
-		$('#isbn_toplivo').val($(this).val());
+		if($(this).val() == "*"){
+			$('#isbn_toplivo').attr('value', '');
+		} else{
+			$('#isbn_toplivo').val($(this).val());
+		}
 	});
 
 });

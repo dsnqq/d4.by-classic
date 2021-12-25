@@ -492,7 +492,7 @@
 			$exect_sale = ((float)$product_specials[0]['price']*100)/(float)$price;
 			$exect_sale = 100 - $exect_sale;
 		   } ?>
-            <input type="text" name="procent_price" value="<?php echo($product_specials[0]['price'] && $product_specials[0]['price'] != 0) ? $exect_sale : "0"; ?>" placeholder="Процент скидки (мин.5%)" class="form-control procent_price" />
+            <input type="number" data-min="0" data-max="100" name="procent_price" value="<?php echo($product_specials[0]['price'] && $product_specials[0]['price'] != 0) ? $exect_sale : "0"; ?>" placeholder="Процент скидки (мин.5%)" class="form-control procent_price" />
           </div>
         </div>
         <div class="" id="special_class">
@@ -1562,6 +1562,15 @@
           });
 
           $('.procent_price').on('input', function(){
+
+              var value = this.value.replace(/[^0-9]/g, '');
+              if (value < $(this).data('min')) {
+                  this.value = $(this).data('min');
+              } else if (value > $(this).data('max')) {
+                  this.value = $(this).data('max');
+              } else {
+                  this.value = value;
+
               if($('#input-price').val() !== ""){
                   var itogo = parseInt($('#input-price').val()) - (parseInt($('#input-price').val())/100)*parseInt($(this).val());
                   if(parseInt($(this).val()) >= 5 && ($('#special_class').html().trim() === '' || $('#special_class').html().trim() === ' ' || $('#special_class').html().trim() === '  ')){
@@ -1578,7 +1587,8 @@
               if($(this).val() === "" || $(this).val() === "0" || $(this).val() === 0){
                   $('.itogo_price').val(parseInt($('#input-price').val()));
                   $('#special_class').html("");
-              }
+              }}
+
 
           });
 
