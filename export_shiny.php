@@ -121,6 +121,13 @@
         }
         $images_product = substr($images_product,0,-1); // удаляем последнюю запятую
 
+        // достаем описание
+        $query__desc = 'SELECT * FROM `oc_shiny_description` WHERE product_id = ' . (int)$result_item['product_id'];
+        $result__desc = mysqli_query($link, $query__desc) or die("Ошибка " . mysqli_error($link));
+        $row__desc = mysqli_fetch_row($result__desc);
+        $row__desc[3] = strip_tags($row__desc[3]);
+        $row__desc[3] = str_replace("\n", ' ', $row__desc[3]);
+
 
         $create_data[$jel] = array(
 
@@ -137,7 +144,7 @@
             $result_item['version'], // Тип шин
             $result_item['price'], // Цена
             'USD',
-            '', //КОММЕНТАРИЙ
+            $row__desc[3], //КОММЕНТАРИЙ
             '', //ТЕЛЕФОН
             'info@d4.by', //EMAIL
             '', //ИМЯ

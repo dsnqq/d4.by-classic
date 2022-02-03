@@ -259,6 +259,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                       <?php echo $currency; ?>
                       <img src="/catalog/view/theme/d4/images/polylang.svg" class="polylang__currency">
                     </div> --->
+                    <div class="top_flex_item_text">
+                    Время работы: Пн-Сб: 9.00-18.00, Вск: 10.00-13.00
+                    </div>
                     <div class="header_top_flex_item">
                         <a href="/cart/" class="link_cub" style="font-size: 18px;border-bottom: 1px solid;"><img src="/catalog/view/theme/d4/images/cart_icon.svg" width="20px"> Корзина</a>
                     </div>

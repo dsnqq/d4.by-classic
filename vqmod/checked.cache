@@ -869,3 +869,12 @@ catalog/controller/product/manufacturer.php
 catalog/model/catalog/manufacturer.php
 catalog/controller/product/category.php
 admin/language/ru-ru/catalog/product.php
+system/storage/modification/admin/controller/marketing/marketing.php
+admin/language/en-gb/marketing/marketing.php
+admin/language/ru-ru/marketing/marketing.php
+admin/model/marketing/marketing.php
+admin/view/template/marketing/marketing_list.tpl
+system/storage/modification/admin/controller/marketing/affiliate.php
+admin/language/en-gb/marketing/affiliate.php
+admin/language/ru-ru/marketing/affiliate.php
+admin/view/template/marketing/affiliate_list.tpl

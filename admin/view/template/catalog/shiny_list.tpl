@@ -149,6 +149,9 @@
               <button type="button" id="button-clear" class="btn btn-warning btn-lg" style="margin-left: 15px;"><i class="fa fa-filter"></i> Сбросить</button>
           </div>
         </div>
+        <div style="padding:15px 0px;">
+          <span>Найдено объявлений: </span><span style="color: #fff;background: #000;padding: 5px;border-radius: 5px;"><?php echo $product_total_count; ?> шт.</span>
+        </div>
         <form action="<?php echo $delete; ?>" method="post" enctype="multipart/form-data" id="form-product">
           <div class="table-responsive">
           <table class="table">

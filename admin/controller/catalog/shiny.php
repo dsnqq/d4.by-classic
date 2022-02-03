@@ -679,6 +679,11 @@ class ControllerCatalogShiny extends Controller {
 
 		$product_total = $this->model_catalog_shiny->getTotalProducts($filter_data);
 
+		$product_total_count = $this->model_catalog_shiny->getProductCount();
+
+		$data['product_total_count_all'] = $product_total_count;
+		$data['product_total_count'] = $product_total;
+
 		$results = $this->model_catalog_shiny->getProducts($filter_data);
 
 		$this->load->model('catalog/category');

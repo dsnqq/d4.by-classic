@@ -152,7 +152,7 @@
           <div class="lk_right"><!---
             <h4 style="font-weight:bold;">Что делается и сделано по сайту с 01.03.21</h4>
             <a target="_blank" class="btn btn-warning btn-sm abtn" href="https://docs.google.com/spreadsheets/d/1nwpMFXGY8uX-5_kVTreBBWqrawgbB8qn0O4h2eZZhSQ/edit?usp=sharing"><i class="fa fa-check-circle" aria-hidden="true"></i>Смотреть excel онлайн</a>
--->
+
 <h4 style="font-weight:bold;margin-top:10px;">Добавлены новые наименования запчастей 20.09.21</h4>
 - Горелка автономного отопителя<br>
 - Датчик температуры автономного отопителя<br>
@@ -164,7 +164,7 @@
 - Радиатор гидроподвески<br>
 - Ротор генератора<br>
 - Тяга датчика положения кузова<br>
-<!--- CONTENT  -->
+ CONTENT  -->
           </div>
           <div class="clear"></div>
           

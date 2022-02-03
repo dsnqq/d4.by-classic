@@ -345,7 +345,7 @@
 											</select>
 											</div>
 											<div>-</div>
-											<div id="filter_yeaerChangeTh1" style="">
+											<div id="filter_yeaerChangeTh1">
 											<select id="filter_yeaerChange1" name="filter_<?php echo $col; ?>1" class="form-control selectpicker" data-live-search="true">
 													<option value="" <?php echo (is_null($filter_length_ex[1])) ? "selected='selected'" : "" ; ?>>Год</option>
 													<?php $year_max = date('Y');$year_max = (int)$year_max; ?>
@@ -447,7 +447,7 @@
 								
 									<?php break;
 									case 'isbn':
-									?>
+									?> 
 									<!---<th style="position:relative;" class="<?php echo $column_info[$col]['align']; ?>"><span class="select2-selection__clear"><span>Очистить </span>×</span><input type="text" name="filter_<?php echo $col; ?>" class="form-control input-sm search_init fltr <?php echo $col; ?> typeahead" placeholder="<?php echo $text_autocomplete; ?>" value="<?php echo !is_null($filters[$col]) ? $filters[$col] : ''; ?>" data-column="<?php echo $col; ?>"></th>--->
 									<th class="<?php echo $column_info[$col]['align']; ?>">
 									<select  class=" form-control input-sm isbn_toplivo fltr <?php echo $col; ?> typeahead" data-column="<?php echo $col; ?>">
@@ -457,7 +457,7 @@
 											<option value="гибрид"<?php echo (!is_null($filters[$col]) && 'гибрид' == $filters[$col]) ? ' selected' : ''; ?>>гибрид</option>
 											<option value="электро"<?php echo (!is_null($filters[$col]) && 'электро' == $filters[$col]) ? ' selected' : ''; ?>>электро</option>
 										</select>
-										<input type="text" id="isbn_toplivo" name="filter_<?php echo $col; ?>" style="opacity:0;position:absolute;left:-999999px;" value="<?php echo !is_null($filters[$col]) ? $filters[$col] : ''; ?>" data-column="<?php echo $col; ?>">
+										<input type="text" class="fltr" id="isbn_toplivo" name="filter_<?php echo $col; ?>" style="opacity:0;position:absolute;left:-999999px;" value="<?php echo !is_null($filters[$col]) ? $filters[$col] : ''; ?>" data-column="<?php echo $col; ?>">
 									</th>
 									<?php break;
 									case 'jan':

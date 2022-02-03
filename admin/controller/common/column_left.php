@@ -66,6 +66,7 @@ class ControllerCommonColumnLeft extends Controller {
 				);
 			}
 
+			
 			$catalog[] = array(
 				'name'	   => "Добавить шину",
 				'href'     => $this->url->link('catalog/shiny/add', 'token=' . $this->session->data['token'], true),
@@ -76,6 +77,7 @@ class ControllerCommonColumnLeft extends Controller {
 				'href'     => $this->url->link('catalog/shiny', 'token=' . $this->session->data['token'], true),
 				'children' => array()		
 			);
+			
 
 			
 			
