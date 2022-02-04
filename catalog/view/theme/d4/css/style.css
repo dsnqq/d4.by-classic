@@ -17,6 +17,97 @@
 }
 
 
+/* product time work */
+.seller-info {
+    padding: 5px;
+}
+.offices-time_btn span {
+    margin-left: 5px;
+}
+.green {
+    color: #2ECC71;
+}
+.red {
+    color: red;
+}
+.offices-time_btn:after {
+    content: "";
+    position: relative;
+    top: -4px;
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    margin-left: 5px;
+    border: 1px solid transparent;
+    border-top-color: #071225;
+    border-right-color: #071225;
+    transform: rotate(135deg);
+    transition: all .3s;
+    -webkit-backface-visibility: hidden;
+}
+.offices-time_menu.dropdown-menu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    z-index: 1000;
+    display: none;
+    float: left;
+    min-width: 160px;
+    padding: 5px 0;
+    margin: 2px 0 0;
+    font-size: 14px;
+    text-align: left;
+    list-style: none;
+    background-color: #fff;
+    -webkit-background-clip: padding-box;
+    background-clip: padding-box;
+    border: 1px solid #ccc;
+    border: 1px solid rgba(0,0,0,.15);
+    border-radius: 4px;
+    -webkit-box-shadow: 0 6px 12px rgb(0 0 0 / 18%);
+    box-shadow: 0 6px 12px rgb(0 0 0 / 18%);
+}
+.offices-time_menu {
+    width: 272px;
+    margin: 6px 0 0 !important;
+    padding: 15px 24px !important;
+    color: #2c2c2c;
+    border: none;
+    background: #fff;
+    box-shadow: 0 1px 12px rgb(0 0 0 / 20%);
+}
+.offices-time_title {
+    font-size: 18px;
+}
+.offices-time_list {
+    margin-top: 0.75em;
+    padding: 0;
+}
+.offices-time .item {
+    padding: 0;
+    margin: 0 0 9px;
+    font-size: 14px;
+    line-height: 1.5;
+    overflow: hidden;
+    display: block;
+}
+.offices-time .name {
+    position: relative;
+    float: left;
+    width: 60%;
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-pack: justify;
+    justify-content: space-between;
+    -ms-flex-align: end;
+    align-items: flex-end;
+}
+.offices-time .data {
+    float: left;
+    width: 40%;
+    text-align: right;
+    white-space: nowrap;
+}
 
 /* main css */
 .qwerstyu{

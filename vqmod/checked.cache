@@ -878,3 +878,5 @@ system/storage/modification/admin/controller/marketing/affiliate.php
 admin/language/en-gb/marketing/affiliate.php
 admin/language/ru-ru/marketing/affiliate.php
 admin/view/template/marketing/affiliate_list.tpl
+admin/view/template/module/mega_filter_filters.tpl
+catalog/controller/product/product.php

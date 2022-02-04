@@ -116,7 +116,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <!-- End Google Tag Manager (noscript) -->
 
 
-
+<?php /*
 <!-- new year -->
 <div class="b-page_newyear">
     <div class="b-page__content">
@@ -246,6 +246,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <link rel="stylesheet" href="newyear/style.css">
 <script src="newyear/script.js" defer></script>
 <!-- new year end -->
+*/?>
     <header>
         <div class="header_top">
             <div class="container">

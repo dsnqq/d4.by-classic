@@ -128,6 +128,24 @@
         $row__desc[3] = strip_tags($row__desc[3]);
         $row__desc[3] = str_replace("\n", ' ', $row__desc[3]);
 
+        // достаем телефон и складскую информацию
+                
+        $tel = '';
+        $sklad = '';
+        $city_s = '';
+        $query__attr = 'SELECT * FROM `oc_shiny_attribute` WHERE product_id = ' . (int)$result_item['product_id'];
+        $result__attr = mysqli_query($link, $query__attr) or die("Ошибка " . mysqli_error($link));
+        while (  $row__attr  =  mysqli_fetch_row($result__attr)  ){
+            if($row__attr[1] == 13){
+                $tel = $row__attr[3];
+            } elseif($row__attr[1] == 12){
+                $sklad = $row__attr[3];
+            } elseif($row__attr[1] == 17){
+                $city_s = $row__attr[3];
+            }
+        }
+
+
 
         $create_data[$jel] = array(
 
@@ -145,10 +163,10 @@
             $result_item['price'], // Цена
             'USD',
             $row__desc[3], //КОММЕНТАРИЙ
-            '', //ТЕЛЕФОН
+            $tel, //ТЕЛЕФОН
             'info@d4.by', //EMAIL
             '', //ИМЯ
-            '', //АДРЕС
+            $city_s, //АДРЕС
             $images_product, //Фото
         );
         $jel++;
