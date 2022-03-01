@@ -65,6 +65,13 @@ class ControllerCommonColumnLeft extends Controller {
 					'children' => array()		
 				);
 			}
+			//if ($this->user->hasPermission('access', 'catalog/arhive')) {
+				$catalog[] = array(
+					'name'	   => "Архив шин",
+					'href'     => $this->url->link('catalog/arhiveshiny', 'token=' . $this->session->data['token'], true),
+					'children' => array()		
+				);
+			//}
 
 			
 			$catalog[] = array(

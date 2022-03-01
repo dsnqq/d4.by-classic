@@ -880,3 +880,15 @@ admin/language/ru-ru/marketing/affiliate.php
 admin/view/template/marketing/affiliate_list.tpl
 admin/view/template/module/mega_filter_filters.tpl
 catalog/controller/product/product.php
+admin/controller/extension/module/easyphoto.php
+admin/view/template/extension/module/easyphoto.tpl
+system/storage/modification/admin/controller/marketing/coupon.php
+admin/language/en-gb/marketing/coupon.php
+admin/language/ru-ru/marketing/coupon.php
+admin/model/marketing/coupon.php
+admin/view/template/marketing/coupon_list.tpl
+admin/view/template/localisation/currency_form.tpl
+admin/controller/error/permission.php
+admin/language/en-gb/error/permission.php
+admin/language/ru-ru/error/permission.php
+admin/view/template/error/permission.tpl

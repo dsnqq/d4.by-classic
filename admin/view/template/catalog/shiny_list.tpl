@@ -145,6 +145,25 @@
                   <?php } ?>
                 </div>
               </div>
+              <div class="form-group">
+                <label class="col-md-2 col-xs-4 control-label">Статус</label>
+                <div class="col-sm-2  padding-r-2">
+                  <select id="status_filter" name="status_filter" class="form-control selectpicker">
+                        <option value="" <?php echo ($status_filter == "") ? "selected='selected'" : "" ; ?>>Все</option>
+                        <option value="true" <?php echo ($status_filter == "true") ? "selected='selected'" : "" ; ?>>Активно</option>
+                        <option value="false" <?php echo ($status_filter == "false") ? "selected='selected'" : "" ; ?>>Неактивно</option>
+                  </select>
+                </div>
+              </div>
+
+              <?php /* Цена */ ?>
+              <div class="form-group">
+                <label class="col-md-2 col-xs-4 control-label">Цена</label>
+                <div class="col-sm-2  padding-r-2">
+                  <input type="text" name="price" value="<?php echo $price; ?>" placeholder="" id="input-price" class="form-control" />
+                </div>
+              </div>
+
               <button type="button" id="button-filter" class="btn btn-success btn-lg" style="margin-left: 15px;"><i class="fa fa-filter"></i> Поиск</button>
               <button type="button" id="button-clear" class="btn btn-warning btn-lg" style="margin-left: 15px;"><i class="fa fa-filter"></i> Сбросить</button>
           </div>
@@ -196,7 +215,11 @@
                     <?php } ?>
                   </td>
                   <td>
-                      <nobr><?php echo $product['price']; ?> USD<br><span style="font-size:12px;">Цена за шт.</span></nobr>
+                      <nobr>
+                        <?php echo $product['price']; ?> USD<br>
+                        <?php echo $product['price_BYN']; ?><br>
+                        <span style="font-size:12px;">Цена за шт.</span>
+                      </nobr>
                   </td>
                   <td>
                     <span title="<?php echo mb_substr($product['date_added'], 10); ?>"><nobr><?php echo mb_substr($product['date_added'], 0, -8); ?></nobr></span>
@@ -213,10 +236,71 @@
                       <?php } ?>
                   </td>
 
-                  <td>
+                  <td style="text-align: center;">
                     <a href="<?php echo $product['edit']; ?>" title="Редактировать"><i class="fa fa-pencil-square-o fa-lg"></i></a>
                     <a href="<?php echo $product['deleted_url']; ?>" title="Удалить" class="js-adv-delete deletedButton"><i class="fa fa-trash-o fa-lg"></i></a>
                     <a target="_blank" title="Посмотреть на сайте"><i class="fa fa-external-link fa-lg"></i></a>
+                    <br>
+                    <?php 
+                      $product['cat_qr'] = str_replace('&nbsp;&nbsp;&gt;&nbsp;&nbsp;', ' ', $product['cat_qr']);
+                      //$qr_title = "<div>".$product['cat_qr'] . ", " . $product['length'] . "г. " . $product['ean'] . "</div><div>" . $product['jan'] . " " .$product['isbn'] . " " . $product['mpn'] . " " . $product['upc'] . "</div><div>" . $product['manufers'] . "</div><div>" . '<span style="font-size:17px;">' .$product['modelQR'] . '</span></div>';
+                      $qr_title = "<div>" . $product['marka'] . " " . $product['model_s'] . " " . $product['shirina'] . "/" . $product['vysota'] . " " . $product['r_size'] . ", " . $product['quantity'] . " шт., " . $product['season'] . ", " . $product['sostojan'] . '<div style="font-size:17px;">' .$product['model'] . '</div></div>';   
+                    ?>
+                    <div style="color: #23b423;border-color: #23b423;margin-top:10px;" id="" class="btn btn-default printQrOuterLists" data-qrmodel="<?php echo $product['model']; ?>" data-qrid="<?php echo $product['product_id']; ?>" data-titles='<?php echo $qr_title; ?>'>Печать QR код</div>
+                    <?php
+                      require_once $_SERVER['DOCUMENT_ROOT'].'/gd/phpqrcode/qrlib.php';
+                    
+                      /* Генерация QR-кода во временный файл */
+                      QRcode::png('https://d4.by/gd/?product_id='.$product['product_id'], '/home/dby/sites/d4.by/gd/qr_shiny/'.$product['model'].'_tmp.png', 'Q', 6, 1);
+                      
+                      /* Конвертация PNG8 в PNG24 */
+                      $im = imagecreatefrompng($_SERVER['DOCUMENT_ROOT'].'/gd/qr_shiny/'.$product['model'].'_tmp.png');
+                      
+                      $width = imagesx($im);
+                      $height = imagesy($im);
+
+                      // добавления цвета
+                      $color_smx = explode('&nbsp;', $cat_qr); 
+                        $rgba_oux = '255,255,255';
+                      $rgba_oux = explode(',', $rgba_oux);
+                      $bg_color = imageColorAllocate($im, (int)$rgba_oux[0], (int)$rgba_oux[1], (int)$rgba_oux[2]);
+                      for ($x = 0; $x < $width; $x++) {
+                      for ($y = 0; $y < $height; $y++) {
+                        $color = imagecolorat($im, $x, $y);
+                        if ($color == 0) {
+                        imageSetPixel($im, $x, $y, $bg_color);
+                        }
+                      }
+                      }
+                      // конец добавления цвета
+                
+                      $dst = imagecreatetruecolor($width, $height);
+                      imagecopy($dst, $im, 0, 0, 0, 0, $width, $height);
+                      imagedestroy($im);
+                      
+                      /* Наложение логотипа */
+                      $logo = imagecreatefrompng($_SERVER['DOCUMENT_ROOT'].'/gd/logo.png');
+                      $logo_width = imagesx($logo);
+                      $logo_height = imagesy($logo);
+                      
+                      $new_width = $width / 3;
+                      $new_height = $logo_height / ($logo_width / $new_width);
+                      
+                      $x = ceil(($width - $new_width) / 2);
+                      $y = ceil(($height - $new_height) / 2);
+                      
+                      imagecopyresampled($dst, $logo, $x, $y, 0, 0, $new_width, $new_height, $logo_width, $logo_height);
+                      imagepng($dst,$_SERVER['DOCUMENT_ROOT'].'/gd/qr_shiny/'.$product['model'].'_main.png',3);
+                      
+                      unlink($_SERVER['DOCUMENT_ROOT'].'/gd/qr_shiny/'.$product['model'].'_tmp.png');
+
+                      //$img_sm_qr1 = '<img src="https://d4.by/gd/qr_shiny/'.$product['model'].'_main.png" style="width:110px;">';
+                      //echo '<br><br>';
+                      
+                      
+                      
+                      //echo '<div style="display:flex;align-items:center;max-width:275px;border:1px solid #000;"><div>'.$img_sm_qr1.'</div><div style="text-align:center;font-size:12px;padding-left:10px;margin:0 auto;font-weight:bold;line-height:18px;">'.$qr_title.'</div></div>';
+                  ?>
                    
                   </td>
                 </tr>
@@ -234,6 +318,8 @@
       </div>
     </div>
   </div>
+
+  <iframe name="imgFrame" style="width: 0; height: 0; border: 0;color:#fff;"></iframe>
 
   <link type="text/css" href="view/stylesheet/lightbox.min.css" rel="stylesheet" media="screen" />
   <script type="text/javascript" src="view/stylesheet/lightbox.min.js"></script>
@@ -306,6 +392,10 @@ $('#button-filter').on('click', function() {
   if (filter_ean != '*') {
     url += '&filter_ean=' + encodeURIComponent(filter_ean);
   }
+
+  var status_filter = $('#status_filter').val();
+
+  url += '&status_filter=' + encodeURIComponent(status_filter);
   
   
 	location = url;
@@ -317,6 +407,18 @@ $('#button-clear').on('click', function() {
 });
 //--></script>
 <script>
+   $(document).ready(function() {
+		$('body').on('click','.printQrOuterLists', function(){
+				var idThis = $(this).data('qrid');//здесь получаем ID 	
+				var modelThis = $(this).data('qrmodel');//здесь получаем Model
+				var titlesThis = $(this).data('titles'); // получаем title
+				var this_elem = $(this);
+						
+				var frame = window.frames['imgFrame'];
+				frame.document.write('<html><head><style>@print{@page :footer {color: #fff }@page :header {color: #fff}}</style></head><body style="font-family: Open Sans, sans-serif;" onload="window.print()"><div style="margin:0 auto;color:#000;display:flex;align-items:center;max-width:275px;border:1px solid #000;"><div><img src="https://d4.by/gd/qr_shiny/'+modelThis+'_main.png" style="width:110px;"></div><div style="text-align:center;font-size:12px;margin:0 auto;padding-left:10px;font-weight:bold;line-height:18px;">'+titlesThis+'</div></div></body></html>');
+				frame.document.close();
+		}); 
+  });
 
 $(document).ready(function() {
 	
@@ -433,7 +535,7 @@ $(document).ready(function() { //
 </style>
 <link type="text/css" href="view/stylesheet/bootstrap-select.css" rel="stylesheet" media="screen" />
 <style>
-#input-upc,#input-quantity,#input-model{height: 26px;background: #fff;}
+#input-upc,#input-quantity,#input-model,#input-price{height: 26px;background: #fff;}
   .form-control{
     background-color: #f5f5f5;
   }
@@ -447,6 +549,9 @@ $(document).ready(function() { //
     clear: both;
     display: block;
     min-height: 60px;
+  }
+  .js-td-images{
+    min-width:350px;
   }
 </style>
 <?php echo $footer; ?>

@@ -140,7 +140,7 @@
                         <?php } ?>
                   </select>
                 </div>
-
+                
                 <?php /* Высота */ ?>
                 <div class="col-sm-2 padding-l-r-2">
                   <select id="main__isbn" name="isbn" class="form-control selectpicker" data-live-search="true">
@@ -1205,6 +1205,80 @@
             <?php } ?>
         </form>
 
+
+         <?php
+          if(strpos($_SERVER['REQUEST_URI'],'catalog/shiny/add') === false){
+                ?>
+          <?php
+                    require_once $_SERVER["DOCUMENT_ROOT"] . '/gd/phpqrcode/qrlib.php';
+
+                    /* Генерация QR-кода во временный файл */
+                    QRcode::png('https://d4.by/gd/?product_id='.$_GET['product_id'], $_SERVER["DOCUMENT_ROOT"].'/gd/qr_shiny/'.$model.'_tmp.png', 'Q', 6, 1);
+
+
+                    /* Конвертация PNG8 в PNG24 */
+                    $im = imagecreatefrompng($_SERVER["DOCUMENT_ROOT"].'/gd/qr_shiny/'.$model.'_tmp.png');
+
+                    $width = imagesx($im);
+                    $height = imagesy($im);
+
+                    // добавления цвета
+                    $color_smx = explode('&nbsp;', $cat_qr);
+                    $rgba_oux = '255,255,255';
+                    $rgba_oux = explode(',', $rgba_oux);
+                    $bg_color = imageColorAllocate($im, (int)$rgba_oux[0], (int)$rgba_oux[1], (int)$rgba_oux[2]);
+                    for ($x = 0; $x < $width; $x++) {
+                      for ($y = 0; $y < $height; $y++) {
+                        $color = imagecolorat($im, $x, $y);
+                        if ($color == 0) {
+                          imageSetPixel($im, $x, $y, $bg_color);
+                        }
+                      }
+                    }
+                    // конец добавления цвета
+
+                    $dst = imagecreatetruecolor($width, $height);
+                    imagecopy($dst, $im, 0, 0, 0, 0, $width, $height);
+                    imagedestroy($im);
+
+                    /* Наложение логотипа */
+                    $logo = imagecreatefrompng($_SERVER["DOCUMENT_ROOT"].'/gd/logo.png');
+                    $logo_width = imagesx($logo);
+                    $logo_height = imagesy($logo);
+
+                    $new_width = $width / 3;
+                    $new_height = $logo_height / ($logo_width / $new_width);
+
+                    $x = ceil(($width - $new_width) / 2);
+                    $y = ceil(($height - $new_height) / 2);
+
+                    imagecopyresampled($dst, $logo, $x, $y, 0, 0, $new_width, $new_height, $logo_width, $logo_height);
+                    imagepng($dst,$_SERVER["DOCUMENT_ROOT"].'/gd/qr_shiny/'.$model.'_main.png',3);
+
+                    unlink($_SERVER["DOCUMENT_ROOT"].'/gd/qr_shiny/'.$model.'_tmp.png');
+
+          $img_sm_qr1 = '<img src="https://d4.by/gd/qr_shiny/'.$model.'_main.png" style="width:110px;">';
+          echo '<br><br>';
+
+          $cat_qr = str_replace('&nbsp;&nbsp;&gt;&nbsp;&nbsp;', ' ', $cat_qr);
+
+          $qr_title = "<div>" . $marka_shiny_item . " " . $upc . " " . $width_shiny_item . "/" . $height_shiny_item . " " . $location_array_item . ", " . $quantity . " шт., " . $season__item . ", " . $location . '<div style="font-size:17px;">' .$model . '</div></div>';        
+          
+          echo '<div style="display:flex;align-items:center;max-width:275px;border:1px solid #000;"><div>'.$img_sm_qr1.'</div><div style="text-align:center;font-size:12px;padding-left:10px;margin:0 auto;font-weight:bold;line-height:18px;">'.$qr_title.'</div></div>';
+          
+          ?>
+          <button id="printBut" class="btn btn-danger" style="float: right;">Печать QR код</button>
+          <div style="clear:both;"></div>
+          <iframe name="imgFrame" style="width: 0; height: 0; border: 0;color:#fff;"></iframe>
+
+          <script>
+              $('#printBut').on('click', function(){
+                  var frame = window.frames['imgFrame'];
+                  frame.document.write('<html><head><style>@print{@page :footer {color: #fff }@page :header {color: #fff}}</style></head><body style="font-family: Open Sans, sans-serif;" onload="window.print()"><div style="margin:0 auto;color:#000;display:flex;align-items:center;max-width:275px;border:1px solid #000;"><div><?php echo $img_sm_qr1; ?></div><div style="text-align:center;font-size:12px;margin:0 auto;padding-left:10px;font-weight:bold;line-height:18px;"><?php echo $qr_title; ?></div></div></body></html>');
+                  frame.document.close();
+              });
+          </script>
+          <?php } ?>
 
         <?php 
           $site_url_photo = "https://d4.by/upload.php";

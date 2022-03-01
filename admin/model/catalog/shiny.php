@@ -328,6 +328,15 @@ class ModelCatalogShiny extends Model {
 			$sql .= " AND model LIKE '" . $this->db->escape($data['filter_model']) . "%'";
 		}
 		
+		if (!empty($data['status_filter'])) {
+			if($data['status_filter'] == 'true'){
+				$data['status_filter'] = 1;
+			} else{
+				$data['status_filter'] = 0;
+			}
+			$sql .= " AND `status` LIKE '" . $this->db->escape($data['status_filter']) . "%'";
+		}
+		
 		if (!empty($data['filter_shirina'])) {
 			$sql .= " AND jan LIKE '" . $this->db->escape($data['filter_shirina']) . "%'";
 		}
@@ -390,7 +399,7 @@ class ModelCatalogShiny extends Model {
             $sql .= " AND p2c.category_id = '" . (int)$data['filter_category'] . "'";
         }
 		$sql .= " GROUP BY p.product_id";
-		
+		*/
 		$sort_data = array(
 			'pd.name',
 			'p.model',
@@ -403,14 +412,14 @@ class ModelCatalogShiny extends Model {
 		if (isset($data['sort']) && in_array($data['sort'], $sort_data)) {
 			$sql .= " ORDER BY " . $data['sort'];
 		} else {
-			$sql .= " ORDER BY pd.name";
+			$sql .= " ORDER BY date_added";
 		}
 
-		if (isset($data['order']) && ($data['order'] == 'DESC')) {
+		//if (isset($data['order']) && ($data['order'] == 'DESC')) {
 			$sql .= " DESC";
-		} else {
-			$sql .= " ASC";
-		}*/
+		//} else {
+		//	$sql .= " ASC";
+		//}
 
 		if (isset($data['start']) || isset($data['limit'])) {
 			if ($data['start'] < 0) {
@@ -678,6 +687,15 @@ class ModelCatalogShiny extends Model {
             $sql .= " AND upc LIKE '" . $this->db->escape($data['filter_upc']) . "%'";
         }
 
+		if (!empty($data['status_filter'])) {
+			if($data['status_filter'] == 'true'){
+				$data['status_filter'] = 1;
+			} else{
+				$data['status_filter'] = 0;
+			}
+			$sql .= " AND `status` LIKE '" . $this->db->escape($data['status_filter']) . "%'";
+		}
+		
         if (!empty($data['filter_location'])) {
             $sql .= " AND `location` LIKE '" . $this->db->escape($data['filter_location']) . "%'";
         }

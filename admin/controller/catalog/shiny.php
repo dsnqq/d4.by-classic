@@ -49,7 +49,7 @@ class ControllerCatalogShiny extends Controller {
 		
 
 		$this->session->data['success'] = $this->language->get('text_success');
-
+		$url = '';
 		/*$url = '';
 
 		if (isset($this->request->get['filter_name'])) {
@@ -87,6 +87,9 @@ class ControllerCatalogShiny extends Controller {
 		if (isset($this->request->get['page'])) {
 			$url .= '&page=' . $this->request->get['page'];
 		}*/
+		if (isset($this->request->get['page'])) {
+			$url .= '&page=' . $this->request->get['page'];
+		}
 
 		$this->response->redirect($this->url->link('catalog/shiny', 'token=' . $this->session->data['token'] . $url, true));
 		//$this->getList();
@@ -355,6 +358,11 @@ class ControllerCatalogShiny extends Controller {
 			$this->session->data['success'] = $this->language->get('text_success');
 
 			$url = '';
+
+			if (isset($this->request->get['page'])) {
+				$url .= '&page=' . $this->request->get['page'];
+			}
+
 /*
 			if (isset($this->request->get['filter_name'])) {
 				$url .= '&filter_name=' . urlencode(html_entity_decode($this->request->get['filter_name'], ENT_QUOTES, 'UTF-8'));
@@ -554,6 +562,12 @@ class ControllerCatalogShiny extends Controller {
 		} else {
 			$filter_r = null;
 		}
+
+		if (isset($this->request->get['status_filter'])) {
+			$status_filter = $this->request->get['status_filter'];
+		} else {
+			$status_filter = null;
+		}
 		
 		if (isset($this->request->get['filter_ean'])) {
 			$filter_ean = $this->request->get['filter_ean'];
@@ -561,11 +575,12 @@ class ControllerCatalogShiny extends Controller {
 			$filter_ean = null;
 		}
 		
-		if (isset($this->request->get['sort'])) {
+		/*if (isset($this->request->get['sort'])) {
 			$sort = $this->request->get['sort'];
 		} else {
 			$sort = 'pd.name';
-		}
+		}*/
+		//$sort = 'pd.date_added';
 
 		if (isset($this->request->get['order'])) {
 			$order = $this->request->get['order'];
@@ -586,6 +601,10 @@ class ControllerCatalogShiny extends Controller {
 			$url .= '&filter_shirina=' . urlencode(html_entity_decode($this->request->get['filter_shirina'], ENT_QUOTES, 'UTF-8'));
 		}
 
+		if (isset($this->request->get['status_filter'])) {
+			$url .= '&status_filter=' . urlencode(html_entity_decode($this->request->get['status_filter'], ENT_QUOTES, 'UTF-8'));
+		}
+		
 		if (isset($this->request->get['version'])) {
 			$url .= '&version=' . urlencode(html_entity_decode($this->request->get['version'], ENT_QUOTES, 'UTF-8'));
 		}
@@ -660,6 +679,7 @@ class ControllerCatalogShiny extends Controller {
 			'filter_model'	  => $filter_model,
 			'filter_shirina'	  => $filter_shirina,
 			'filter_vysota'	  => $filter_vysota,
+			'status_filter'		=> $status_filter,
 			'filter_ean'	  => $filter_ean,
 			'filter_r'	  => $filter_r,
 			'filter_location'	  => $filter_location,
@@ -750,7 +770,8 @@ class ControllerCatalogShiny extends Controller {
 				'name'       => $result['name'],
 				'model'      => $result['model'],
 				'price'      => $result['price'],
-				'shirina'	 => $result['jan'],
+				'price_BYN'	 => round($this->currency->convert($result['price'], "USD", 'BYN'), '0')." р.",
+ 				'shirina'	 => $result['jan'],
 				'vysota'	 => $result['isbn'],
 				'r_size'	 => $result['mpn'],
 				'marka'	     => $result['ean'],
@@ -765,7 +786,7 @@ class ControllerCatalogShiny extends Controller {
                 'date_modified' => $result['date_modified'],
                 'date_added' => $result['date_added'],
 				'quantity'   => $result['quantity'],
-				'deleted_url'=> "/index.php?route=catalog/shiny/deleted&amp;product_id=".$result['product_id']."&amp;token=".$this->session->data['token']."",
+				'deleted_url'=> "/admin/index.php?route=catalog/shiny/deleted&amp;product_id=".$result['product_id']."&amp;token=".$this->session->data['token']."",
 				'status'     => $result['status'] ? $this->language->get('text_enabled') : $this->language->get('text_disabled'),
 				'edit'       => $this->url->link('catalog/shiny/edit', 'token=' . $this->session->data['token'] . '&product_id=' . $result['product_id'] . $url, true)
 			);
@@ -846,6 +867,9 @@ class ControllerCatalogShiny extends Controller {
 		if (isset($this->request->get['filter_shirina'])) {
 			$url .= '&filter_shirina=' . urlencode(html_entity_decode($this->request->get['filter_shirina'], ENT_QUOTES, 'UTF-8'));
 		}
+		if (isset($this->request->get['status_filter'])) {
+			$url .= '&status_filter=' . urlencode(html_entity_decode($this->request->get['status_filter'], ENT_QUOTES, 'UTF-8'));
+		}
 		if (isset($this->request->get['filter_vysota'])) {
 			$url .= '&filter_vysota=' . urlencode(html_entity_decode($this->request->get['filter_vysota'], ENT_QUOTES, 'UTF-8'));
 		}
@@ -899,6 +923,9 @@ class ControllerCatalogShiny extends Controller {
 		if (isset($this->request->get['version'])) {
 			$url .= '&version=' . urlencode(html_entity_decode($this->request->get['version'], ENT_QUOTES, 'UTF-8'));
 		}
+		if (isset($this->request->get['status_filter'])) {
+			$url .= '&status_filter=' . urlencode(html_entity_decode($this->request->get['status_filter'], ENT_QUOTES, 'UTF-8'));
+		}
 		if (isset($this->request->get['filter_r'])) {
 			$url .= '&filter_r=' . urlencode(html_entity_decode($this->request->get['filter_r'], ENT_QUOTES, 'UTF-8'));
 		}
@@ -941,6 +968,7 @@ class ControllerCatalogShiny extends Controller {
 		$data['length'] = $length;
 		$data['version'] = $version;
 		$data['upc'] = $filter_upc;
+		$data['status_filter'] = $status_filter;
 		
 		$data['sort'] = $sort;
 		$data['order'] = $order;

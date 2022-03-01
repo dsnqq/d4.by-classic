@@ -64,7 +64,10 @@
 					<?php foreach ($attribute_groups as $attribute_group) { ?>
 						<?php foreach ($attribute_group['attribute'] as $attribute) { ?>
 							<?php if($attribute['name'] == "Телефон, если другой" && $attribute['text'] != ""){ ?>
-								<?php $attribute__phone = explode(';',$attribute['text']);?>
+								<?php 
+									$attribute__phone = explode(';',$attribute['text']);
+									//$attribute__phone = explode(',',$attribute['text']);
+								?>
 									<span style="font-size:16px;">
 										<span style="font-size:14px;">Телефон:</span><br>
 										<?php foreach($attribute__phone as $attribute__phone__item){ ?>
@@ -177,9 +180,59 @@
 				<div class="offices-time_btn" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 				<img src="/catalog/view/theme/d4/images/time.svg">
 				<?php if($dayNum <= 6){ // ПН-СБ ?>
-					<span class="green">Открыто до 18:00</span>
+					<?php 
+						$opening_hours = '9:00 - 18:00';
+						$opening_start = trim(explode('-', $opening_hours)[0]);
+						$opening_start_hours = explode(':', $opening_start)[0];
+						$opening_start_minutes = explode(':', $opening_start)[1];
+						$opening_start_today = $opening_start_hours * 60 + $opening_start_minutes;
+						$opening_end = trim(explode('-', $opening_hours)[1]);
+						$opening_end_hours = explode(':', $opening_end)[0];
+						$opening_end_minutes = explode(':', $opening_end)[1];
+						$opening_end_today = $opening_end_hours * 60 + $opening_end_minutes;
+						if ($opening_end_today <= $opening_start_today) $opening_end_today = 24 * 60 + $opening_end_today;
+						$zone = 'Europe/Minsk'; 
+						$now = new DateTime('now', new DateTimeZone($zone));
+						$now_hours = $now->format('H');
+						$now_minutes = $now->format('i');
+						$now_today = $now_hours * 60 + $now_minutes;
+						if ($now_today > $opening_start_today && $now_today < $opening_end_today) {
+						?>
+							<span class="green">Открыто до 18:00</span>
+						<?php
+						} else {
+						?>
+							<span class="red">Закрыто до 9:00</span>
+						<?php
+						}
+					?>
 				<?php } else{ // ВСК?>
-					<span class="green">Открыто до 13:00</span>
+					<?php 
+						$opening_hours = '9:00 - 13:00';
+						$opening_start = trim(explode('-', $opening_hours)[0]);
+						$opening_start_hours = explode(':', $opening_start)[0];
+						$opening_start_minutes = explode(':', $opening_start)[1];
+						$opening_start_today = $opening_start_hours * 60 + $opening_start_minutes;
+						$opening_end = trim(explode('-', $opening_hours)[1]);
+						$opening_end_hours = explode(':', $opening_end)[0];
+						$opening_end_minutes = explode(':', $opening_end)[1];
+						$opening_end_today = $opening_end_hours * 60 + $opening_end_minutes;
+						if ($opening_end_today <= $opening_start_today) $opening_end_today = 24 * 60 + $opening_end_today;
+						$zone = 'Europe/Minsk'; 
+						$now = new DateTime('now', new DateTimeZone($zone));
+						$now_hours = $now->format('H');
+						$now_minutes = $now->format('i');
+						$now_today = $now_hours * 60 + $now_minutes;
+						if ($now_today > $opening_start_today && $now_today < $opening_end_today) {
+						?>
+							<span class="green">Открыто до 13:00</span>
+						<?php
+						} else {
+						?>
+							<span class="red">Закрыто до 10:00</span>
+						<?php
+						}
+					?>
 				<?php } ?>
 				</div>
 				<div class="offices-time_menu dropdown-menu">
