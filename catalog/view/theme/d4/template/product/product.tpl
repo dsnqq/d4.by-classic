@@ -57,8 +57,8 @@
               <div class="product_info_y__stay">
                 <span class="ytrewqq" style="font-size:18px;"><span style="font-size:14px;">Телефон:</span>
 				<br>+375 (29) 641-64-96
-				<br>+375 (29) 795-36-19
 				<br>+375 (29) 800-07-36
+				<br>+375 (29) 795-26-40
 				</span>
 				<?php if ($attribute_groups) { ?>
 					<?php foreach ($attribute_groups as $attribute_group) { ?>
