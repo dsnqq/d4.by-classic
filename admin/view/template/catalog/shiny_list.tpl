@@ -204,7 +204,14 @@
                     <span class="grey">Артикул: <?php echo $product['model']; ?></span>
                   </td>
                   <td class="js-td-images">
-                    <span class="gray">Описание:  <?php echo $product['description'][1]['description'];?><br></span>
+                    <span class="gray">Описание:  <?php echo $product['description'][1]['description'];?><br>
+                      <?php foreach($product['attributs'] as $attributs){ ?>
+                        <?php if($attributs['attribute_id'] == 12){ ?>
+                          <div><span style="color:red;">Заметка:</span> <?php echo $attributs['product_attribute_description'][1]['text']; ?></div><br>
+                        <?php } ?>
+                      <?php } ?>
+                     
+                    </span>
                     <span class="gray"></span>
                     <?php if($product['images']){ ?>
                       <?php foreach( $product['images'] as $image_item){ ?>

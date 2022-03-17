@@ -762,6 +762,8 @@ class ControllerCatalogShiny extends Controller {
 				);
 			}
 
+			$attribute_list = $this->model_catalog_shiny->getProductAttributes($result['product_id']);
+
 			$data['products'][] = array(
 				'product_id' => $result['product_id'],
 				'image'      => $image,
@@ -780,6 +782,7 @@ class ControllerCatalogShiny extends Controller {
 				'season'	 => $result['sku'],
 				'type_av'	 => $result['version'],
 				'year_av'	 => $result['length'],
+				'attributs'	 => $attribute_list,
 				'category'   => $category,
 				'special'    => $special,
 				'description'=>$shiny_description_data,

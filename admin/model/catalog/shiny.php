@@ -67,6 +67,28 @@ class ModelCatalogShiny extends Model {
 
 		if (isset($data['product_image'])) {
 			foreach ($data['product_image'] as $product_image) {
+				/***ip-2016***/
+					$direct = $this->config->get('easyphoto_direct')?$this->config->get('easyphoto_direct'):'easyphoto';
+					if(strpos($direct, $product_image['image'])){
+						$separator = $this->config->get('easyphoto_separator')?$this->config->get('easyphoto_separator'):1000;
+						$image = explode($direct."/", $product_image['image']);
+						for($ids=0; $ids<1000*$separator; $ids += $separator){
+							$finish = $ids+$separator;
+							if($product_id > $ids and $product_id <= $finish){
+								$path = $direct . '/' . $ids . '_' . $finish . '/' . $product_id;
+								$directory = DIR_IMAGE . 'catalog/' . $path;
+								
+							}
+						}
+						if(!strpos($product_image['image'], $path)){
+							if (!is_dir($directory)) {
+								mkdir($directory, 0777, true);
+							}
+							rename(DIR_IMAGE . $product_image['image'], $directory . '/' . $image[1]);
+							$product_image['image'] = 'catalog/' . $path . '/' . $image[1];
+						}
+					}
+				/***ip-2016***/		
 				$this->db->query("INSERT INTO " . DB_PREFIX . "shiny_image SET product_id = '" . (int)$product_id . "', image = '" . $this->db->escape($product_image['image']) . "', sort_order = '" . (int)$product_image['sort_order'] . "'");
 			}
 		}
@@ -141,6 +163,7 @@ class ModelCatalogShiny extends Model {
 		if (isset($data['image'])) {
 			$this->db->query("UPDATE " . DB_PREFIX . "shiny SET image = '" . $this->db->escape($data['image']) . "' WHERE product_id = '" . (int)$product_id . "'");
 		}
+		
 
 		$this->db->query("DELETE FROM " . DB_PREFIX . "shiny_description WHERE product_id = '" . (int)$product_id . "'");
 
@@ -162,6 +185,36 @@ class ModelCatalogShiny extends Model {
                 }
             }
         }
+
+		
+		$this->db->query("DELETE FROM " . DB_PREFIX . "shiny_image WHERE product_id = '" . (int)$product_id . "'");
+		if (isset($data['product_image'])) {
+			foreach ($data['product_image'] as $product_image) {
+				/***ip-2016***/
+					$direct = $this->config->get('easyphoto_direct')?$this->config->get('easyphoto_direct'):'easyphoto';
+					if(strpos($direct, $product_image['image'])){
+						$separator = $this->config->get('easyphoto_separator')?$this->config->get('easyphoto_separator'):1000;
+						$image = explode($direct."/", $product_image['image']);
+						for($ids=0; $ids<1000*$separator; $ids += $separator){
+							$finish = $ids+$separator;
+							if($product_id > $ids and $product_id <= $finish){
+								$path = $direct . '/' . $ids . '_' . $finish . '/' . $product_id;
+								$directory = DIR_IMAGE . 'catalog/' . $path;
+								
+							}
+						}
+						if(!strpos($product_image['image'], $path)){
+							if (!is_dir($directory)) {
+								mkdir($directory, 0777, true);
+							}
+							rename(DIR_IMAGE . $product_image['image'], $directory . '/' . $image[1]);
+							$product_image['image'] = 'catalog/' . $path . '/' . $image[1];
+						}
+					}
+				/***ip-2016***/		
+				$this->db->query("INSERT INTO " . DB_PREFIX . "shiny_image SET product_id = '" . (int)$product_id . "', image = '" . $this->db->escape($product_image['image']) . "', sort_order = '" . (int)$product_image['sort_order'] . "'");
+			}
+		}
 
 
 		/*
