@@ -64,5 +64,6 @@
 /vqmod/vqcache/
 /bamper/*
 /gd/qr/*
+/gd/qr_shiny/*
 /cronActionFiles/logs/
 /cronActionFiles/logs/*
