@@ -1,7 +1,13 @@
 <?php
 class ModelCatalogProduct extends Model {
+	/**
+	 * Внутренний кэш данных товара в рамках одного HTTP‑запроса.
+	 */
 	private static $product_cache = array();
 
+	/**
+	 * Записывает агрегированную статистику просмотров товара в таблицу product_stax.
+	 */
 	public function updateStax($product_id, $name) {
 		$today = strtotime(date('d.m.Y H:i:s'));
 		$query = $this->db->query("SELECT * FROM " . DB_PREFIX . "product_stax WHERE product_id = '" . (int)$product_id . "' AND view_date = '".$today."' AND nameStatic = '".$name."'");
@@ -12,6 +18,9 @@ class ModelCatalogProduct extends Model {
 		}
 	}
 
+    /**
+     * Логирует просмотры товара в файл для последующей оффлайн‑аналитики.
+     */
     public function updateProductStatistics($product_id, $nameStatic)
     {
         $file = DIR_SYSTEM . 'product_views.log';
@@ -24,6 +33,9 @@ class ModelCatalogProduct extends Model {
         file_put_contents($file, json_encode($data) . PHP_EOL, FILE_APPEND | LOCK_EX);
     }
 
+	/**
+	 * Возвращает полные данные одного товара по его ID.
+	 */
 	public function getProduct($product_id) {
 		$cache_key = (int)$product_id . '.' . (int)$this->config->get('config_language_id') . '.' . (int)$this->config->get('config_store_id') . '.' . (int)$this->config->get('config_customer_group_id');
 
@@ -90,6 +102,9 @@ class ModelCatalogProduct extends Model {
 		}
 	}
 
+	/**
+	 * Пакетно получает данные по списку ID товаров (используется для избежания N+1 запросов).
+	 */
 	private function getProductsByIds($product_ids) {
 		$product_ids = array_values(array_unique(array_map('intval', (array)$product_ids)));
 		$product_ids = array_filter($product_ids, function($v) { return $v > 0; });
@@ -177,6 +192,9 @@ class ModelCatalogProduct extends Model {
 		return $out;
 	}
 
+	/**
+	 * Возвращает список товаров по фильтрам (категория, поиск, производитель и т.п.) с сортировкой и пагинацией.
+	 */
 	public function getProducts($data = array()) {
 		$sql = "SELECT p.product_id, (SELECT AVG(rating) AS total FROM " . DB_PREFIX . "review r1 WHERE r1.product_id = p.product_id AND r1.status = '1' GROUP BY r1.product_id) AS rating, (SELECT price FROM " . DB_PREFIX . "product_discount pd2 WHERE pd2.product_id = p.product_id AND pd2.customer_group_id = '" . (int)$this->config->get('config_customer_group_id') . "' AND pd2.quantity = '1' AND ((pd2.date_start = '0000-00-00' OR pd2.date_start < NOW()) AND (pd2.date_end = '0000-00-00' OR pd2.date_end > NOW())) ORDER BY pd2.priority ASC, pd2.price ASC LIMIT 1) AS discount, (SELECT price FROM " . DB_PREFIX . "product_special ps WHERE ps.product_id = p.product_id AND ps.customer_group_id = '" . (int)$this->config->get('config_customer_group_id') . "' AND ((ps.date_start = '0000-00-00' OR ps.date_start < NOW()) AND (ps.date_end = '0000-00-00' OR ps.date_end > NOW())) ORDER BY ps.priority ASC, ps.price ASC LIMIT 1) AS special";
 
@@ -331,6 +349,9 @@ class ModelCatalogProduct extends Model {
 		return $this->getProductsByIds($product_ids);
 	}
 
+	/**
+	 * Возвращает список акционных товаров (product_special) с поддержкой сортировки и лимита.
+	 */
 	public function getProductSpecials($data = array()) {
 		$sql = "SELECT DISTINCT ps.product_id, (SELECT AVG(rating) FROM " . DB_PREFIX . "review r1 WHERE r1.product_id = ps.product_id AND r1.status = '1' GROUP BY r1.product_id) AS rating FROM " . DB_PREFIX . "product_special ps LEFT JOIN " . DB_PREFIX . "product p ON (ps.product_id = p.product_id) LEFT JOIN " . DB_PREFIX . "product_description pd ON (p.product_id = pd.product_id) LEFT JOIN " . DB_PREFIX . "product_to_store p2s ON (p.product_id = p2s.product_id) WHERE p.status = '1' AND p.date_available <= NOW() AND p2s.store_id = '" . (int)$this->config->get('config_store_id') . "' AND ps.customer_group_id = '" . (int)$this->config->get('config_customer_group_id') . "' AND ((ps.date_start = '0000-00-00' OR ps.date_start < NOW()) AND (ps.date_end = '0000-00-00' OR ps.date_end > NOW())) GROUP BY ps.product_id";
 
@@ -382,6 +403,9 @@ class ModelCatalogProduct extends Model {
 		return $this->getProductsByIds($product_ids);
 	}
 
+	/**
+	 * Возвращает последние добавленные товары, используя кэш по лимиту и настройкам магазина.
+	 */
 	public function getLatestProducts($limit) {
 		$product_data = $this->cache->get('product.latest.' . (int)$this->config->get('config_language_id') . '.' . (int)$this->config->get('config_store_id') . '.' . $this->config->get('config_customer_group_id') . '.' . (int)$limit);
 
@@ -401,6 +425,9 @@ class ModelCatalogProduct extends Model {
 		return $product_data;
 	}
 
+	/**
+	 * Возвращает самые популярные товары по полю viewed, с учётом статуса и даты доступности.
+	 */
 	public function getPopularProducts($limit) {
 		$product_data = $this->cache->get('product.popular.' . (int)$this->config->get('config_language_id') . '.' . (int)$this->config->get('config_store_id') . '.' . $this->config->get('config_customer_group_id') . '.' . (int)$limit);
 
@@ -420,6 +447,9 @@ class ModelCatalogProduct extends Model {
 		return $product_data;
 	}
 
+	/**
+	 * Возвращает товары‑бестселлеры по суммарному количеству проданных единиц.
+	 */
 	public function getBestSellerProducts($limit) {
 		$product_data = $this->cache->get('product.bestseller.' . (int)$this->config->get('config_language_id') . '.' . (int)$this->config->get('config_store_id') . '.' . $this->config->get('config_customer_group_id') . '.' . (int)$limit);
 
@@ -441,6 +471,9 @@ class ModelCatalogProduct extends Model {
 		return $product_data;
 	}
 
+	/**
+	 * Возвращает атрибуты товара, сгруппированные по группам атрибутов.
+	 */
 	public function getProductAttributes($product_id) {
 		$product_attribute_group_data = array();
 
@@ -469,6 +502,9 @@ class ModelCatalogProduct extends Model {
 		return $product_attribute_group_data;
 	}
 
+	/**
+	 * Возвращает все опции товара и их значения.
+	 */
 	public function getProductOptions($product_id) {
 		$product_option_data = array();
 
@@ -508,18 +544,27 @@ class ModelCatalogProduct extends Model {
 		return $product_option_data;
 	}
 
+	/**
+	 * Возвращает количественные скидки товара для текущей группы покупателей.
+	 */
 	public function getProductDiscounts($product_id) {
 		$query = $this->db->query("SELECT * FROM " . DB_PREFIX . "product_discount WHERE product_id = '" . (int)$product_id . "' AND customer_group_id = '" . (int)$this->config->get('config_customer_group_id') . "' AND quantity > 1 AND ((date_start = '0000-00-00' OR date_start < NOW()) AND (date_end = '0000-00-00' OR date_end > NOW())) ORDER BY quantity ASC, priority ASC, price ASC");
 
 		return $query->rows;
 	}
 
+	/**
+	 * Возвращает дополнительные изображения товара.
+	 */
 	public function getProductImages($product_id) {
 		$query = $this->db->query("SELECT * FROM " . DB_PREFIX . "product_image WHERE product_id = '" . (int)$product_id . "' ORDER BY sort_order ASC");
 
 		return $query->rows;
 	}
 
+	/**
+	 * Возвращает связанные товары для заданного товара.
+	 */
 	public function getProductRelated($product_id) {
 		$product_data = array();
 
@@ -532,6 +577,9 @@ class ModelCatalogProduct extends Model {
 		return $product_data;
 	}
 
+	/**
+	 * Возвращает ID макета (layout) для конкретного товара.
+	 */
 	public function getProductLayoutId($product_id) {
 		$query = $this->db->query("SELECT * FROM " . DB_PREFIX . "product_to_layout WHERE product_id = '" . (int)$product_id . "' AND store_id = '" . (int)$this->config->get('config_store_id') . "'");
 
@@ -542,12 +590,18 @@ class ModelCatalogProduct extends Model {
 		}
 	}
 
+	/**
+	 * Возвращает список категорий, в которые привязан товар.
+	 */
 	public function getCategories($product_id) {
 		$query = $this->db->query("SELECT * FROM " . DB_PREFIX . "product_to_category WHERE product_id = '" . (int)$product_id . "'");
 
 		return $query->rows;
 	}
 
+	/**
+	 * Возвращает количество товаров по переданным фильтрам (для пагинации и счётчиков).
+	 */
 	public function getTotalProducts($data = array()) {
 		$sql = "SELECT COUNT(DISTINCT p.product_id) AS total";
 
@@ -650,18 +704,27 @@ class ModelCatalogProduct extends Model {
 		return $query->row['total'];
 	}
 
+	/**
+	 * Возвращает один рекуррентный профиль товара по его ID и ID профиля.
+	 */
 	public function getProfile($product_id, $recurring_id) {
 		$query = $this->db->query("SELECT * FROM " . DB_PREFIX . "recurring r JOIN " . DB_PREFIX . "product_recurring pr ON (pr.recurring_id = r.recurring_id AND pr.product_id = '" . (int)$product_id . "') WHERE pr.recurring_id = '" . (int)$recurring_id . "' AND status = '1' AND pr.customer_group_id = '" . (int)$this->config->get('config_customer_group_id') . "'");
 
 		return $query->row;
 	}
 
+	/**
+	 * Возвращает все рекуррентные профили для товара и текущей группы покупателей.
+	 */
 	public function getProfiles($product_id) {
 		$query = $this->db->query("SELECT rd.* FROM " . DB_PREFIX . "product_recurring pr JOIN " . DB_PREFIX . "recurring_description rd ON (rd.language_id = " . (int)$this->config->get('config_language_id') . " AND rd.recurring_id = pr.recurring_id) JOIN " . DB_PREFIX . "recurring r ON r.recurring_id = rd.recurring_id WHERE pr.product_id = " . (int)$product_id . " AND status = '1' AND pr.customer_group_id = '" . (int)$this->config->get('config_customer_group_id') . "' ORDER BY sort_order ASC");
 
 		return $query->rows;
 	}
 
+	/**
+	 * Возвращает количество товаров с действующими акциями (product_special).
+	 */
 	public function getTotalProductSpecials() {
 		$query = $this->db->query("SELECT COUNT(DISTINCT ps.product_id) AS total FROM " . DB_PREFIX . "product_special ps LEFT JOIN " . DB_PREFIX . "product p ON (ps.product_id = p.product_id) LEFT JOIN " . DB_PREFIX . "product_to_store p2s ON (p.product_id = p2s.product_id) WHERE p.status = '1' AND p.date_available <= NOW() AND p2s.store_id = '" . (int)$this->config->get('config_store_id') . "' AND ps.customer_group_id = '" . (int)$this->config->get('config_customer_group_id') . "' AND ((ps.date_start = '0000-00-00' OR ps.date_start < NOW()) AND (ps.date_end = '0000-00-00' OR ps.date_end > NOW()))");
 
