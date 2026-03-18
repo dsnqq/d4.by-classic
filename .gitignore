@@ -64,3 +64,5 @@
 /vqmod/vqcache/
 /bamper/*
 /gd/qr/*
+/cronActionFiles/logs/
+/cronActionFiles/logs/*
