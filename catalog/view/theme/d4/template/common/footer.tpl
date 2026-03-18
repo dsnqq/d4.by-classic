@@ -26,7 +26,7 @@
 	</div>
 </div>
 
-<?php if ($route != 'common/home') {?>
+<?php if ($route != 'common/home') { ?>
   <div class="container" style="padding-bottom: 100px;">
       <div class="auto_all_link">
           <div class="title_d">Запчасти б/у для автомобилей</div>
