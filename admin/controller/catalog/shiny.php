@@ -2,6 +2,9 @@
 class ControllerCatalogShiny extends Controller {
 	private $error = array();
 
+    /*
+     * Базовый index для раздела
+     * */
 	public function index() {
 		$this->load->language('catalog/shiny');
 
@@ -11,34 +14,92 @@ class ControllerCatalogShiny extends Controller {
 
 		$this->getList();
 	}
+
+    public function addImageListPage(){
+        $this->load->model('catalog/shiny');
+
+        if ($this->request->server['REQUEST_METHOD'] == 'POST') {
+            $this->model_catalog_shiny->addImageForProduct($this->request->post['product_id'], $this->request->post['image']);
+        }
+
+    }
+
 	public function actions() {
 		$hostname = "localhost"; // название/путь сервера, с MySQL
 		$username = "dby_user"; // имя пользователя (в Denwer`е по умолчанию "root")
 		$password = "LhePBA4v6Lc8k6"; // пароль пользователя (в Denwer`е по умолчанию пароль отсутствует, этот параметр можно оставить пустым)
 		$dbName = "dby_bd"; // название базы данных
-		
-		$link = mysqli_connect($hostname, $username, $password, $dbName) 
+
+		$link = mysqli_connect($hostname, $username, $password, $dbName)
 		or die("Ошибка " . mysqli_error($link));
-	
+
 		$category_id = $this->request->post['actions'];
-	
+
 		$query = "SELECT status FROM oc_shiny WHERE product_id = '" . $category_id . "'";
-		$result = mysqli_query($link, $query) or die("Ошибка " . mysqli_error($link)); 
-		
+		$result = mysqli_query($link, $query) or die("Ошибка " . mysqli_error($link));
+
 		$filter_group = mysqli_fetch_array($result);
 		if($filter_group['status'] == '1'){
 			echo '0';
 			$query_link ="UPDATE oc_shiny SET status='0' WHERE product_id='" . $category_id . "'";
-			$result2020 = mysqli_query($link, $query_link) or die("Ошибка " . mysqli_error($link)); 
+			$result2020 = mysqli_query($link, $query_link) or die("Ошибка " . mysqli_error($link));
 		}else{
 			echo '1';
 			$query_link ="UPDATE oc_shiny SET status='1' WHERE product_id='" . $category_id . "'";
-			$result2020 = mysqli_query($link, $query_link) or die("Ошибка " . mysqli_error($link)); 
+			$result2020 = mysqli_query($link, $query_link) or die("Ошибка " . mysqli_error($link));
 		}
-	
-	
-		mysqli_close($link); 
+
+
+		mysqli_close($link);
 	}
+
+    public function setPrice() {
+        $hostname = "localhost"; // название/путь сервера, с MySQL
+        $username = "dby_user"; // имя пользователя (в Denwer`е по умолчанию "root")
+        $password = "LhePBA4v6Lc8k6"; // пароль пользователя (в Denwer`е по умолчанию пароль отсутствует, этот параметр можно оставить пустым)
+        $dbName = "dby_bd"; // название базы данных
+
+        $link = mysqli_connect($hostname, $username, $password, $dbName)
+        or die("Ошибка " . mysqli_error($link));
+
+        $category_id = $this->request->post['actions'];
+
+        $query = "SELECT status FROM oc_shiny WHERE product_id = '" . $category_id . "'";
+        $result = mysqli_query($link, $query) or die("Ошибка " . mysqli_error($link));
+
+        $filter_group = mysqli_fetch_array($result);
+        if($filter_group['status'] == '1'){
+            echo '0';
+            $query_link ="UPDATE oc_shiny SET status='0' WHERE product_id='" . $category_id . "'";
+            $result2020 = mysqli_query($link, $query_link) or die("Ошибка " . mysqli_error($link));
+        }else{
+            echo '1';
+            $query_link ="UPDATE oc_shiny SET status='1' WHERE product_id='" . $category_id . "'";
+            $result2020 = mysqli_query($link, $query_link) or die("Ошибка " . mysqli_error($link));
+        }
+
+
+        mysqli_close($link);
+    }
+
+    public function setPriceItem() {
+        $hostname = "localhost";
+        $username = "dby_user";
+        $password = "LhePBA4v6Lc8k6";
+        $dbName = "dby_bd";
+
+        $link = mysqli_connect($hostname, $username, $password, $dbName)
+        or die("Ошибка " . mysqli_error($link));
+
+        $product_id = $this->request->post['shinyId'];
+        $shiny_price = $this->request->post['price'];
+
+        $query_link ="UPDATE oc_shiny SET price='" . (int)$shiny_price . "' WHERE product_id='" . (int)$product_id . "'";
+        $result2020 = mysqli_query($link, $query_link) or die("Ошибка " . mysqli_error($link));
+
+        mysqli_close($link);
+    }
+
 	public function deleted() {
 		$this->load->language('catalog/shiny');
 
@@ -46,249 +107,22 @@ class ControllerCatalogShiny extends Controller {
 
 		$this->load->model('catalog/shiny');
 		$this->model_catalog_shiny->deleteProduct($this->request->get['product_id']);
-		
+
 
 		$this->session->data['success'] = $this->language->get('text_success');
 		$url = '';
-		/*$url = '';
 
-		if (isset($this->request->get['filter_name'])) {
-			$url .= '&filter_name=' . urlencode(html_entity_decode($this->request->get['filter_name'], ENT_QUOTES, 'UTF-8'));
+		if (isset($this->request->get['status_filter'])) {
+			$url .= '&status_filter=' . $this->request->get['status_filter'];
 		}
 
-		if (isset($this->request->get['filter_model'])) {
-			$url .= '&filter_model=' . urlencode(html_entity_decode($this->request->get['filter_model'], ENT_QUOTES, 'UTF-8'));
-		}
-
-		if (isset($this->request->get['filter_price'])) {
-			$url .= '&filter_price=' . $this->request->get['filter_price'];
-		}
-
-		if (isset($this->request->get['filter_quantity'])) {
-			$url .= '&filter_quantity=' . $this->request->get['filter_quantity'];
-		}
-
-		if (isset($this->request->get['filter_category'])) {
-			$url .= '&filter_category=' . $this->request->get['filter_category'];
-		}
-
-		if (isset($this->request->get['filter_status'])) {
-			$url .= '&filter_status=' . $this->request->get['filter_status'];
-		}
-
-		if (isset($this->request->get['sort'])) {
-			$url .= '&sort=' . $this->request->get['sort'];
-		}
-
-		if (isset($this->request->get['order'])) {
-			$url .= '&order=' . $this->request->get['order'];
-		}
-
-		if (isset($this->request->get['page'])) {
-			$url .= '&page=' . $this->request->get['page'];
-		}*/
 		if (isset($this->request->get['page'])) {
 			$url .= '&page=' . $this->request->get['page'];
 		}
 
 		$this->response->redirect($this->url->link('catalog/shiny', 'token=' . $this->session->data['token'] . $url, true));
-		//$this->getList();
 	}
-    /*
-	public function actions() {
-		$hostname = "localhost"; // название/путь сервера, с MySQL
-		$username = "dby_user"; // имя пользователя (в Denwer`е по умолчанию "root")
-		$password = "LhePBA4v6Lc8k6"; // пароль пользователя (в Denwer`е по умолчанию пароль отсутствует, этот параметр можно оставить пустым)
-		$dbName = "dby_bd"; // название базы данных
-		
-		$link = mysqli_connect($hostname, $username, $password, $dbName) 
-		or die("Ошибка " . mysqli_error($link));
-	
-		$category_id = $this->request->post['actions'];
-	
-		$query = "SELECT status FROM oc_product WHERE product_id = '" . $category_id . "'";
-		$result = mysqli_query($link, $query) or die("Ошибка " . mysqli_error($link)); 
-		
-		$filter_group = mysqli_fetch_array($result);
-		if($filter_group['status'] == '1'){
-			echo '0';
-			$query_link ="UPDATE oc_product SET status='0' WHERE product_id='" . $category_id . "'";
-			$result2020 = mysqli_query($link, $query_link) or die("Ошибка " . mysqli_error($link)); 
-		}else{
-			echo '1';
-			$query_link ="UPDATE oc_product SET status='1' WHERE product_id='" . $category_id . "'";
-			$result2020 = mysqli_query($link, $query_link) or die("Ошибка " . mysqli_error($link)); 
-		}
-	
-	
-		mysqli_close($link); 
-	}
-	
-	public function delete() {
-		$this->load->language('catalog/product');
 
-		$this->document->setTitle($this->language->get('heading_title'));
-
-		$this->load->model('catalog/product');
-		if (isset($this->request->post['selected']) && $this->validateDelete()) {
-			foreach ($this->request->post['selected'] as $product_id) {
-				$this->model_catalog_product->deleteProduct($product_id);
-			}
-
-			$this->session->data['success'] = $this->language->get('text_success');
-
-			$url = '';
-
-			if (isset($this->request->get['filter_name'])) {
-				$url .= '&filter_name=' . urlencode(html_entity_decode($this->request->get['filter_name'], ENT_QUOTES, 'UTF-8'));
-			}
-
-			if (isset($this->request->get['filter_model'])) {
-				$url .= '&filter_model=' . urlencode(html_entity_decode($this->request->get['filter_model'], ENT_QUOTES, 'UTF-8'));
-			}
-
-			if (isset($this->request->get['filter_price'])) {
-				$url .= '&filter_price=' . $this->request->get['filter_price'];
-			}
-
-			if (isset($this->request->get['filter_quantity'])) {
-				$url .= '&filter_quantity=' . $this->request->get['filter_quantity'];
-			}
-
-      if (isset($this->request->get['filter_category'])) {
-        $url .= '&filter_category=' . $this->request->get['filter_category'];
-      }
-
-			if (isset($this->request->get['filter_status'])) {
-				$url .= '&filter_status=' . $this->request->get['filter_status'];
-			}
-
-			if (isset($this->request->get['sort'])) {
-				$url .= '&sort=' . $this->request->get['sort'];
-			}
-
-			if (isset($this->request->get['order'])) {
-				$url .= '&order=' . $this->request->get['order'];
-			}
-
-			if (isset($this->request->get['page'])) {
-				$url .= '&page=' . $this->request->get['page'];
-			}
-
-			$this->response->redirect($this->url->link('catalog/product', 'token=' . $this->session->data['token'] . $url, true));
-		}
-
-		$this->getList();
-	}
-	public function deleted() {
-		$this->load->language('catalog/product');
-
-		$this->document->setTitle($this->language->get('heading_title'));
-
-		$this->load->model('catalog/product');
-		$this->model_catalog_product->deleteProduct($this->request->get['product_id']);
-		
-
-		$this->session->data['success'] = $this->language->get('text_success');
-
-		$url = '';
-
-		if (isset($this->request->get['filter_name'])) {
-			$url .= '&filter_name=' . urlencode(html_entity_decode($this->request->get['filter_name'], ENT_QUOTES, 'UTF-8'));
-		}
-
-		if (isset($this->request->get['filter_model'])) {
-			$url .= '&filter_model=' . urlencode(html_entity_decode($this->request->get['filter_model'], ENT_QUOTES, 'UTF-8'));
-		}
-
-		if (isset($this->request->get['filter_price'])) {
-			$url .= '&filter_price=' . $this->request->get['filter_price'];
-		}
-
-		if (isset($this->request->get['filter_quantity'])) {
-			$url .= '&filter_quantity=' . $this->request->get['filter_quantity'];
-		}
-
-		if (isset($this->request->get['filter_category'])) {
-			$url .= '&filter_category=' . $this->request->get['filter_category'];
-		}
-
-		if (isset($this->request->get['filter_status'])) {
-			$url .= '&filter_status=' . $this->request->get['filter_status'];
-		}
-
-		if (isset($this->request->get['sort'])) {
-			$url .= '&sort=' . $this->request->get['sort'];
-		}
-
-		if (isset($this->request->get['order'])) {
-			$url .= '&order=' . $this->request->get['order'];
-		}
-
-		if (isset($this->request->get['page'])) {
-			$url .= '&page=' . $this->request->get['page'];
-		}
-
-		$this->response->redirect($this->url->link('catalog/product', 'token=' . $this->session->data['token'] . $url, true));
-		//$this->getList();
-	}
-	public function copy() {
-		$this->load->language('catalog/product');
-
-		$this->document->setTitle($this->language->get('heading_title'));
-
-		$this->load->model('catalog/product');
-
-		if (isset($this->request->post['selected']) && $this->validateCopy()) {
-			foreach ($this->request->post['selected'] as $product_id) {
-				$this->model_catalog_product->copyProduct($product_id);
-			}
-
-			$this->session->data['success'] = $this->language->get('text_success');
-
-			$url = '';
-
-			if (isset($this->request->get['filter_name'])) {
-				$url .= '&filter_name=' . urlencode(html_entity_decode($this->request->get['filter_name'], ENT_QUOTES, 'UTF-8'));
-			}
-
-			if (isset($this->request->get['filter_model'])) {
-				$url .= '&filter_model=' . urlencode(html_entity_decode($this->request->get['filter_model'], ENT_QUOTES, 'UTF-8'));
-			}
-
-			if (isset($this->request->get['filter_price'])) {
-				$url .= '&filter_price=' . $this->request->get['filter_price'];
-			}
-
-			if (isset($this->request->get['filter_quantity'])) {
-				$url .= '&filter_quantity=' . $this->request->get['filter_quantity'];
-			}
-
-      if (isset($this->request->get['filter_category'])) {
-        $url .= '&filter_category=' . $this->request->get['filter_category'];
-      }
-
-			if (isset($this->request->get['filter_status'])) {
-				$url .= '&filter_status=' . $this->request->get['filter_status'];
-			}
-
-			if (isset($this->request->get['sort'])) {
-				$url .= '&sort=' . $this->request->get['sort'];
-			}
-
-			if (isset($this->request->get['order'])) {
-				$url .= '&order=' . $this->request->get['order'];
-			}
-
-			if (isset($this->request->get['page'])) {
-				$url .= '&page=' . $this->request->get['page'];
-			}
-
-			$this->response->redirect($this->url->link('catalog/product', 'token=' . $this->session->data['token'] . $url, true));
-		}
-
-		$this->getList();
-	}*/
     public function delete() {
 		$this->load->language('catalog/shiny');
 
@@ -320,9 +154,9 @@ class ControllerCatalogShiny extends Controller {
 				$url .= '&filter_quantity=' . $this->request->get['filter_quantity'];
 			}
 
-      if (isset($this->request->get['filter_category'])) {
-        $url .= '&filter_category=' . $this->request->get['filter_category'];
-      }
+            if (isset($this->request->get['filter_category'])) {
+                $url .= '&filter_category=' . $this->request->get['filter_category'];
+            }
 
 			if (isset($this->request->get['filter_status'])) {
 				$url .= '&filter_status=' . $this->request->get['filter_status'];
@@ -345,6 +179,10 @@ class ControllerCatalogShiny extends Controller {
 
 		$this->getList();
 	}
+
+    /*
+     * Раздел под редактирование объявление шины
+     * */
     public function edit() {
 		$this->load->language('catalog/shiny');
 
@@ -352,7 +190,38 @@ class ControllerCatalogShiny extends Controller {
 
 		$this->load->model('catalog/shiny');
 
+        $user_id = $this->session->data['user_id'];
+
 		if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validateForm()) {
+            ///////// ***** ОТЛАВЛИВАЕМ ИЗМЕНЕНИЯ СТАРТ ***** ////////////
+            $data_old = $this->getProductData();
+            $data_new = $this->request->post;
+
+            $params = [
+                ["price", "Цена", "float"],
+                ["model", "Артикул"],
+                ["status", "Статус", "integer"],
+                ["version", "Тип авто"],
+                ["sku", "Сезон"],
+                ["jan", "Ширина", "integer"],
+                ["isbn", "Высота", "integer"],
+                ["mpn", "R"],
+                ["ean", "Марка"],
+                ["upc", "Модель"],
+                ["quantity", "Количество"],
+                ["location", "Состояние"],
+            ];
+            foreach ($params as $param) {
+                if(!$param[2]) { $param[2] = "string"; };
+                settype($data_old[$param[0]], $param[2]);
+                settype($data_new[$param[0]], $param[2]);
+
+                if ($data_old[$param[0]] != $data_new[$param[0]]) {
+                    $this->model_catalog_shiny->addChangeProductData($data_old[$param[0]], $data_new[$param[0]], $param[1], $this->request->get['product_id'], $user_id);
+                }
+            }
+            ///////// ***** ОТЛАВЛИВАЕМ ИЗМЕНЕНИЯ КОНЕЦ ***** ////////////
+
 			$this->model_catalog_shiny->editProduct($this->request->get['product_id'], $this->request->post);
 
 			$this->session->data['success'] = $this->language->get('text_success');
@@ -363,81 +232,42 @@ class ControllerCatalogShiny extends Controller {
 				$url .= '&page=' . $this->request->get['page'];
 			}
 
-/*
-			if (isset($this->request->get['filter_name'])) {
-				$url .= '&filter_name=' . urlencode(html_entity_decode($this->request->get['filter_name'], ENT_QUOTES, 'UTF-8'));
-			}
-
-			if (isset($this->request->get['filter_model'])) {
-				$url .= '&filter_model=' . urlencode(html_entity_decode($this->request->get['filter_model'], ENT_QUOTES, 'UTF-8'));
-			}
-
-			if (isset($this->request->get['filter_price'])) {
-				$url .= '&filter_price=' . $this->request->get['filter_price'];
-			}
-
-			if (isset($this->request->get['filter_quantity'])) {
-				$url .= '&filter_quantity=' . $this->request->get['filter_quantity'];
-			}
-
-      if (isset($this->request->get['filter_category'])) {
-        $url .= '&filter_category=' . $this->request->get['filter_category'];
-      }
-
-			if (isset($this->request->get['filter_status'])) {
-				$url .= '&filter_status=' . $this->request->get['filter_status'];
-			}
-
-			if (isset($this->request->get['sort'])) {
-				$url .= '&sort=' . $this->request->get['sort'];
-			}
-
-			if (isset($this->request->get['order'])) {
-				$url .= '&order=' . $this->request->get['order'];
-			}
-
-			if (isset($this->request->get['page'])) {
-				$url .= '&page=' . $this->request->get['page'];
-			}
-			if (isset($this->request->get['route'])) {
-				$get = explode("/", $this->request->get['route']);
-				$folder = $get[0];
-				$file = $get[1];
-				
-				if ($file == 'user_permission') $table = 'user_group';
-				else $table = $file;
-
-				$this->load->model('setting/setting');
-				$last_id = $this->model_setting_setting->getLastId($table);
-
-				if ($file == 'setting') {
-					$route = 'setting/store';
-					$editroute = 'setting/setting';
-				} else {
-					$route = $folder.'/'.$file;
-					$editroute = $folder.'/'.$file.'/edit';
-				}
-				
-				if (!isset($url)) $url = "";
-
-				if (($file != 'setting') && (isset($this->request->get[$table.'_id']) || isset($last_id))) {
-					$url .= '&'.$table.'_id='.(isset($this->request->get[$table.'_id']) ? $this->request->get[$table.'_id'] : $last_id);
-				}
-
-				if (isset($this->request->post['apply']) && $this->request->post['apply'] == "1") {
-					$this->response->redirect($this->url->link($editroute, 'token='.$this->session->data['token'].$url, 'SSL'));
-				} 
-			}*/
-
 			if($this->request->post['go_list_product'] == 1){
 				$this->response->redirect($this->url->link('catalog/shiny', 'token=' . $this->session->data['token'] . $url, true));
 			} else{
-				$this->response->redirect($this->url->link('catalog/shiny/add', 'token=' . $this->session->data['token'] . $url, true));	
+				$this->response->redirect($this->url->link('catalog/shiny/add', 'token=' . $this->session->data['token'] . $url, true));
 			}
 		}
 
 		$this->getForm();
 	}
+
+    /*
+     * Запрос значений для показа истории шины
+     * */
+    public function getChangeProduct() {
+        $json = array();
+
+        $this->load->model('catalog/shiny');
+
+        $changes = $this->model_catalog_shiny->getChangeProductData($this->request->get['product_id']);
+
+        foreach ($changes as &$change) {
+            if($change["data_change"]) {
+                $date2 = new DateTime($change["data_change"]);
+                $change["data_change"] = $date2->format("d-m-Y H:i:s");
+            }
+        }
+
+        $json["changes"] = $changes;
+
+        $this->response->addHeader('Content-Type: application/json');
+        $this->response->setOutput(json_encode($json));
+    }
+
+    /*
+     * Раздел под добавление объявление шины
+     * */
     public function add() {
 		$this->load->language('catalog/shiny');
 
@@ -445,11 +275,17 @@ class ControllerCatalogShiny extends Controller {
 
 		$this->load->model('catalog/shiny');
 
+        $user_id = $this->session->data['user_id'];
+
 		if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validateForm()) {
 
-			$this->model_catalog_shiny->addProduct($this->request->post);
+            $new_product_id = $this->model_catalog_shiny->addProduct($this->request->post);
 
 			$this->session->data['success'] = $this->language->get('text_success');
+
+            //****** ИЗМЕНЕНИЕ КОЛОНКИ СТАТУС СТАРТ ******/
+            $this->model_catalog_shiny->addChangeProductData("", "", "Добавил З/Ч", $new_product_id, $user_id);
+            //****** ИЗМЕНЕНИЕ КОЛОНКИ СТАТУС КОНЕЦ ******/
 
 			$url = '';
 
@@ -488,20 +324,118 @@ class ControllerCatalogShiny extends Controller {
 			if (isset($this->request->get['page'])) {
 				$url .= '&page=' . $this->request->get['page'];
 			}
-			
+
 			if (isset($this->request->post['go_list_product']) && $this->request->post['go_list_product'] == "1") {
 				$this->response->redirect($this->url->link('catalog/shiny', 'token=' . $this->session->data['token'] . $url, true));
 			}
-			
+
 		}
 
 		$this->getForm();
-	
-		
 	}
+
+    protected function getProductData() {
+
+        $url = '';
+
+        $product_info = $this->model_catalog_shiny->getProduct($this->request->get['product_id']);
+
+        $data['token'] = $this->session->data['token'];
+
+        $this->load->model('localisation/language');
+
+        if (!empty($product_info)) {
+            $data['model'] = $product_info['model'];
+        } else {
+            $data['model'] = '';
+        }
+
+        if (!empty($product_info)) {
+            $data['sku'] = $product_info['sku'];
+        } else {
+            $data['sku'] = '';
+        }
+
+        if (!empty($product_info)) {
+            $data['upc'] = $product_info['upc'];
+        } else {
+            $data['upc'] = '';
+        }
+
+        if (!empty($product_info)) {
+            $data['ean'] = $product_info['ean'];
+        } else {
+            $data['ean'] = '';
+        }
+
+        if (!empty($product_info)) {
+            $data['jan'] = $product_info['jan'];
+        } else {
+            $data['jan'] = '';
+        }
+
+        if (!empty($product_info)) {
+            $data['isbn'] = $product_info['isbn'];
+        } else {
+            $data['isbn'] = '';
+        }
+
+        if (!empty($product_info)) {
+            $data['mpn'] = $product_info['mpn'];
+        } else {
+            $data['mpn'] = '';
+        }
+
+        if (!empty($product_info)) {
+            $data['location'] = $product_info['location'];
+        } else {
+            $data['location'] = '';
+        }
+
+        if (!empty($product_info)) {
+            $data['quantity'] = $product_info['quantity'];
+        } else {
+            $data['quantity'] = '';
+        }
+
+        if (!empty($product_info)) {
+            $data['price'] = $product_info['price'];
+        } else {
+            $data['price'] = '';
+        }
+
+        if (!empty($product_info)) {
+            $data['length'] = $product_info['length'];
+        } else {
+            $data['length'] = '';
+        }
+
+        if (!empty($product_info)) {
+            $data['version'] = $product_info['version'];
+        } else {
+            $data['version'] = '';
+        }
+
+        if (!empty($product_info)) {
+            $data['zametka'] = $product_info['zametka'];
+        } else {
+            $data['zametka'] = '';
+        }
+
+        if (!empty($product_info)) {
+            $data['status'] = $product_info['status'];
+        } else {
+            $data['status'] = '';
+        }
+
+        return $data;
+    }
 
 	protected function getList() {
 		$data['token_ac'] = $this->session->data['token'];
+
+        $user_id = $this->session->data['user_id'];
+        $data['user_id_com'] = $user_id;
 
 		if (isset($this->request->get['filter_model'])) {
 			$filter_model = $this->request->get['filter_model'];
@@ -514,25 +448,25 @@ class ControllerCatalogShiny extends Controller {
 		} else {
 			$filter_upc = null;
 		}
-		
+
 		if (isset($this->request->get['filter_quantity'])) {
 			$filter_quantity = $this->request->get['filter_quantity'];
 		} else {
 			$filter_quantity = null;
 		}
-		
+
 		if (isset($this->request->get['length'])) {
 			$length = $this->request->get['length'];
 		} else {
 			$length = null;
 		}
-		
+
 		if (isset($this->request->get['version'])) {
 			$version = $this->request->get['version'];
 		} else {
 			$version = null;
 		}
-		
+
 		if (isset($this->request->get['filter_location'])) {
 			$filter_location = $this->request->get['filter_location'];
 		} else {
@@ -544,7 +478,7 @@ class ControllerCatalogShiny extends Controller {
 		} else {
 			$sku_season = null;
 		}
-		
+
 		if (isset($this->request->get['filter_shirina'])) {
 			$filter_shirina = $this->request->get['filter_shirina'];
 		} else {
@@ -568,19 +502,12 @@ class ControllerCatalogShiny extends Controller {
 		} else {
 			$status_filter = null;
 		}
-		
+
 		if (isset($this->request->get['filter_ean'])) {
 			$filter_ean = $this->request->get['filter_ean'];
 		} else {
 			$filter_ean = null;
 		}
-		
-		/*if (isset($this->request->get['sort'])) {
-			$sort = $this->request->get['sort'];
-		} else {
-			$sort = 'pd.name';
-		}*/
-		//$sort = 'pd.date_added';
 
 		if (isset($this->request->get['order'])) {
 			$order = $this->request->get['order'];
@@ -596,7 +523,6 @@ class ControllerCatalogShiny extends Controller {
 
 		$url = '';
 
-
 		if (isset($this->request->get['filter_shirina'])) {
 			$url .= '&filter_shirina=' . urlencode(html_entity_decode($this->request->get['filter_shirina'], ENT_QUOTES, 'UTF-8'));
 		}
@@ -604,7 +530,7 @@ class ControllerCatalogShiny extends Controller {
 		if (isset($this->request->get['status_filter'])) {
 			$url .= '&status_filter=' . urlencode(html_entity_decode($this->request->get['status_filter'], ENT_QUOTES, 'UTF-8'));
 		}
-		
+
 		if (isset($this->request->get['version'])) {
 			$url .= '&version=' . urlencode(html_entity_decode($this->request->get['version'], ENT_QUOTES, 'UTF-8'));
 		}
@@ -612,11 +538,11 @@ class ControllerCatalogShiny extends Controller {
 		if (isset($this->request->get['length'])) {
 			$url .= '&length=' . urlencode(html_entity_decode($this->request->get['length'], ENT_QUOTES, 'UTF-8'));
 		}
-		
+
 		if (isset($this->request->get['sku_season'])) {
 			$url .= '&sku_season=' . urlencode(html_entity_decode($this->request->get['sku_season'], ENT_QUOTES, 'UTF-8'));
 		}
-		
+
 		if (isset($this->request->get['filter_location'])) {
 			$url .= '&filter_location=' . urlencode(html_entity_decode($this->request->get['filter_location'], ENT_QUOTES, 'UTF-8'));
 		}
@@ -624,11 +550,11 @@ class ControllerCatalogShiny extends Controller {
 		if (isset($this->request->get['filter_quantity'])) {
 			$url .= '&filter_quantity=' . urlencode(html_entity_decode($this->request->get['filter_quantity'], ENT_QUOTES, 'UTF-8'));
 		}
-		
+
 		if (isset($this->request->get['filter_model'])) {
 			$url .= '&filter_model=' . urlencode(html_entity_decode($this->request->get['filter_model'], ENT_QUOTES, 'UTF-8'));
 		}
-		
+
 		if (isset($this->request->get['filter_r'])) {
 			$url .= '&filter_r=' . urlencode(html_entity_decode($this->request->get['filter_r'], ENT_QUOTES, 'UTF-8'));
 		}
@@ -636,7 +562,7 @@ class ControllerCatalogShiny extends Controller {
 		if (isset($this->request->get['filter_upc'])) {
 			$url .= '&filter_upc=' . urlencode(html_entity_decode($this->request->get['filter_upc'], ENT_QUOTES, 'UTF-8'));
 		}
-		
+
 		if (isset($this->request->get['filter_vysota'])) {
 			$url .= '&filter_vysota=' . urlencode(html_entity_decode($this->request->get['filter_vysota'], ENT_QUOTES, 'UTF-8'));
 		}
@@ -700,8 +626,10 @@ class ControllerCatalogShiny extends Controller {
 		$product_total = $this->model_catalog_shiny->getTotalProducts($filter_data);
 
 		$product_total_count = $this->model_catalog_shiny->getProductCount();
+		$product_total_count_status_no = $this->model_catalog_shiny->getProductCountStatusNo();
 
 		$data['product_total_count_all'] = $product_total_count;
+		$data['product_total_count_status_no'] = $product_total_count_status_no;
 		$data['product_total_count'] = $product_total;
 
 		$results = $this->model_catalog_shiny->getProducts($filter_data);
@@ -714,7 +642,7 @@ class ControllerCatalogShiny extends Controller {
 		);
 
 		$data['categories'] = $this->model_catalog_category->getCategories($filter_data);
-        
+
 		foreach ($results as $result) {
 
       $category =  $this->model_catalog_shiny->getProductCategories($result['product_id']);
@@ -743,9 +671,9 @@ class ControllerCatalogShiny extends Controller {
 
 			// Изображения
 			$product_images = $this->model_catalog_shiny->getProductImages($result['product_id']);
-	
+
 			$product_images_mas = array();
-	
+
 			foreach ($product_images as $product_image) {
 				if (is_file(DIR_IMAGE . $product_image['image'])) {
 					$image1 = $product_image['image'];
@@ -754,7 +682,7 @@ class ControllerCatalogShiny extends Controller {
 					$image1 = '';
 					$thumb1 = 'no_image.png';
 				}
-	
+
 				$product_images_mas[] = array(
 					'image'      => $image1,
 					'thumb'      => $this->model_tool_image->resize($thumb1, 100, 100),
@@ -764,10 +692,13 @@ class ControllerCatalogShiny extends Controller {
 
 			$attribute_list = $this->model_catalog_shiny->getProductAttributes($result['product_id']);
 
+            $change = $this->model_catalog_shiny->getChangeProductData($result['product_id']);
+
 			$data['products'][] = array(
 				'product_id' => $result['product_id'],
 				'image'      => $image,
 				'thumb'      => $thumb,
+				'length'     => $result['length'],
 				'images'     => $product_images_mas,
 				'name'       => $result['name'],
 				'model'      => $result['model'],
@@ -784,12 +715,13 @@ class ControllerCatalogShiny extends Controller {
 				'year_av'	 => $result['length'],
 				'attributs'	 => $attribute_list,
 				'category'   => $category,
+				'change'     => $change,
 				'special'    => $special,
 				'description'=>$shiny_description_data,
-                'date_modified' => $result['date_modified'],
-                'date_added' => $result['date_added'],
+                'date_modified' => ($result['date_modified'] != "0000-00-00 00:00:00") ? date("d-m-Y", strtotime($result['date_modified'])) : $result['date_modified'],
+                'date_added' => date("d-m-Y", strtotime($result['date_added'])),
 				'quantity'   => $result['quantity'],
-				'deleted_url'=> "/admin/index.php?route=catalog/shiny/deleted&amp;product_id=".$result['product_id']."&amp;token=".$this->session->data['token']."",
+				'deleted_url'=> "/admin/index.php?route=catalog/shiny/deleted&amp;product_id=".$result['product_id']."&amp;token=".$this->session->data['token']. $url,
 				'status'     => $result['status'] ? $this->language->get('text_enabled') : $this->language->get('text_disabled'),
 				'edit'       => $this->url->link('catalog/shiny/edit', 'token=' . $this->session->data['token'] . '&product_id=' . $result['product_id'] . $url, true)
 			);
@@ -885,7 +817,7 @@ class ControllerCatalogShiny extends Controller {
 		if (isset($this->request->get['filter_upc'])) {
 			$url .= '&filter_upc=' . urlencode(html_entity_decode($this->request->get['filter_upc'], ENT_QUOTES, 'UTF-8'));
 		}
-		
+
 		if ($order == 'ASC') {
 			$url .= '&order=DESC';
 		} else {
@@ -972,7 +904,7 @@ class ControllerCatalogShiny extends Controller {
 		$data['version'] = $version;
 		$data['upc'] = $filter_upc;
 		$data['status_filter'] = $status_filter;
-		
+
 		$data['sort'] = $sort;
 		$data['order'] = $order;
 
@@ -983,8 +915,11 @@ class ControllerCatalogShiny extends Controller {
 		$this->response->setOutput($this->load->view('catalog/shiny_list', $data));
 	}
 
+    /*
+     * Метод под отображение карточки объявления шины
+     * */
 	protected function getForm() {
-		
+
 	if($this->request->post['go_list_product'] == "0"){
 		$this->request->post['model'] = '';
 		$this->request->post['image'] = '';
@@ -1232,8 +1167,8 @@ class ControllerCatalogShiny extends Controller {
 		} else {
 			$data['model'] = '';
 		}
-		
-		
+
+
 
 		if (isset($this->request->post['sku'])) {
 			$data['sku'] = $this->request->post['sku'];
@@ -1304,7 +1239,7 @@ class ControllerCatalogShiny extends Controller {
 		} else {
 			$data['main_category_dop'] = '';
 		}
-		
+
 		if (isset($this->request->post['mpn'])) {
 			$data['mpn'] = $this->request->post['mpn'];
 		} elseif (!empty($product_info)) {
@@ -1728,7 +1663,7 @@ class ControllerCatalogShiny extends Controller {
 				'date_end'          => ($product_special['date_end'] != '0000-00-00') ? $product_special['date_end'] :  ''
 			);
 		}
-		
+
 		// Image
 		if (isset($this->request->post['image'])) {
 			$data['image'] = $this->request->post['image'];
@@ -1856,11 +1791,9 @@ class ControllerCatalogShiny extends Controller {
 
 		$this->response->setOutput($this->load->view('catalog/shiny_form', $data));
 	}
-	
+
 
 	protected function validateForm() {
-		
-
 		if (!$this->user->hasPermission('modify', 'catalog/product')) {
 			$this->error['warning'] = $this->language->get('error_permission');
 		}
@@ -1875,17 +1808,35 @@ class ControllerCatalogShiny extends Controller {
 		if($this->request->post['sku'] == ""){$this->error['warning'] = "Укажите сезон!";}
 		if($this->request->post['quantity'] == "" || $this->request->post['quantity'] == 0){$this->error['warning'] = "Укажите количество!";}
 		if($this->request->post['ean'] == ""){$this->error['warning'] = "Укажите марку!";}
-		//if($this->request->post['upc'] == ""){$this->error['warning'] = "Укажите модель!";}
 		if($this->request->post['jan'] == ""){$this->error['warning'] = "Укажите ширину!";}
 		if($this->request->post['isbn'] == ""){$this->error['warning'] = "Укажите высоту!";}
 		if($this->request->post['mpn'] == ""){$this->error['warning'] = "Укажите радиус!";}
-		
+		if($this->request->post['version'] == ""){$this->error['warning'] = "Укажите тип авто!";}
+
 		// Генерируем ex_id, если не прилетел
 		$this->load->model('catalog/product');
+        $this->load->model('catalog/shiny');
+
 		if($this->request->post['model'] == ""){
-			$chekMaxModel = $this->model_catalog_shiny->chekMaxModel();
-			$chekMaxModel['MAX(product_id)'] = $chekMaxModel['MAX(product_id)'] + 2;
-			$this->request->post['model'] = $chekMaxModel['MAX(product_id)'];
+            /* Тут проблема генерации новых моделей */
+			/*$chekMaxModelProduct = $this->model_catalog_product->chekMaxModel(); //359922
+			$chekMaxModelShiny = $this->model_catalog_shiny->chekMaxModel(); // 358528
+
+            if ($chekMaxModelProduct['MAX(product_id)'] == $chekMaxModelShiny['MAX(product_id)']) {
+                $chekMaxModelShiny['MAX(product_id)'] = $chekMaxModelShiny['MAX(product_id)'] + 2;
+                $this->request->post['model'] = $chekMaxModelShiny['MAX(product_id)'];
+            } else {
+                $chekMaxModelProduct['MAX(product_id)'] = $chekMaxModelProduct['MAX(product_id)'] + 2;
+                $this->request->post['model'] = $chekMaxModelProduct['MAX(product_id)'];
+            }*/
+            $maxModelProduct = (int)$this->model_catalog_product->chekMaxModel()['MAX(product_id)'];
+
+            $this->request->post['model'] = $maxModelProduct + 1;
+
+            while ($this->model_catalog_shiny->getModelProduct($this->request->post['model'])) {
+                $this->request->post['model']++;
+            }
+            /* Конец проблемы генерации новых моделей */
 		} else{
 			$model_product_info = $this->model_catalog_shiny->getModelProduct($this->request->post['model']);
 			if(($model_product_info['model'] == $this->request->post['model']) && ($model_product_info['product_id'] != $this->request->get['product_id'])) {
@@ -1895,7 +1846,7 @@ class ControllerCatalogShiny extends Controller {
 			if(preg_match("/[А-Яа-я]/", $this->request->post['model'])){
 				$this->error['warning'] = $this->language->get('error_model_ex_id2');
 			}
-		} 
+		}
 
 		if (utf8_strlen($this->request->post['keyword']) > 0) {
 			$this->load->model('catalog/url_alias');

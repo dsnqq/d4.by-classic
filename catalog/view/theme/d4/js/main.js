@@ -57,5 +57,5 @@ $(document).ready(function(){
             alert('Заполните поле телефон!');
         }
     });*/
-    
+    $("#list-view").trigger( "click" );
 });

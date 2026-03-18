@@ -1,0 +1,11 @@
+#filter_yeaerChangeTh .btn-group.bootstrap-select.form-control{position: relative;top: 8px;background: none;}
+#filter_yeaerChangeTh1 .btn-group.bootstrap-select.form-control{position: relative;top: 8px;background: none;}
+#filter_yeaerChangeTh button,#filter_yeaerChangeTh1 button{width:60px;}
+
+#loaderHistory{display: none;align-items: center;justify-content: center;padding: 20px;}
+#loaderHistory.active{display: flex;}
+.sku_qe_br{word-break: break-all;}
+.historyTable tr,.historyTable td{border: 1px solid black;text-align:center;}
+.historyTable1 tr,.historyTable1 td{border: 1px solid black;text-align:center;}
+.historyTable td,.historyTable1 td {width: 20%;padding: 5px;}
+.column_data {word-break: break-all;}

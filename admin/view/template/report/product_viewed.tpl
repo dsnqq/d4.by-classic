@@ -31,7 +31,9 @@
             <div style="display:flex;justify-content:space-between;align-items:center;border-bottom: 2px solid;">
               <div class="">Всего просмотренно: '.$product_total.' шт.</div>
               <div style=";font-size:18px;color:red;">Самые свежие просмотры добавляются вверх</div>
-              <div class="">Сегодня '.date('d.m.Y').'<br><a style="display: block;color: #fff;background: #000;padding: 5px 10px;border-radius: 3px;margin: 5px 0px;" href="'.$_SERVER['REQUEST_URI'].'">ОБНОВИТЬ СТАТИСТИКУ</a></div>
+              <div class="">Сегодня '.date('d.m.Y').'<br>
+                <a id="refreshStatistics" style="cursor:pointer;display: block;color: #fff;background: #000;padding: 5px 10px;border-radius: 3px;margin: 5px 0px;">ОБНОВИТЬ СТАТИСТИКУ</a>
+              </div>
             </div>
           ';
           echo '<table class="table">';
@@ -81,18 +83,22 @@
                  echo '<tr>';
                    echo '<td style="padding: 5px !important;">Дата</td>';
                    echo '<td style="padding: 5px !important;">Количество просмотров</td>';
+                   echo '<td style="padding: 5px !important;">Количество уникальных просмотров</td>';
                  echo '</tr>';
               ?>
-              <?php foreach($countAllArray as $countAllArray__item => $key){ ?>
-                <tr><td style="padding: 5px !important;"><?=$countAllArray__item?></td><td style="padding: 5px !important;"><?php echo count($key); ?> шт.</td></tr>
+              <?php foreach($countAllArray as $month => $data) { ?>
+                <tr>
+                  <td><?=$month?></td>
+                  <td><?=$data['views']?> шт.</td>
+                  <td><?=$data['unique_products']?> шт.</td>
+                </tr>
               <?php } ?>
-              <?php 
-                 echo '</table>';
-
-              ?>
+              
+              <!---<tr> <td>11.2025</td> <td>183521 шт.</td> <td>69029 шт.</td> </tr>-->
+              <?php echo '</table>';?>
           </div>
         </div>
-      </div><!---->
+      </div>
     </div>
   </div>
 </div>
@@ -117,6 +123,26 @@
   }
   </style>
   <script>
+    document.getElementById('refreshStatistics').addEventListener('click', function() {
+      this.textContent = 'Обновление...';
+
+      fetch('https://service.d4.by/api/product-statistics-clear-cache')
+              .then(response => response.json())
+              .then(data => {
+                if(data.status === 'ok') {
+                  alert('Кеш сброшен, обновите страницу для отображения новой статистики.');
+                  location.reload();
+                } else {
+                  alert('Ошибка при сбросе кеша.');
+                  this.textContent = 'ОБНОВИТЬ СТАТИСТИКУ';
+                }
+              })
+              .catch(err => {
+                console.error(err);
+                alert('Ошибка соединения с сервером.');
+                this.textContent = 'ОБНОВИТЬ СТАТИСТИКУ';
+              });
+    });
     $(document).ready(function() {
       $(".deletedButton").on("click", function () {
         return confirm("Вы действительно хотите удалить З/Ч ?");

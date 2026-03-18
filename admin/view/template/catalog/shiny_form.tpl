@@ -144,7 +144,7 @@
                 <?php /* Высота */ ?>
                 <div class="col-sm-2 padding-l-r-2">
                   <select id="main__isbn" name="isbn" class="form-control selectpicker" data-live-search="true">
-                        <option value="" <?php echo ($jan == "") ? "selected='selected'" : "" ; ?>>Высота *</option>
+                        <option value="" <?php echo (isbn == "") ? "selected='selected'" : "" ; ?>>Высота *</option>
                         <?php foreach($height_shiny as $height_shiny_item){ ?>
                           <option value="<?php echo $height_shiny_item; ?>" <?php echo ($height_shiny_item == $isbn) ? "selected='selected'" : "" ; ?>><?php echo $height_shiny_item; ?></option>
                         <?php } ?>
@@ -211,8 +211,8 @@
             </div>
 
             <?php /* Тип авто, год выпуска шин */ ?>
-            <div class="form-group">
-                <label class="col-sm-2 control-label">Тип авто, год выпуска шин</label>
+            <div class="form-group required">
+              <label class="col-sm-2 control-label"><b style="font-weight:bold;">Тип авто *</b>, год выпуска шин</label>
                 <div class="col-sm-2  padding-r-2">
                   <select id="" name="version" class="form-control selectpicker" data-live-search="true">
                         <option value="" <?php echo ($version == "") ? "selected='selected'" : "" ; ?>>Тип авто</option>
@@ -1262,7 +1262,7 @@
 
           $cat_qr = str_replace('&nbsp;&nbsp;&gt;&nbsp;&nbsp;', ' ', $cat_qr);
 
-          $qr_title = "<div>" . $marka_shiny_item . " " . $upc . " " . $width_shiny_item . "/" . $height_shiny_item . " " . $location_array_item . ", " . $quantity . " шт., " . $season__item . ", " . $location . '<div style="font-size:17px;">' .$model . '</div></div>';        
+          $qr_title = "<div>" . $ean . " " . $upc . " " . $jan . "/" . $isbn . " " . $mpn . ", " . $quantity . " шт., " . $sku . ", " . $location . '<div style="font-size:17px;">' .$model . '</div></div>';
           
           echo '<div style="display:flex;align-items:center;max-width:275px;border:1px solid #000;"><div>'.$img_sm_qr1.'</div><div style="text-align:center;font-size:12px;padding-left:10px;margin:0 auto;font-weight:bold;line-height:18px;">'.$qr_title.'</div></div>';
           

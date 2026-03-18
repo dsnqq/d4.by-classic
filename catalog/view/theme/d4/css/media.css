@@ -27,6 +27,18 @@
     min-height:600px;
 }
 @media screen and (max-width: 991px) {
+    .product-layout.product-list .product_this__flex.mt10{
+        position: static !important;
+    }
+
+    .product_this__btn{
+        margin: auto;
+    }
+
+    .product_this__time{
+        margin: 10px auto;
+    }
+
     .qwerstyu{
         display:block !important;
     }
@@ -68,7 +80,7 @@
         padding: 15px;
     }
     .burg img{
-        display:block; 
+        display:block;
     }
     .mfilter-price-inputs, .mfilter-slider-inputs {
         text-align:center;

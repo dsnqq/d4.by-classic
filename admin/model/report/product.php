@@ -52,7 +52,6 @@ class ModelReportProduct extends Model {
 	}
 
 	public function getTotalProductsViewed() {
-		//$query = $this->db->query("SELECT COUNT(*) AS total FROM " . DB_PREFIX . "product WHERE viewed > 0");
 		$query = $this->db->query("SELECT COUNT(*) AS total FROM " . DB_PREFIX . "product_stax");
 		return $query->row['total'];
 	}

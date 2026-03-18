@@ -16,32 +16,32 @@
 	$button_template = '<div class="mfilter-button mfilter-button-%s">%s</div>';
 	$button_temp = '<a href="#" class="%s">%s</a>';
 	$buttons = array( 'top' => array(), 'bottom' => array() );
-	
+
 	if( ! empty( $settings['show_reset_button'] ) ) {
 		$buttons['bottom'][] = sprintf( $button_temp, 'mfilter-button-reset', $text_reset_all );
 	}
-	
+
 	if( ! empty( $settings['show_top_reset_button'] ) ) {
 		$buttons['top'][] = sprintf( $button_temp, 'mfilter-button-reset', $text_reset_all );
 	}
 
 	if( ! empty( $settings['refresh_results'] ) && $settings['refresh_results'] == 'using_button' && ! empty( $settings['place_button'] ) ) {
 		$place_button = explode( '_', $settings['place_button'] );
-	
+
 		if( in_array( 'top', $place_button ) ) {
 			$buttons['top'][] = sprintf( $button_temp, 'btn btn-primary btn-xs', $text_button_apply );
 		}
-		
+
 		if( in_array( 'bottom', $place_button ) ) {
 			$buttons['bottom'][] = sprintf( $button_temp, 'btn btn-primary btn-xs', $text_button_apply );
 		}
 	}
-	
-	foreach( $buttons as $bKey => $bVal ) {	
+
+	foreach( $buttons as $bKey => $bVal ) {
 		$buttons[$bKey] = $bVal ? sprintf( $button_template, $bKey, implode( '', $bVal ) ) : '';
 	}
 
-	
+
 ?>
 
 <?php if( ! empty( $hide_container ) ) { ?>
@@ -49,18 +49,18 @@
 <?php } ?>
 
 <div class="box mfilter-box mfilter-box-<?php echo $_idx; ?><?php echo $theme ? ' ' . $theme : '' ?> mfilter-<?php echo $_position; ?><?php echo ! empty( $hide_container ) ? ' mfilter-hide-container' : '' ?><?php echo ! empty( $_displayOptionsAs ) && $_displayOptionsAs == 'modern_horizontal' ? ' mfilter-hide' : ''; ?> mfilter-direction-<?php echo $direction; ?>" id="mfilter-box-<?php echo $_idx; ?>">
-	
+
 	<div class="box-content mfilter-content<?php echo empty( $settings['calculate_number_of_products'] ) || empty( $settings['show_number_of_products'] ) ? ' mfilter-hide-counter' : ''; ?>">
 	<?php if( $heading_title ) { ?>
 		<p class="box-heading"><?php echo $heading_title; ?></p>
-	<?php } ?>	
+	<?php } ?>
 	<?php echo $buttons['top']; ?>
 		<ul>
-			<?php 
+			<?php
 				foreach( $filters as $key_group => $gfilter ) {
 					$gfilters = array();
 					$gkey = '';
-					
+
 					if( $gfilter['type'] == 'attribute_group' ) {
 						$gkey = $gfilter['group_key'];
 						$gfilters = & $gfilter['attributes'];
@@ -93,12 +93,12 @@
 						<?php if( isset( $filter['auto_levels'] ) ) { ?>
 							data-auto-levels="<?php echo $filter['auto_levels']; ?>"
 						<?php } ?>
-						data-display-live-filter="<?php 
+						data-display-live-filter="<?php
 							$display_live_filter = ! empty( $settings['display_live_filter']['enabled'] ) ? '1' : '-1';
 
 							if( ! empty( $filter['display_live_filter'] ) ) {
 								$display_live_filter = $filter['display_live_filter'];
-							} 
+							}
 
 							if( $display_live_filter == '1' && ! empty( $settings['display_live_filter']['items'] ) ) {
 								echo $settings['display_live_filter']['items'];
@@ -114,7 +114,7 @@
 						>
 
 						<?php if( $filter['collapsed'] != 'hide_header' && ! empty( $filter['name'] ) && empty( $filter['hide_header'] ) ) { ?>
-							<div class="mfilter-heading<?php 
+							<div class="mfilter-heading<?php
 
 								if( $filter['collapsed'] ) {
 									if( $filter['collapsed'] == '1' || ( $is_mobile && $filter['collapsed'] == 'mobile' ) || ( ! $is_mobile && $filter['collapsed'] == 'pc' ) ) {
@@ -138,7 +138,7 @@
 							</div>
 						<?php } ?>
 
-						<div class="mfilter-content-opts"<?php 
+						<div class="mfilter-content-opts"<?php
 
 								if( ( $filter['collapsed'] == '1' || ( $is_mobile && $filter['collapsed'] == 'mobile' ) || ( ! $is_mobile && $filter['collapsed'] == 'pc' ) ) && $filter['collapsed'] != 'hide_header' && $_position != 'content_top' ) {
 									if( empty( $params[$filter['seo_name']] ) ) {
@@ -159,7 +159,7 @@
 														<?php foreach( $filter['levels'] as $level_id => $level ) { ?>
 															<?php $value = empty( $values[$level_id] ) ? '' : $values[$level_id]; ?>
 															<li style="position:relative;">
-																<span class="selection__clear<?php echo $z; ?>">×</span> 
+																<span class="selection__clear<?php echo $z; ?>">×</span>
 																<select id="same_<?php echo $z; ?>" class="form-control same_pick" data-live-search="true" data-type="category-<?php echo $filter['type']; ?>">
 																	<option value=""><?php echo $level['name']; ?></option>
 																	<?php foreach( $level['options'] as $optKey => $optVal ) { ?>
@@ -245,6 +245,7 @@
 											</div>
 										<?php } else if( $filter['type'] == 'price' ) { ?>
 											<div class="mfilter-option mfilter-price">
+												<p class="box-heading">Цена, $</p>
 												<div class="mfilter-price-inputs">
 													<?php //echo $getSymbolLeft; ?>
 													<input
@@ -278,7 +279,6 @@
 													<option></option>
 												</select>
 											</div>
-											<div class="xxeww">Больше параметров поиска <span class="bs-caret" style="position: relative;margin-left:8px;"><span class="caret"></span></span></div>
 											<div class="mfilter-option mfilter-slider" style="position:absolute;left:-99999999px;opacity:0;">
 												<div class="mfilter-slider-inputs">
 													<input
@@ -298,7 +298,7 @@
 												<div class="mfilter-slider-container">
 													<div class="mfilter-slider-slider"></div>
 												</div>
-												<div class="mfilter-slider-data" style="display: none;"><?php 
+												<div class="mfilter-slider-data" style="display: none;"><?php
 													$mfilter_slider_data = array();
 
 													$sort_order = 0;
@@ -307,7 +307,7 @@
 														$mfilter_slider_data[$key] = $tmp;
 													}
 
-													echo base64_encode(json_encode( $mfilter_slider_data )); 
+													echo base64_encode(json_encode( $mfilter_slider_data ));
 												?></div>
 											</div>
 										<?php } else if( $filter['type'] == 'text' ) { ?>
@@ -351,16 +351,37 @@
 												}
 
 											?>
-											<div class="mfilter-options-container">
+											<?php // Производители ?>
+
+											<div class="mfilter-tb">
+												<div class="mfilter-option mfilter-select" style="position:relative;">
+													<span class="selection__clear3">×</span>
+													<select class="form-control same_pick manufacture-pick" data-live-search="true">
+														<option value=""><?php echo $filter['name']; ?><?php //echo $text_select; ?></option>
+														<?php foreach( $filter['options'] as $option_id => $option ) { ?>
+														<option
+																id="mfilter-opts-select-<?php echo $_idx; ?>-<?php echo $base_id; ?>-<?php echo $option['key']; ?>"
+																value="<?php echo str_replace( '"', '&quot;', $option['value'] ); ?>"
+														data-name="<?php echo $option['name']; ?>"
+														data-key="<?php echo $option['key']; ?>"
+														<?php echo ! empty( $params[$filter['seo_name']] ) && in_array( $option['value'], $params[$filter['seo_name']] ) ? ' selected="selected"' : ''; ?>
+														><?php echo $option['name']; ?></option>
+														<?php } ?>
+													</select>
+												</div>
+											</div>
+											<div class="mfilter-options-container mfilter-manufacturer-list">
 												<div class="mfilter-tb">
 												<?php $options_tmp = array(); ?>
 												<?php foreach( $filter['options'] as $option_id => $option ) { if( $option['name'] === '' || isset( $options_tmp[$option['key']] ) ) continue; $options_tmp[$option['key']] = true; ?>
 													<?php echo $_position == 'content_top' ? '<div class="mfilter-tb">' : ''; ?>
 													<div class="mfilter-option mfilter-tb-as-tr">
+
 														<div class="mfilter-tb-as-td mfilter-col-input">
-															<input 
-																id="mfilter-opts-attribs-<?php echo $_idx; ?>-<?php echo $base_id; ?>-<?php echo $option['key']; ?>" 
+															<input
+																id="mfilter-opts-attribs-<?php echo $_idx; ?>-<?php echo $base_id; ?>-<?php echo $option['key']; ?>"
 																name="<?php echo $filter['seo_name']; ?>"
+																data-keys="<?php echo $option['key']; ?>"
 																type="<?php echo $_tmp_type == 'image_list_checkbox' ? 'checkbox' : ( $_tmp_type == 'image_list_radio' ? 'radio' : $_tmp_type ); ?>"
 																<?php echo ! empty( $params[$filter['seo_name']] ) && ( in_array( $option['value'], $params[$filter['seo_name']] ) || in_array( $option['key'], $params[$filter['seo_name']] ) ) ? ' checked="checked"' : ''; ?>
 																value="<?php echo str_replace( '"', '&quot;', $option['value'] ); ?>" />
@@ -386,6 +407,7 @@
 												<?php } ?>
 												</div>
 											</div>
+
 										<?php } else if( $filter['type'] == 'vehicles' ) { ?>
 											<div class="mfilter-tb">
 												<div class="mfilter-option mfilter-select mfilter-vehicles">
@@ -397,7 +419,7 @@
 																<option value=""><?php echo $text_select; ?></option>
 															<?php } ?>
 															<?php foreach( $v as $option_id => $option ) { ?>
-																<option 
+																<option
 																	id="mfilter-opts-select-<?php echo $_idx; ?>-<?php echo $base_id; ?>-<?php echo $option['key']; ?>"
 																	value="<?php echo str_replace( '"', '&quot;', $option['value'] ); ?>"
 																	data-name="<?php echo $option['name']; ?>"
@@ -423,7 +445,7 @@
 																<option value=""><?php echo $text_select; ?></option>
 															<?php } ?>
 															<?php foreach( $v as $option_id => $option ) { ?>
-																<option 
+																<option
 																	id="mfilter-opts-select-<?php echo $_idx; ?>-<?php echo $base_id; ?>-<?php echo $option['key']; ?>"
 																	value="<?php echo str_replace( '"', '&quot;', $option['value'] ); ?>"
 																	data-name="<?php echo $option['name']; ?>"
@@ -441,11 +463,11 @@
 										<?php } else if( $filter['type'] == 'select' ) { ?>
 											<div class="mfilter-tb">
 												<div class="mfilter-option mfilter-select" style="position:relative;">
-													<span class="selection__clear3">×</span> 
+													<span class="selection__clear3">×</span>
 													<select class="form-control same_pick" data-live-search="true">
 														<option value=""><?php echo $filter['name']; ?><?php //echo $text_select; ?></option>
 														<?php foreach( $filter['options'] as $option_id => $option ) { ?>
-															<option 
+															<option
 																id="mfilter-opts-select-<?php echo $_idx; ?>-<?php echo $base_id; ?>-<?php echo $option['key']; ?>"
 																value="<?php echo str_replace( '"', '&quot;', $option['value'] ); ?>"
 																data-name="<?php echo $option['name']; ?>"
@@ -461,9 +483,9 @@
 													<?php foreach( $filter['options'] as $option_id => $option ) { ?>
 														<li class="mfilter-option mfilter-image">
 															<input
-																id="mfilter-opts-attribs-<?php echo $_idx; ?>-<?php echo $base_id; ?>-<?php echo $option['key']; ?>" 
+																id="mfilter-opts-attribs-<?php echo $_idx; ?>-<?php echo $base_id; ?>-<?php echo $option['key']; ?>"
 																name="<?php echo $filter['seo_name']; ?>"
-																type="<?php echo $filter['type'] == 'image' ? 'checkbox' : 'radio'; ?>" 
+																type="<?php echo $filter['type'] == 'image' ? 'checkbox' : 'radio'; ?>"
 																style="display:none"
 																<?php echo ! empty( $params[$filter['seo_name']] ) && ( in_array( $option['value'], $params[$filter['seo_name']] ) || in_array( $option['key'], $params[$filter['seo_name']] ) ) ? ' checked="checked"' : ''; ?>
 																value="<?php echo str_replace( '"', '&quot;', $option['value'] ); ?>" />
@@ -477,7 +499,7 @@
 										<?php } ?>
 									</div>
 								</div>
-
+								
 								<div class="mfilter-clearfix"></div>
 							</div>
 
@@ -487,6 +509,7 @@
 				<?php } ?>
 			<?php } ?>
 		</ul>
+		<div class="xxeww"><p class="box-heading">Больше параметров</p> <span class="bs-caret" style="position: relative;margin-left:8px;"><span class="caret"></span></span></div>
 		<?php echo $buttons['bottom']; ?>
 	</div>
 </div>
@@ -505,9 +528,9 @@ $('body').on('click', '.link_modification', function(){
 	text = text.substring(1);
 	var year = text.split('-');
 
-	$("#year_min :contains('"+year[0]+"')").prop('selected', 'true'); 
-	$("#year_max :contains('"+year[1]+"')").prop('selected', 'true'); 
-	
+	$("#year_min :contains('"+year[0]+"')").prop('selected', 'true');
+	$("#year_max :contains('"+year[1]+"')").prop('selected', 'true');
+
 	// фиксим проблему со скрытым блоком
 	$('.mfilter-opts-slider-min').attr('data-key', $("#year_min").val());
 	$('.mfilter-opts-slider-max').attr('data-key', $("#year_max").val());
@@ -522,7 +545,7 @@ $('#same_1').change(function () {
 	// здесь отслеживаем выбор модели
 	var selectedItem = $('#same_1').val();//здесь получаем ID категории для вытягивания фильтров
 	//getCategoryFilters - Функция на получение фильтров категории /catalog/model/catalog/category.php
-	
+
 	$.ajax({
 		url: '/modification.php',
 		data: {
@@ -543,20 +566,20 @@ $('#same_1').change(function () {
 
 
 /* city in filter */
-<?php 
+<?php
     $hostname = "localhost"; // название/путь сервера, с MySQL
     $username = "dby_user"; // имя пользователя (в Denwer`е по умолчанию "root")
     $password = "LhePBA4v6Lc8k6"; // пароль пользователя (в Denwer`е по умолчанию пароль отсутствует, этот параметр можно оставить пустым)
 	$dbName = "dby_bd"; // название базы данных
-	
-    $link = mysqli_connect($hostname, $username, $password, $dbName) 
+
+    $link = mysqli_connect($hostname, $username, $password, $dbName)
 	or die("Ошибка " . mysqli_error($link));
 	$query = "SELECT MAX(length) FROM oc_product";
-	$result = mysqli_query($link, $query) or die("Ошибка " . mysqli_error($link)); 
+	$result = mysqli_query($link, $query) or die("Ошибка " . mysqli_error($link));
 	$filter_group = mysqli_fetch_array($result);
 
 	$query1 = "SELECT MIN(length) FROM oc_product";
-	$result1 = mysqli_query($link, $query1) or die("Ошибка " . mysqli_error($link)); 
+	$result1 = mysqli_query($link, $query1) or die("Ошибка " . mysqli_error($link));
 	$filter_group1 = mysqli_fetch_array($result1);
 
 ?>
@@ -575,7 +598,7 @@ $(document).ready(function(){
 				$('#year_min').append("<option value="+ difference +">" + min_number + "</option>");
 				difference++;
 			}
-			
+
 			difference--;
             //var min_number = parseInt($('.mfilter-opts-slider-min').val().slice(0,-3));
             //var max_number = parseInt($('.mfilter-opts-slider-max').val().slice(0,-3));
@@ -588,13 +611,13 @@ $(document).ready(function(){
                 $('#year_max').append("<option value="+ difference +">" + max_number + "</option>");
 				difference--;
 			}
-			
+
 			// после загрузки выбираем то что у нас в фильтре по факту
 			var min_this = parseInt($('.mfilter-opts-slider-min').val().slice(0,-3));
 			var max_this = parseInt($('.mfilter-opts-slider-max').val().slice(0,-3));
 
-			$("#year_min :contains('"+min_this+"')").prop('selected', 'true'); 
-			$("#year_max :contains('"+max_this+"')").prop('selected', 'true'); 
+			$("#year_min :contains('"+min_this+"')").prop('selected', 'true');
+			$("#year_max :contains('"+max_this+"')").prop('selected', 'true');
 
 			//крестик тут будет при загрузке с данными страницами
 			if($('#same_0').val()){
@@ -608,7 +631,7 @@ $(document).ready(function(){
 					$(this).parent().prev().css('visibility', 'unset');
 				}
 			});
-            
+
 		}
 
 		//крестик тут будет
@@ -653,60 +676,85 @@ $(document).ready(function(){
 /* city in filter end */
 </script>
 
+<style>
+	body .scroll-wrapper {
+		overflow: unset !important;
+	}
+	body .scroll-wrapper > .scroll-content{
+		overflow: unset !important;
+	}
+	body .mfilter-live-filter{
+		display: none !important;
+	}
+	body .mfilter-manufacturer-list{
+		position: absolute;
+		left: -99999px;
+		height: 1px;
+		overflow: hidden;
+	}
+</style>
+<script src="/catalog/view/javascript/manufacturer-list-filter.js"></script>
+
 <script type="text/javascript">
 	MegaFilterLang.text_display = '<?php echo $text_display; ?>';
 	MegaFilterLang.text_list	= '<?php echo $text_list; ?>';
 	MegaFilterLang.text_grid	= '<?php echo $text_grid; ?>';
 	MegaFilterLang.text_select	= '<?php echo $text_select; ?>';
-	
+
 	if( typeof MegaFilterOverrideFn == 'undefined' ) {
 		var MegaFilterOverrideFn = {};
 	}
-	
+
 	if( typeof MegaFilterCommonData == 'undefined' ) {
 		var MegaFilterCommonData = {};
 	}
-	
+
 	MegaFilterCommonData.seo = {
 		'currentUrl' : '<?php echo addslashes( $current_url ); ?>',
 		'aliases' : <?php echo json_encode( $aliases ); ?>
 	};
-	
+
 	if( typeof MegaFilterOverrideFn['<?php echo $_idx; ?>'] == 'undefined' ) {
 		MegaFilterOverrideFn['<?php echo $_idx; ?>'] = {};
 	}
-	
+
 	<?php if( ! empty( $settings['javascript'] ) ) { ?>
 		<?php echo htmlspecialchars_decode( $settings['javascript'] ); ?>
 	<?php } ?>
-	
-	jQuery().ready(function(){			
+
+	jQuery().ready(function(){
+		jQuery('#mfilter-opts-text-2-sku').on('input change', function(){
+			var val = jQuery(this).val();
+			var reg = /[а-яА-ЯёЁ]/g;
+			jQuery(this).val(val.replace(reg, ''));
+		});
+
 		jQuery('#mfilter-box-<?php echo $_idx; ?>').each(function(){
 			var _t = jQuery(this).addClass('init'),
 				_p = { };
-			
+
 			for( var i = 0; i < MegaFilterINSTANCES.length; i++ ) {
 				if( _t.attr('id') == MegaFilterINSTANCES[i]._box.attr('id') ) {
 					return;
 				}
 			}
-			
+
 			<?php foreach( $requestGet as $k => $v ) { ?>
 				_p['<?php echo $k; ?>'] = '<?php echo addslashes( $v ); ?>';
 			<?php } ?>
-			
+
 			var mfpModule = new MegaFilter();
-			
+
 			if( typeof MegaFilterOverrideFn['<?php echo $_idx; ?>'] != 'undefined' ) {
 				for( var i in MegaFilterOverrideFn['<?php echo $_idx; ?>'] ) {
 					mfpModule[i] = MegaFilterOverrideFn['<?php echo $_idx; ?>'][i];
 				}
 			}
-			
+
 			MegaFilterINSTANCES.push(mfpModule.init( _t, {
 				'idx'					: '<?php echo $_idx; ?>',
 				'route'					: '<?php echo $_route; ?>',
-				'routeProduct'			: '<?php echo $_routeProduct; ?>', 
+				'routeProduct'			: '<?php echo $_routeProduct; ?>',
 				'routeHome'				: '<?php echo $_routeHome; ?>',
 				'routeCategory'			: '<?php echo $_routeCategory; ?>',
 				'routeInformation'		: '<?php echo $_routeInformation; ?>',

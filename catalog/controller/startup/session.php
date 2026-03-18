@@ -8,7 +8,9 @@ class ControllerStartupSession extends Controller {
 		
 			if ($query->num_rows) {
 				$this->session->start('api', $query->row['session_id']);
-				
+
+                $this->session->data["api_id"] = $query->row["api_id"];
+                
 				// keep the session alive
 				$this->db->query("UPDATE `" . DB_PREFIX . "api_session` SET date_modified = NOW() WHERE api_session_id = '" . (int)$query->row['api_session_id'] . "'");
 			}

@@ -1,0 +1,165 @@
+<?php
+require_once('/home/dby/sites/d4.by/config.php');
+
+// === Утилита: подключение к БД ===
+function db_connect() {
+    $link = mysqli_connect(DB_HOSTNAME, DB_USERNAME, DB_PASSWORD, DB_DATABASE);
+    if (!$link) {
+        die("Ошибка подключения: " . mysqli_connect_error());
+    }
+    return $link;
+}
+
+// === Утилита: выполнение запроса и проверка результата ===
+function db_query($link, $sql) {
+    $res = mysqli_query($link, $sql);
+    if ($res === false) {
+        die("Ошибка запроса [" . mysqli_error($link) . "]: " . $sql);
+    }
+    return $res;
+}
+
+// === Получение списка всех активных товаров ===
+function fetch_all_products($link) {
+    $sql = "SELECT p.*, pd.description
+            FROM oc_product p
+            LEFT JOIN oc_product_description pd
+              ON p.product_id = pd.product_id AND pd.language_id = 1
+            WHERE p.status != '0'";
+    return db_query($link, $sql);
+}
+
+// === Получение доп. изображений товара ===
+function get_product_images($link, $product_id) {
+    $images = [];
+    $sql = "SELECT image FROM oc_product_image WHERE product_id = $product_id ORDER BY sort_order ASC";
+    $res = db_query($link, $sql);
+    while ($row = mysqli_fetch_assoc($res)) {
+        if (!empty($row['image'])) {
+            $images[] = HTTPS_SERVER . 'image/' . $row['image'];
+        }
+    }
+    return implode(',', $images);
+}
+
+// === Получение телефонов, склада и города из атрибутов ===
+function get_contact_attributes($link, $product_id) {
+    $tel = $sklad = $city = '';
+    $sql = "SELECT attribute_id, text FROM oc_product_attribute WHERE product_id = $product_id";
+    $res = db_query($link, $sql);
+    while ($row = mysqli_fetch_assoc($res)) {
+        switch ($row['attribute_id']) {
+            case 13: $tel   = $row['text']; break;
+            case 12: $sklad = $row['text']; break;
+            case 17: $city  = $row['text']; break;
+        }
+    }
+    return [$tel, $sklad, $city];
+}
+
+// === Получение скидки в процентах ===
+function get_special_discount($link, $product_id, $original_price) {
+    $sql = "SELECT price FROM oc_product_special WHERE product_id = $product_id LIMIT 1";
+    $res = db_query($link, $sql);
+    $row = mysqli_fetch_assoc($res);
+    if (!empty($row['price']) && floatval($original_price) > 0) {
+        // вычисляем процент скидки от оригинальной цены
+        $special_price = floatval($row['price']);
+        $discount_percent = (int) (100 - ($special_price * 100 / floatval($original_price)));
+        return $discount_percent;
+    }
+    return '';
+}
+
+// === Функция генерации CSV ===
+function kama_create_csv_file($data, $filepath, $col_delim = ';', $row_delim = "\r\n") {
+    if (!is_array($data) || empty($data)) {
+        return false;
+    }
+    $dir = dirname($filepath);
+    if (!is_dir($dir)) {
+        mkdir($dir, 0777, true);
+    }
+    $fp = fopen($filepath, 'w');
+    if (!$fp) {
+        die("Не удалось открыть файл для записи: $filepath");
+    }
+    foreach ($data as $row) {
+        $out = [];
+        foreach ($row as $cell) {
+            $v = (string) $cell;
+            if (preg_match('/[";,\r\n]/', $v)) {
+                $v = str_replace(["\r\n","\n","\r"], ['\n','\r',''], $v);
+                $v = str_replace('"', '""', $v);
+            }
+            $out[] = '"' . $v . '"';
+        }
+        fwrite($fp, implode($col_delim, $out) . $row_delim);
+    }
+    fclose($fp);
+    return true;
+}
+
+// === Основная функция экспорта ===
+function export_all_products_to_csv() {
+    $link = db_connect();
+    $result = fetch_all_products($link);
+
+    // Заголовки CSV
+    $headers = [
+        'ID_EXT','МАРКА','МОДЕЛЬ','ГОД','ЗАПЧАСТЬ','ВЕРСИЯ','ТОПЛИВО','ОБЪЕМ',
+        'ТИП ДВИГАТЕЛЯ','КОРОБКА','ТИП КУЗОВА','R ДИАМЕТР','J ШИРИНА',
+        'КОЛ ОТВЕРСТИЙ','ET ВЫЛЕТ','DIA','PCD','НОМЕР','ОПИСАНИЕ',
+        'НОВАЯ','ПОД ЗАКАЗ','СКЛАДСКАЯ ИНФОРМАЦИЯ','ЦЕНА','ВАЛЮТА','СКИДКА',
+        'АДРЕС','ТЕЛЕФОНЫ','EMAIL','ИМЯ','ФОТО'
+    ];
+    $data = [$headers];
+
+    while ($p = mysqli_fetch_assoc($result)) {
+        list($tel, $sklad, $city) = get_contact_attributes($link, $p['product_id']);
+        $images     = get_product_images($link, $p['product_id']);
+        $discount   = get_special_discount($link, $p['product_id'], $p['price']);
+        $description = strip_tags(str_replace("\n", ' ', $p['description'] ?? ''));
+
+        $row = [
+            $p['model'],
+            $p['manufacturer_id'],
+            '',
+            $p['length'],
+            $p['version'],
+            '',
+            '',
+            '',
+            '',
+            '',
+            $p['location'],
+            $p['width'],
+            $p['height'],
+            $p['etvylet'],
+            $p['diadiametr'],
+            $p['weight'],
+            $p['sku'],
+            $description,
+            0, 0,
+            $sklad,
+            $p['price'],
+            'USD',
+            $discount,
+            $city,
+            $tel,
+            '',
+            '',
+            $images
+        ];
+        $data[] = $row;
+    }
+
+    $file = '/home/dby/sites/d4.by/export/csv_export_all.csv';
+    if (kama_create_csv_file($data, $file)) {
+        echo "CSV экспорт завершён: $file\n";
+    }
+    mysqli_close($link);
+}
+
+// Запуск экспорта
+export_all_products_to_csv();

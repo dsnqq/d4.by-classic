@@ -46,6 +46,11 @@ class ModelCatalogAqeProduct extends Model {
 			$sql .= " LEFT JOIN " . DB_PREFIX . "product_special ps ON (ps.product_id = p.product_id)";
 		}
 
+        // объеденяем с таблицей истории
+        if (isset($data['filter_status']) && $data['filter_status'] == 0) {
+            $sql .= " LEFT JOIN " . DB_PREFIX . "product_change c ON (c.product_id = p.product_id)";
+        }
+
 		if (in_array("manufacturer", $columns)) {
 			$sql .= " LEFT JOIN " . DB_PREFIX . "manufacturer m ON (m.manufacturer_id = p.manufacturer_id)";
 		}
@@ -102,11 +107,21 @@ class ModelCatalogAqeProduct extends Model {
 			}
 		}
 
-		$date_filters = array(
-			'date_added'        => 'p.date_added',
-			'date_available'    => 'p.date_available',
-			'date_modified'     => 'p.date_modified',
-		);
+        // фикс для сортировки по неактивным з/ч
+        if (isset($data['filter_status']) && $data['filter_status'] == 0) {
+            $date_filters = array(
+                'date_added'        => 'p.date_added',
+                'date_available'    => 'p.date_available',
+                'date_modified'     => 'p.date_modified',
+                'data_change'       => 'с.data_change',
+            );
+        } else {
+            $date_filters = array(
+                'date_added'        => 'p.date_added',
+                'date_available'    => 'p.date_available',
+                'date_modified'     => 'p.date_modified',
+            );
+        }
 
 		foreach ($date_filters as $key => $value) {
 			if (isset($data["filter_$key"]) && !is_null($data["filter_$key"])) {
@@ -251,46 +266,108 @@ class ModelCatalogAqeProduct extends Model {
 			}
 		}
 
+        /*if (!empty($data['filter_category'])) {
+            $implode_data = array();
+
+            if ($data['filter_category'] == '*')
+                $implode_data[] = "p2c.category_id IS NULL";
+            else
+                $implode_data[] = "p2c.category_id = '" . (int)$data['filter_category'] . "'";
+
+            $categories = $this->getSubCategories($data['filter_category']);
+
+            foreach ($categories as $category) {
+                if ($data['filter_category'] != '*')
+                    $implode_data[] = "p2c.category_id = '" . (int)$category['category_id'] . "'";
+            }
+
+            $where[] = "(" . implode(' OR ', $implode_data) . ")";
+        }*/
+
+        if (isset($data['filter_status']) && $data['filter_status'] == 0) {
+            $where[] = " c.value_name = 'Статус' AND c.value_new = 0";
+        }
+
+
 		if ($where) {
 			$sql .= " WHERE " . implode($where, " AND ");
 		}
 
 		$sql .= " GROUP BY p.product_id";
 
-		$sort_data = array(
-			'p.product_id',
-			'tc.title',
-			'p.minimum',
-			'p.subtract',
-			'ss.name',
-			'p.shipping',
-			'p.date_added',
-			'p.date_available',
-			'p.date_modified',
-			'lc.title',
-			'wc.title',
-			'p.points',
-			'p.length',
-			'p.width',
-			'p.height',
-			'p.weight',
-			'p.sku',
-			'p.upc',
-			'p.ean',
-			'p.jan',
-			'p.isbn',
-			'p.mpn',
-			'p.location',
-			'm.name',
-			'seo',
-			'pd.name',
-			'p.model',
-			'p.price',
-			'p.quantity',
-			'p.status',
-			'p.sort_order',
-			'p.viewed'
-		);
+        if (isset($data['filter_status']) && $data['filter_status'] == 0) {
+            $sort_data = array(
+                'p.product_id',
+                'tc.title',
+                'p.minimum',
+                'p.subtract',
+                'ss.name',
+                'p.shipping',
+                'p.date_added',
+                'p.date_available',
+                'p.date_modified',
+                'c.data_change',
+                'lc.title',
+                'wc.title',
+                'p.points',
+                'p.length',
+                'p.width',
+                'p.height',
+                'p.weight',
+                'p.sku',
+                'p.upc',
+                'p.ean',
+                'p.jan',
+                'p.isbn',
+                'p.mpn',
+                'p.location',
+                'm.name',
+                'seo',
+                'pd.name',
+                'p.model',
+                'p.price',
+                'p.quantity',
+                'p.status',
+                'p.sort_order',
+                'p.viewed'
+            );
+        } else {
+            $sort_data = array(
+                'p.product_id',
+                'tc.title',
+                'p.minimum',
+                'p.subtract',
+                'ss.name',
+                'p.shipping',
+                'p.date_added',
+                'p.date_available',
+                'p.date_modified',
+                'lc.title',
+                'wc.title',
+                'p.points',
+                'p.length',
+                'p.width',
+                'p.height',
+                'p.weight',
+                'p.sku',
+                'p.upc',
+                'p.ean',
+                'p.jan',
+                'p.isbn',
+                'p.mpn',
+                'p.location',
+                'm.name',
+                'seo',
+                'pd.name',
+                'p.model',
+                'p.price',
+                'p.quantity',
+                'p.status',
+                'p.sort_order',
+                'p.viewed'
+            );
+        }
+
 
 		if (isset($data['sort']) && in_array($data['sort'], $sort_data)) {
 			$sql .= " ORDER BY " . $data['sort'];

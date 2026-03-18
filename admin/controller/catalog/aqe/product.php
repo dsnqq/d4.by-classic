@@ -26,7 +26,6 @@ class ControllerCatalogAqeProduct extends Controller {
 
 	public function index() {
 		$this->document->setTitle($this->language->get('heading_title'));
-
 		$this->getList();
 	}
 
@@ -221,6 +220,8 @@ class ControllerCatalogAqeProduct extends Controller {
 		$data['aqe_alternate_row_colour'] = $this->config->get('aqe_alternate_row_colour');
 		$data['aqe_list_view_image_width'] = $this->config->get('aqe_list_view_image_width');
 		$data['aqe_list_view_image_height'] = $this->config->get('aqe_list_view_image_height');
+        $user_id = $this->session->data['user_id'];
+        $data['user_id_com'] = $user_id;
 
 		$this->document->addScript('view/javascript/aqe/catalog.min.js');
 
@@ -238,11 +239,15 @@ class ControllerCatalogAqeProduct extends Controller {
 		$filters['sub_category'] = (isset($this->request->get['filter_sub_category'])) ? $this->request->get['filter_sub_category'] : $this->config->get('aqe_catalog_products_filter_sub_category');
 		$filters['special_price'] = (isset($this->request->get['filter_special_price'])) ? $this->request->get['filter_special_price'] : '';
 
-		if (isset($this->request->get['sort'])) {
+		if (isset($this->request->get['sort']) && $this->request->get['sort'] != "c.data_change") {
 			$sort = $this->request->get['sort'];
 		} else {
 			$sort = 'p.date_added';
 		}
+
+        if(isset($this->request->get['filter_status']) && $this->request->get['filter_status'] == 0) {
+            $sort = 'c.data_change';
+        }
 
 		if (isset($this->request->get['order'])) {
 			$order = $this->request->get['order'];
@@ -516,13 +521,16 @@ class ControllerCatalogAqeProduct extends Controller {
 
 
 			$product_images = $this->model_catalog_product->getProductImages($result['product_id']);
-			$product_stax_view = $this->model_catalog_product->getProductCountStaxView($result['product_id']);
 			
+			$product_stax_view = $this->model_catalog_product->getProductViews($result['product_id']);
+
 			if (!is_array($columns)) {
 				$row['name'] = $result['name'];
 				$row['model'] = $result['model'];
 				$row['price'] = $result['price'];
-				$row['viewers'] = $product_stax_view;
+                $row['data_change'] = $result['data_change'];
+				$row['viewers'] = $product_stax_view['view_count'];
+				$row['view_date_list'] = explode(',', $product_stax_view['view_date_list']);
 				$row['price_BYN'] = round($this->currency->convert($result['price'], "USD", 'BYN'), '0')."р.";
 				$row['price_RUB'] = round($this->currency->convert($result['price'], "USD", 'RUB'), '0')."₽";
 				$row['special'] = $special;
@@ -530,7 +538,7 @@ class ControllerCatalogAqeProduct extends Controller {
 				$row['description'] = $result['description'];
 				$row['images'] = $product_images;
 				$row['status'] = ($result['status'] ? $this->language->get('text_enabled') : $this->language->get('text_disabled'));
-				
+
 				$row['quantity'] = $result['quantity'];
 			} else {
 				foreach ($columns as $column => $attr) {
@@ -543,7 +551,26 @@ class ControllerCatalogAqeProduct extends Controller {
 						$row[$column] = $result['image'];
 						$row['thumb'] = $image;
 						$row['thumb_mini'] = $this->model_tool_image->resize($image,170, 170);
-						$row['images'] = $product_images;
+
+
+                        $row['images'] = array();
+
+                        foreach ($product_images as $product_image) {
+                            if (is_file(DIR_IMAGE . $product_image['image'])) {
+                                $image = $product_image['image'];
+                                $thumb = $product_image['image'];
+                            } else {
+                                $image = '';
+                                $thumb = 'no_image.png';
+                            }
+                            $row['images'][] = array(
+                                //'image'      => $this->model_tool_image->resize($product_image['image'], 1200, 1200),//$image,
+                                'image'      => $product_image['image'],//$image,
+                                'thumb'      => $this->model_tool_image->resize($thumb, 100, 100),
+                                'sort_order' => $product_image['sort_order']
+                            );
+                        }
+
 						$row['name'] = $result['name'];
 					} else if ($column == 'category') {
 						$this->load->model('catalog/category');
@@ -564,7 +591,7 @@ class ControllerCatalogAqeProduct extends Controller {
 						}else{
 							$row['location'] = $result['location'];
 						}
-						
+
 						$row['width'] = $result['width'];
 						$row['ean'] = $result['ean'];
 						$row['height'] = $result['height'];
@@ -602,7 +629,7 @@ class ControllerCatalogAqeProduct extends Controller {
 						}
 						$row[$column] = implode("<br />", $product_downloads);
 					} else if ($column == 'status') {
-						
+
 						if ((int)$result['status'] || !$this->config->get('aqe_highlight_status')) {
 							$row[$column] = ((int)$result['status'] ? $this->language->get('text_enabled') : $this->language->get('text_disabled'));
 						} else {
@@ -638,20 +665,28 @@ class ControllerCatalogAqeProduct extends Controller {
 					} else if (in_array($column, array('weight', 'width', 'height'))) {
 						$row[$column] = sprintf("%.4f",round((float)$result[$column]));
 					} else if ($column == 'date_added' || $column == 'date_modified') {
+                        $this->load->model('catalog/product');
 						$date = new DateTime($result[$column]);
-						$row[$column] = $date->format("Y-m-d H:i:s");
-						$row['date_mod'] = $result['date_modified'];
+						$row[$column] = $date->format("d-m-Y H:i:s");
+
+                        /*$change = $this->model_catalog_product->getChangeProductData($result['product_id']); // ОТКЛЮЧАЕМ ФУНКЦИОНАЛ
+
+                        $change = $change[count($change)-1]['data_change'];
+
+                        $row['change'] = 123;*/
+                        //$date2 = new DateTime($result['date_modified']);
+						//$row['date_mod'] = $date2->format("d-m-Y H:i:s");
 					} else if ($column == 'date_available') {
 						$date = new DateTime($result['date_available']);
-						$row[$column] = $date->format("Y-m-d");
+						$row[$column] = $date->format("d-m-Y");
 					} else if ($column == 'id') {
 						$row[$column] = $result['product_id'];
                     } else if ($column == 'sku') {
-                        //$a = nl2br(str_replace(',',' ',$result['sku'])); //Меняем точку на запятую
                         $row[$column] = $result['sku'];
 					} else if ($column == 'action') {
 
 						$this->load->model('catalog/category');
+						$this->load->model('catalog/product');
 						$categories = $this->model_catalog_product->getProductCategories($result['product_id']);
 						$category_paths = array();
 						foreach($categories as $cat) {
@@ -671,7 +706,10 @@ class ControllerCatalogAqeProduct extends Controller {
 						$row['mpn'] = $result['mpn'];
 						$row['length'] = $result['length'];
 						$row['upc'] = $result['upc'];
-						$row['viewers'] = $product_stax_view;
+						$row['sku'] = $result['sku'];
+						$row['viewers'] = $product_stax_view['view_count'];
+						$row['view_date_list'] = explode(',', $product_stax_view['view_date_list']);
+                        $row['change'] = $this->model_catalog_product->getChangeProductData($result['product_id']); // ОТКЛЮЧАЕМ ФУНКЦИОНАЛ
 
 						$url = '';
 						if (isset($this->request->get['filter_category'])) {
@@ -713,7 +751,7 @@ class ControllerCatalogAqeProduct extends Controller {
 						if (isset($this->request->get['filter_status'])) {
 							$url .= '&filter_status=' . $this->request->get['filter_status'];
 						}
-						$row['url_deleted'] = $url;			
+						$row['url_deleted'] = $url;
 						$row[$column] = $_buttons;
 					} else if ($column == 'selector') {
 						$row[$column] = '';
@@ -844,7 +882,7 @@ class ControllerCatalogAqeProduct extends Controller {
 		} else {
 			$data['stock_status_select'] = addslashes(json_encode(array()));
 		}
- 
+
 		if (in_array("length_class", $displayed_columns)) {
 			$this->load->model('localisation/length_class');
 			$data['length_classes'] = $this->model_localisation_length_class->getLengthClasses();
@@ -1033,7 +1071,7 @@ class ControllerCatalogAqeProduct extends Controller {
 	public function autocomplete() {
 		$response = array();
 
-		if (isset($this->request->get['filter_name']) ||
+		/*if (isset($this->request->get['filter_name']) ||
 			isset($this->request->get['filter_model']) ||
 			isset($this->request->get['filter_category']) ||
 			isset($this->request->get['filter_seo']) ||
@@ -1127,7 +1165,7 @@ class ControllerCatalogAqeProduct extends Controller {
 				);
 			}
 		} else if (isset($this->request->get['filter_download'])) {
-		}
+		}*/
 
 		$this->response->addHeader('Content-Type: application/json');
 		$this->response->setOutput(json_encode($response));
@@ -1546,10 +1584,171 @@ class ControllerCatalogAqeProduct extends Controller {
 		$this->response->setOutput(json_encode($response));
 	}
 
+    public function getProductDataPrice($id) {
+        $this->load->model('catalog/product');
+
+        $product_info = $this->model_catalog_product->getProduct($id);
+
+        return $product_info['price'];
+    }
+
+    public function getProductData($id) {
+
+        $this->load->model('catalog/product');
+
+        $product_info = $this->model_catalog_product->getProduct($id);
+
+        if (!empty($product_info)) {
+            $data['model'] = $product_info['model'];
+        } else {
+            $data['model'] = '';
+        }
+
+        if (!empty($product_info)) {
+            $data['sku'] = $product_info['sku'];
+        } else {
+            $data['sku'] = '';
+        }
+        if (!empty($product_info)) {
+            $data['diadiametr'] = $product_info['diadiametr'];
+        } else {
+            $data['diadiametr'] = '';
+        }
+
+        if (!empty($product_info)) {
+            $data['version'] = $product_info['version'];
+        } else {
+            $data['version'] = '';
+        }
+
+        if (!empty($product_info)) {
+            $data['upc'] = $product_info['upc'];
+        } else {
+            $data['upc'] = '';
+        }
+
+        if (!empty($product_info)) {
+            $data['ean'] = $product_info['ean'];
+        } else {
+            $data['ean'] = '';
+        }
+
+        if (!empty($product_info)) {
+            $data['jan'] = $product_info['jan'];
+        } else {
+            $data['jan'] = '';
+        }
+
+        if (!empty($product_info)) {
+            $data['etvylet'] = $product_info['etvylet'];
+        } else {
+            $data['etvylet'] = '';
+        }
+
+        if (!empty($product_info)) {
+            $data['isbn'] = $product_info['isbn'];
+        } else {
+            $data['isbn'] = '';
+        }
+
+        if (isset($this->request->post['main_category_dop'])) {
+            $data['main_category_dop'] = $this->request->post['main_category_dop'];
+        } else {
+            $data['main_category_dop'] = '';
+        }
+
+        if (!empty($product_info)) {
+            $data['mpn'] = $product_info['mpn'];
+        } else {
+            $data['mpn'] = '';
+        }
+
+        if (!empty($product_info)) {
+            $data['location'] = $product_info['location'];
+        } else {
+            $data['location'] = '';
+        }
+
+        if ($this->config->get('config_product_upc_hide') != 0) {
+            $data['hide_upc'] = true;
+        } else {
+            $data['hide_upc'] = false;
+        }
+
+        if ($this->config->get('config_product_ean_hide') != 0) {
+            $data['hide_ean'] = true;
+        } else {
+            $data['hide_ean'] = false;
+        }
+
+        if ($this->config->get('config_product_jan_hide') != 0) {
+            $data['hide_jan'] = true;
+        } else {
+            $data['hide_jan'] = false;
+        }
+
+        if ($this->config->get('config_product_isbn_hide') != 0) {
+            $data['hide_isbn'] = true;
+        } else {
+            $data['hide_isbn'] = false;
+        }
+
+        if ($this->config->get('config_product_mpn_hide') != 0) {
+            $data['hide_mpn'] = true;
+        } else {
+            $data['hide_mpn'] = false;
+        }
+
+        $this->load->model('setting/store');
+
+        if (!empty($product_info)) {
+            $data['price'] = $product_info['price'];
+        } else {
+            $data['price'] = '';
+        }
+
+        if (!empty($product_info)) {
+            $data['date_available'] = ($product_info['date_available'] != '0000-00-00') ? $product_info['date_available'] : '';
+        } else {
+            $data['date_available'] = date('Y-m-d');
+        }
+
+        if (!empty($product_info)) {
+            $data['quantity'] = $product_info['quantity'];
+        } else {
+            $data['quantity'] = 1;
+        }
+
+        if (!empty($product_info)) {
+            $data['minimum'] = $product_info['minimum'];
+        } else {
+            $data['minimum'] = 1;
+        }
+
+        if (!empty($product_info)) {
+            $data['subtract'] = $product_info['subtract'];
+        } else {
+            $data['subtract'] = 1;
+        }
+
+        if (!empty($product_info)) {
+            $data['sort_order'] = $product_info['sort_order'];
+        } else {
+            $data['sort_order'] = 1;
+        }
+
+        if (!empty($product_info)) {
+            $data['status'] = $product_info['status'];
+        }
+
+        return $data;
+    }
+
 	public function quick_update() {
 		$response = array();
 
 		if ($this->request->server['REQUEST_METHOD'] == 'POST' && $this->validateUpdateData($this->request->post)) {
+
 			list($column, $id) = explode("-", $this->request->post['id']);
 			$id = (array)$id;
 			$value = $this->request->post['new'];
@@ -1566,6 +1765,10 @@ class ControllerCatalogAqeProduct extends Controller {
 			$results = array('done' => array(), 'failed' => array());
 
 			foreach ((array)$id as $_id) {
+                $this->load->model('catalog/product');
+                $product_info = $this->model_catalog_product->getProduct($_id);
+                $price_old_product = $product_info['price'];
+
 				if ($this->model_catalog_aqe_product->quickEditProduct($_id, $column, $value, $lang_id, $this->request->post)) {
 					$results['done'][] = $_id;
 				} else {
@@ -1736,6 +1939,16 @@ class ControllerCatalogAqeProduct extends Controller {
 					}
 					$response['values']['*'] = $response['value'];
 				} else if($column == 'price') {
+
+                    //****** ИЗМЕНЕНИЕ КОЛОНКИ ЦЕНА СТАРТ ******/
+                    $user_id = $this->session->data['user_id'];
+                    $this->load->model('catalog/product');
+                    //$product_info = $this->model_catalog_product->getProduct($_id);
+                    $data_new = (float)$value;
+
+                    $this->model_catalog_product->addChangeProductData((float)$price_old_product, $data_new, "Цена", $_id, $user_id);
+                    //****** ИЗМЕНЕНИЕ КОЛОНКИ ЦЕНА КОНЕЦ ******/
+
 					$response['value'] = sprintf('%.4f',round((float)$value, 4));
 
 					foreach ($id as $_id) {

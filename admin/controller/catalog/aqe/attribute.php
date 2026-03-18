@@ -507,7 +507,6 @@ class ControllerCatalogAqeAttribute extends Controller {
 					foreach ($descriptions as $language_id => $value) {
 						$data['value'][$language_id] = $value[$data['parameter']];
 					}
-					// $response['title'] = $this->language->get('entry_' . $data['parameter']);
 					break;
 				default:
 					$response["success"] = 0;

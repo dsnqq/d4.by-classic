@@ -22,9 +22,12 @@ class ControllerCommonFooter extends Controller {
 		$data['route'] = $this->request->get['route'];
 
 		$this->load->model('catalog/category');
-		
+		$this->load->model('catalog/product');
+
+
 		$data['categories'] = array();
-		$categories = $this->model_catalog_category->getCategories(0);		
+        $data['currencies'] = $this->model_catalog_category->getCurrencies();
+		$categories = $this->model_catalog_category->getCategories(0);	
 		foreach ($categories as $category) {
             $filter_data = array(
                 'filter_category_id'  => $category['category_id'],
@@ -33,10 +36,11 @@ class ControllerCommonFooter extends Controller {
  
             $data['categories'][] = array(
                 'category_id' => $category['category_id'],
-                'name'        => $category['name'] . ($this->config->get('config_product_count') ? ' (' . $this->model_catalog_product->getTotalProducts($filter_data) . ')' : ''),
+                'name'        => $category['name'],
                 'href'        => $this->url->link('product/category', 'path=' . $category['category_id'])
             );
         }
+		
 
 		$this->load->model('catalog/information');
 

@@ -1,4 +1,7 @@
 <?php echo $header; ?>
+
+<?php $isCity = false; ?>
+
 <div id="content">
 <div class="container">
   <ul class="breadcrumb">
@@ -26,9 +29,9 @@
             <?php if ($thumb || $images) { ?>
               <div class = "wrap_thumbnails">
                 <?php if ($thumb) { ?>
-                  <a id = "gallery_zoom" href="<?php echo $popup; ?>" class="MagicZoom" data-options="zoomPosition: inner"><img src="<?php echo $popup; ?>" title="<?php echo $manufacturer; ?> к <?php echo $catprod2[0]['name']; ?> <?php echo $catprod[0]['name']; ?>" alt="<?php echo $manufacturer; ?> к <?php echo $catprod2[0]['name']; ?> <?php echo $catprod[0]['name']; ?>" itemprop="contentUrl" /></a>
+                  <a id = "gallery_zoom" href="<?php echo $popup; ?>" class="MagicZoom" data-options="zoomPosition: inner"><img src="<?php echo $thumb; ?>" title="<?php echo $manufacturer; ?> к <?php echo $catprod2[0]['name']; ?> <?php echo $catprod[0]['name']; ?>" alt="<?php echo $manufacturer; ?> к <?php echo $catprod2[0]['name']; ?> <?php echo $catprod[0]['name']; ?>" itemprop="contentUrl" /></a>
                 <?php } else{ ?>
-					<a id = "gallery_zoom" href="<?php echo $popup; ?>" class="MagicZoom" data-options="zoomPosition: inner"><img src="<?php echo $popup; ?>" title="<?php echo $manufacturer; ?> к <?php echo $catprod2[0]['name']; ?> <?php echo $catprod[0]['name']; ?>" alt="<?php echo $manufacturer; ?> к <?php echo $catprod2[0]['name']; ?> <?php echo $catprod[0]['name']; ?>" itemprop="contentUrl" /></a>
+					<a id = "gallery_zoom" href="<?php echo $popup; ?>" class="MagicZoom" data-options="zoomPosition: inner"><img src="<?php echo $thumb; ?>" title="<?php echo $manufacturer; ?> к <?php echo $catprod2[0]['name']; ?> <?php echo $catprod[0]['name']; ?>" alt="<?php echo $manufacturer; ?> к <?php echo $catprod2[0]['name']; ?> <?php echo $catprod[0]['name']; ?>" itemprop="contentUrl" /></a>
 				<?php } ?>
                 </ul>
               </div>
@@ -39,13 +42,13 @@
                 <?php if ($thumb || $images) {  ?>
                   <?php if ($thumb) { ?>
                     <div class = "wrap_thumb_img">
-                    <a data-zoom-id = "gallery_zoom" href = "<?php echo $popup; ?>"><img src="<?php echo $popup; ?>" title="<?php echo $heading_title; ?>" alt="<?php echo $heading_title; ?>"  class="wrap_thumb_img_pars"/></a>
+                    <a data-zoom-id = "gallery_zoom" href = "<?php echo $popup; ?>"><img src="<?php echo $thumb; ?>" title="<?php echo $heading_title; ?>" alt="<?php echo $heading_title; ?>"  class="wrap_thumb_img_pars"/></a>
                     </div>
                   <?php } ?>
                   <?php if ($images) { ?>
                     <?php foreach ($images as $image) { ?>
                       <div class = "wrap_thumb_img">
-                        <a data-zoom-id = "gallery_zoom" href = "<?php echo $image['popup']; ?>"><img src="<?php echo $image['popup']; ?>" title="<?php echo $heading_title; ?>" alt="<?php echo $heading_title; ?>"  class="wrap_thumb_img_pars"/></a>
+                        <a data-zoom-id = "gallery_zoom" href = "<?php echo $image['popup']; ?>"><img src="<?php echo $image['thumb']; ?>" title="<?php echo $heading_title; ?>" alt="<?php echo $heading_title; ?>"  class="wrap_thumb_img_pars"/></a>
                       </div>
                     <?php } ?>
                   <?php } ?>
@@ -54,34 +57,7 @@
             </div>
           </div>
           <div class="product_info_y">
-              <div class="product_info_y__stay">
-                <span class="ytrewqq" style="font-size:18px;"><span style="font-size:14px;">Телефон:</span>
-				<br>+375 (29) 641-64-96
-				<br>+375 (29) 800-07-36
-				<br>+375 (29) 795-26-40
-				</span>
-				<?php if ($attribute_groups) { ?>
-					<?php foreach ($attribute_groups as $attribute_group) { ?>
-						<?php foreach ($attribute_group['attribute'] as $attribute) { ?>
-							<?php if($attribute['name'] == "Телефон, если другой" && $attribute['text'] != ""){ ?>
-								<?php 
-									$attribute__phone = explode(';',$attribute['text']);
-									//$attribute__phone = explode(',',$attribute['text']);
-								?>
-									<span style="font-size:16px;">
-										<span style="font-size:14px;">Телефон:</span><br>
-										<?php foreach($attribute__phone as $attribute__phone__item){ ?>
-											<?php echo trim($attribute__phone__item); ?><br>
-										<?php } ?>
-									</span>
-								<style>
-									.ytrewqq{display:none !important;}
-								</style>
-							<?php } ?>
-						<?php } ?>
-					<?php } ?>
-				<?php } ?>
-              </div>
+
               <ul>
                   <li><span>Марка: </span><span><?php echo $catprod2[0]['name']; ?></span></li>
                   <li><span>Модель: </span><span><?php echo $catprod[0]['name']; ?></span></li>
@@ -124,7 +100,6 @@
 				  <?php } ?>
 
 
-
 				  <?php if ($attribute_groups) { ?>
 					<?php foreach ($attribute_groups as $attribute_group) { ?>
 						<?php foreach ($attribute_group['attribute'] as $attribute) { ?>
@@ -160,6 +135,12 @@
 		<?php if($description){ ?>
         <div class="product_this_desc"><div class="block_white_t">Описание:</div><?php echo $description; ?></div>
 		<?php } ?>
+
+		  <?php if($youtube){  ?>
+		  <div class="product_this_desc"><div class="block_white_t">Видео:</div>
+			  <iframe width="560" height="315" src="https://www.youtube.com/embed/<?php echo $youtube; ?>" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+		  </div>
+		  <?php } ?>
         <div class="product_share">
           Поделиться с другом: 
           <script src="https://yastatic.net/es5-shims/0.0.2/es5-shims.min.js"></script>
@@ -168,6 +149,95 @@
         </div>
       </div>
       <div class="right_product_page">
+		  <div class="user-detail-action mb30">
+			<div class="ytrewqq">
+				  <a class="btn btn-danger btn-block btn-phone" href="tel:+375(29)641-64-96">
+					  +375 (29) 641-64-96
+				  </a>
+					<div class="text-center">
+						<a class="button-messangers mobiles" href=" viber://add?number='375296416496">Viber</a>
+						<a class="button-messangers desktoper" href="viber://chat?number=+375296416496">Viber</a>
+					</div>
+				  <div style="clear:both; margin-bottom: 5px;"></div>
+				  <a class="btn btn-danger btn-block btn-phone" href="tel:+375(29)800-07-36">
+					  +375 (29) 800-07-36
+				  </a>
+					<div class="text-center">
+						<a class="button-messangers mobiles" href=" viber://add?number='375298000736">Viber</a>
+						<a class="button-messangers desktoper" href="viber://chat?number=+375298000736">Viber</a>
+						<a class="button-messangers" href="https://wa.me/+375298000736">WhatsApp</a>
+						<a class="button-messangers" href="tg://resolve?domain=+375298000736">Telegram</a>
+					</div>
+				  <div style="clear:both; margin-bottom: 5px;"></div>
+				  <a class="btn btn-danger btn-block btn-phone" href="tel:+375(29)795-26-40">
+					  +375 (29) 795-26-40
+				  </a>
+					<div class="text-center">
+						<a class="button-messangers mobiles" href=" viber://add?number='375297952640">Viber</a>
+						<a class="button-messangers desktoper" href="viber://chat?number=+375297952640">Viber</a>
+						<a class="button-messangers" href="https://wa.me/+375297952640">WhatsApp</a>
+						<a class="button-messangers" href="tg://resolve?domain=+375297952640">Telegram</a>
+					</div>
+				  <div style="clear:both; margin-bottom: 5px;"></div>
+			</div>
+
+			  <?php if ($attribute_groups) { ?>
+			  <?php foreach ($attribute_groups as $attribute_group) { ?>
+			  <?php foreach ($attribute_group['attribute'] as $attribute) { ?>
+			  <?php if($attribute['name'] == "Телефон, если другой" && $attribute['text'] != ""){ ?>
+			  <?php
+											$attribute__phone = explode(';',$attribute['text']);
+											//$attribute__phone = explode(',',$attribute['text']);
+										?>
+				  <?php foreach($attribute__phone as $attribute__phone__item){ ?>
+						  <?php
+							$viber_status = false;
+							$whatsapp_status = false;
+							$telegram_status = false;
+						  ?>
+						<?php
+							if(strpos(trim($attribute__phone__item), 'Viber') !== false) {
+								$viber_status = true;
+								$attribute__phone__item = str_replace('Viber','',$attribute__phone__item);
+							}
+							if(strpos(trim($attribute__phone__item), 'WhatsApp') !== false) {
+								$whatsapp_status = true;
+								$attribute__phone__item = str_replace('WhatsApp','',$attribute__phone__item);
+							}
+							if(strpos(trim($attribute__phone__item), 'Telegram') !== false) {
+								$telegram_status = true;
+								$attribute__phone__item = str_replace('Telegram','',$attribute__phone__item);
+							}
+						?>
+						  <a class="btn btn-danger btn-block btn-phone" href="tel:<?php echo $attribute__phone__item; ?>">
+							  <?php echo $attribute__phone__item; ?>
+						  </a>
+						  <?php $phone = preg_replace('/[^0-9]/', '', $attribute__phone__item); ?>
+						  <div class="text-center">
+							  <?php if($viber_status == true){ ?>
+							  <a class="button-messangers mobiles" href=" viber://add?number='<?php echo $phone; ?>">Viber</a>
+							  <a class="button-messangers desktoper" href="viber://chat?number=+<?php echo $phone; ?>">Viber</a>
+							  <?php } ?>
+							  <?php if($whatsapp_status == true){ ?>
+							  <a class="button-messangers" href="https://wa.me/<?php echo $phone; ?>">WhatsApp</a>
+							  <?php } ?>
+							  <?php if($telegram_status == true){ ?>
+							  <a class="button-messangers" href="tg://resolve?domain=<?php echo $phone; ?>">Telegram</a>
+							  <?php } ?>
+						  </div>
+						  <div style="clear:both; margin-bottom: 5px;"></div>
+				  <?php } ?>
+			  <style>
+				  .ytrewqq{display:none !important;}
+			  </style>
+			  <?php } ?>
+			  <?php } ?>
+			  <?php } ?>
+			  <?php } ?>
+
+		  </div>
+
+
 		<div class="block_white mb30">
 		<div class="block_white_t">Время работы</div>
 		<?php 
@@ -276,7 +346,22 @@
 				</ul>
 				</div>
 			</div>
-			<p>Адрес: <b>Дрогичин, Заводская 20</b></p>
+			
+	
+				<?php if ($attribute_groups) { ?>
+					<?php foreach ($attribute_groups as $attribute_group) { ?>
+						<?php foreach ($attribute_group['attribute'] as $attribute) { ?>
+							<?php if($attribute['name'] == "Город" && $attribute['text'] != ""){ ?>
+								<?php $isCity = true; ?>
+								<p>Адрес: <b><?php echo $attribute['text']; ?></b></p>
+							<?php } ?>
+						<?php } ?>
+					<?php } ?>
+				<?php } ?>
+				<?php if ($isCity == false) { ?>
+					<p>Адрес: <b>Дрогичин, Заводская 20</b></p>
+				<?php } ?>
+			
 			<p class="hidden">
 				<b>E-mail:</b>
 				<a href="mailto:info@d4.by"><i class="fa fa-envelope"></i></a> info@d4.by </p>
@@ -342,6 +427,21 @@
 		slidesToShow: 5,
 		slidesToScroll: 1
 	});
+</script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        setTimeout(function () {
+            const formData = new FormData();
+            formData.append('name', "<?php echo addslashes($manufacturer); ?> к <?php echo addslashes($catprod2[0]['name']); ?> <?php echo addslashes($catprod[0]['name']); ?>, <?php echo $year; ?>г.");
+
+            fetch('index.php?route=product/product/humanView&id=<?php echo (int)$product_id; ?>', {
+                method: 'POST',
+                body: formData,
+                credentials: 'same-origin'
+            });
+        }, 1000);
+    });
 </script>
 
 <script type="text/javascript"><!--
@@ -541,4 +641,35 @@ $(document).ready(function() {
 })
 //--></script>
 </div>
+<style>
+	.btn.btn-danger{
+		background-color: #E74C3C;
+		color: #FFFFFF;
+		display: block;
+		width: 100%;
+		text-align: center;
+		text-decoration: none;
+		border-radius: 3px;
+		padding: 10px 0;
+	}
+	.button-messangers {
+		width: 30%;
+		background: #94280d;
+		color: white;
+		padding: 4px;
+		display: block;
+		float: left;
+		border: 1px solid white;
+		text-align: center;
+		text-decoration: none;
+	}
+	.mobiles{display:none;}
+	@media screen and (max-width: 1024px) {
+		.desktoper{display:none;}
+		.mobiles{display:inline-block;}
+		.user-detail-action{
+			margin-top: 30px;
+		}
+	}
+</style>
 <?php echo $footer; ?>

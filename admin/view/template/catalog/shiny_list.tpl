@@ -3,9 +3,14 @@
 <div id="content">
   <div class="page-header">
     <div class="container-fluid">
-      <div class="pull-right"><a href="<?php echo $add; ?>" data-toggle="tooltip" title="<?php echo $button_add; ?>" class="btn btn-primary"><i class="fa fa-plus"></i></a>
+      <div class="pull-right">
+
+          <?php if( $user_id_com != 25 ){ ?>
+          <a href="<?php echo $add; ?>" data-toggle="tooltip" title="<?php echo $button_add; ?>" class="btn btn-primary"><i class="fa fa-plus"></i></a>
         <?php /*<button type="submit" form="form-product" formaction="<?php echo $copy; ?>" data-toggle="tooltip" title="<?php echo $button_copy; ?>" class="btn btn-default"><i class="fa fa-copy"></i></button>*/?>
         <button type="button" data-toggle="tooltip" title="<?php echo $button_delete; ?>" class="btn btn-danger" onclick="confirm('<?php echo $text_confirm; ?>') ? $('#form-product').submit() : false;"><i class="fa fa-trash-o"></i></button>
+        <?php } ?>
+
       </div>
       <h1><?php echo $heading_title; ?></h1>
       <ul class="breadcrumb">
@@ -32,7 +37,7 @@
       </div>
       <div class="panel-body">
         <div class="well " >
-          <div class="row"> 
+          <div class="row">
             <div class="form-group ">
                 <?php /* Ширина */ ?>
                 <label class="col-md-2 col-xs-4 control-label" for="input-jan" style="font-weight:bold;">Ширина *, высота *, R * </span></label>
@@ -63,7 +68,7 @@
                           <option value="<?php echo $location_array_item; ?>" <?php echo ($location_array_item == $filter_r) ? "selected='selected'" : "" ; ?>><?php echo $location_array_item; ?></option>
                         <?php } ?>
                   </select>
-                </div> 
+                </div>
             </div>
             <?php /* Марка */ ?>
             <div class="form-group ">
@@ -105,7 +110,7 @@
                         <?php } ?>
                   </select>
                 </div>
-                
+
                 <?php /* Количество */ ?>
                 <div class="col-sm-2">
                     <input type="text" name="quantity" value="<?php echo $quantity; ?>" placeholder="<?php echo $entry_quantity; ?>" id="input-quantity" class="form-control" />
@@ -169,7 +174,12 @@
           </div>
         </div>
         <div style="padding:15px 0px;">
-          <span>Найдено объявлений: </span><span style="color: #fff;background: #000;padding: 5px;border-radius: 5px;"><?php echo $product_total_count; ?> шт.</span>
+          <span>Найдено объявлений: </span>
+            <span style="font-size: 18px;font-weight: bold;line-height: 39px;">
+                <?php echo $product_total_count; ?> штук
+			<span>
+            (<span style="color:green;">активные: <?php $shiny_acrive = (int)$product_total_count - (int)$product_total_count_status_no; echo $shiny_acrive; ?></span>, <span style="color:red;">неактивные: <?php echo $product_total_count_status_no; ?></span>)</span>
+            </span>
         </div>
         <form action="<?php echo $delete; ?>" method="post" enctype="multipart/form-data" id="form-product">
           <div class="table-responsive">
@@ -200,7 +210,11 @@
                   </td>
                   <td>
                     <?php echo $product['marka']; ?> <?php echo $product['model_s']; ?> <b><?php echo $product['shirina']; ?>/<?php echo $product['vysota']; ?> <?php echo $product['r_size']; ?></b>, <?php echo $product['quantity']; ?> шт., <?php echo $product['season']; ?>, <?php echo $product['sostojan']; ?>
-                    <br>
+                     <?php if($product['length'] && $product['length'] != 0){ ?>
+					<br>
+					<span class="grey">Год: <?php echo $product['length']; ?></span>
+					<?php } ?>
+					<br>
                     <span class="grey">Артикул: <?php echo $product['model']; ?></span>
                   </td>
                   <td class="js-td-images">
@@ -210,7 +224,7 @@
                           <div><span style="color:red;">Заметка:</span> <?php echo $attributs['product_attribute_description'][1]['text']; ?></div><br>
                         <?php } ?>
                       <?php } ?>
-                     
+
                     </span>
                     <span class="gray"></span>
                     <?php if($product['images']){ ?>
@@ -223,51 +237,72 @@
                   </td>
                   <td>
                       <nobr>
-                        <?php echo $product['price']; ?> USD<br>
-                        <?php echo $product['price_BYN']; ?><br>
+                          <span class="pensil_action_input"><?php echo $product['price']; ?> USD</span>
+                          <?php if( $user_id_com != 25 ){ ?>
+                              <a data-price="<?php echo $product['price']; ?>" data-id="<?php echo $product['product_id']; ?>" class="pensil_action" style="margin-left:5px;" title="Изменить цену">
+                                  <i aria-hidden="true" class="fa fa-pencil-square-o"></i>
+                              </a>
+                          <?php } ?>
+                          <br>
+                            <?php echo $product['price_BYN']; ?>
+                          <br>
                         <span style="font-size:12px;">Цена за шт.</span>
                       </nobr>
                   </td>
                   <td>
-                    <span title="<?php echo mb_substr($product['date_added'], 10); ?>"><nobr><?php echo mb_substr($product['date_added'], 0, -8); ?></nobr></span>
+                    <span title="<?php echo $product['date_added']; ?>"><nobr><?php echo $product['date_added']; ?></nobr></span>
                     <?php if($product['date_modified'] != "0000-00-00 00:00:00"){ ?>
                       <br>Изменено:<br>
-                      <span title="<?php echo mb_substr($product['date_modified'], 10); ?>"><nobr><?php echo mb_substr($product['date_modified'], 0, -8); ?></nobr></span>
+                      <span title="<?php echo $product['date_modified']; ?>"><nobr><?php echo $product['date_modified']; ?></nobr></span>
                     <?php } ?>
                   </td>
                   <td>
+
                       <?php if($product['status'] == "Активно"){ ?>
-                        <i class="fa fa-check-circle fa-lg color_green status_favourite" data-id="<?php echo $product['product_id']; ?>" title="активно"></i>
+                        <button class="btn btn-default fa fa-check-circle fa-lg color_green <?php if( $user_id_com != 25 ){ ?>status_favourite<?php } ?>" data-id="<?php echo $product['product_id']; ?>" title="активно">
+                            Активно
+                        </button>
                       <?php } else{ ?>
-                        <i class="fa fa-times color_red status_favourite" data-id="<?php echo $product['product_id']; ?>" aria-hidden="true" title="неактивно"></i>
+                        <button class="btn btn-default fa fa-times color_red <?php if( $user_id_com != 25 ){ ?>status_favourite<?php } ?>" data-id="<?php echo $product['product_id']; ?>" aria-hidden="true" title="неактивно">
+                            Неактивно
+                        </button>
                       <?php } ?>
                   </td>
 
                   <td style="text-align: center;">
-                    <a href="<?php echo $product['edit']; ?>" title="Редактировать"><i class="fa fa-pencil-square-o fa-lg"></i></a>
-                    <a href="<?php echo $product['deleted_url']; ?>" title="Удалить" class="js-adv-delete deletedButton"><i class="fa fa-trash-o fa-lg"></i></a>
-                    <a target="_blank" title="Посмотреть на сайте"><i class="fa fa-external-link fa-lg"></i></a>
+                      <?php if( $user_id_com != 25 ){ ?>
+                        <a data-productinfo="Артикул: <?php echo $product['model']; ?>" data-productid="<?php echo $product['product_id']; ?>" class="historyProduct" style="cursor: pointer;position: relative;">
+                            <i class="fa fa-archive fa-lg"></i>
+                            <?php if($product['change']){ ?>
+                                <span class="shiny_change"> <?php echo count($product['change']); ?></span>
+                            <?php } ?>
+                        </a>
+                        <a href="<?php echo $product['edit']; ?>" title="Редактировать"><i class="fa fa-pencil-square-o fa-lg"></i></a>
+                        <a href="<?php echo $product['deleted_url']; ?>" title="Удалить" class="js-adv-delete deletedButton"><i class="fa fa-trash-o fa-lg"></i></a>
+                        <a data-productid="<?php echo $product['product_id']; ?>" class="addPhotoButton"><i class="fa fa-camera"></i></a>
+                      <?php } ?>
+                    <a href="https://d4.by/index.php?route=product/shiny_form&product_id=<?php echo $product['product_id']; ?>" target="_blank" title="Посмотреть на сайте"><i class="fa fa-eye fa-lg"></i></a>
                     <br>
-                    <?php 
+                    <?php
                       $product['cat_qr'] = str_replace('&nbsp;&nbsp;&gt;&nbsp;&nbsp;', ' ', $product['cat_qr']);
                       //$qr_title = "<div>".$product['cat_qr'] . ", " . $product['length'] . "г. " . $product['ean'] . "</div><div>" . $product['jan'] . " " .$product['isbn'] . " " . $product['mpn'] . " " . $product['upc'] . "</div><div>" . $product['manufers'] . "</div><div>" . '<span style="font-size:17px;">' .$product['modelQR'] . '</span></div>';
-                      $qr_title = "<div>" . $product['marka'] . " " . $product['model_s'] . " " . $product['shirina'] . "/" . $product['vysota'] . " " . $product['r_size'] . ", " . $product['quantity'] . " шт., " . $product['season'] . ", " . $product['sostojan'] . '<div style="font-size:17px;">' .$product['model'] . '</div></div>';   
+                      $qr_title = "<div>" . $product['marka'] . " " . $product['model_s'] . " " . $product['shirina'] . "/" . $product['vysota'] . " " . $product['r_size'] . ", " . $product['quantity'] . " шт., " . $product['season'] . ", " . $product['sostojan'] . '<div style="font-size:17px;">' .$product['model'] . '</div></div>';
                     ?>
                     <div style="color: #23b423;border-color: #23b423;margin-top:10px;" id="" class="btn btn-default printQrOuterLists" data-qrmodel="<?php echo $product['model']; ?>" data-qrid="<?php echo $product['product_id']; ?>" data-titles='<?php echo $qr_title; ?>'>Печать QR код</div>
                     <?php
                       require_once $_SERVER['DOCUMENT_ROOT'].'/gd/phpqrcode/qrlib.php';
-                    
+
                       /* Генерация QR-кода во временный файл */
                       QRcode::png('https://d4.by/gd/?product_id='.$product['product_id'], '/home/dby/sites/d4.by/gd/qr_shiny/'.$product['model'].'_tmp.png', 'Q', 6, 1);
-                      
+
                       /* Конвертация PNG8 в PNG24 */
                       $im = imagecreatefrompng($_SERVER['DOCUMENT_ROOT'].'/gd/qr_shiny/'.$product['model'].'_tmp.png');
-                      
+
                       $width = imagesx($im);
                       $height = imagesy($im);
 
                       // добавления цвета
-                      $color_smx = explode('&nbsp;', $cat_qr); 
+                      $color_smx = explode('&nbsp;', $cat_qr);
                         $rgba_oux = '255,255,255';
                       $rgba_oux = explode(',', $rgba_oux);
                       $bg_color = imageColorAllocate($im, (int)$rgba_oux[0], (int)$rgba_oux[1], (int)$rgba_oux[2]);
@@ -280,35 +315,35 @@
                       }
                       }
                       // конец добавления цвета
-                
+
                       $dst = imagecreatetruecolor($width, $height);
                       imagecopy($dst, $im, 0, 0, 0, 0, $width, $height);
                       imagedestroy($im);
-                      
+
                       /* Наложение логотипа */
                       $logo = imagecreatefrompng($_SERVER['DOCUMENT_ROOT'].'/gd/logo.png');
                       $logo_width = imagesx($logo);
                       $logo_height = imagesy($logo);
-                      
+
                       $new_width = $width / 3;
                       $new_height = $logo_height / ($logo_width / $new_width);
-                      
+
                       $x = ceil(($width - $new_width) / 2);
                       $y = ceil(($height - $new_height) / 2);
-                      
+
                       imagecopyresampled($dst, $logo, $x, $y, 0, 0, $new_width, $new_height, $logo_width, $logo_height);
                       imagepng($dst,$_SERVER['DOCUMENT_ROOT'].'/gd/qr_shiny/'.$product['model'].'_main.png',3);
-                      
+
                       unlink($_SERVER['DOCUMENT_ROOT'].'/gd/qr_shiny/'.$product['model'].'_tmp.png');
 
                       //$img_sm_qr1 = '<img src="https://d4.by/gd/qr_shiny/'.$product['model'].'_main.png" style="width:110px;">';
                       //echo '<br><br>';
-                      
-                      
-                      
+
+
+
                       //echo '<div style="display:flex;align-items:center;max-width:275px;border:1px solid #000;"><div>'.$img_sm_qr1.'</div><div style="text-align:center;font-size:12px;padding-left:10px;margin:0 auto;font-weight:bold;line-height:18px;">'.$qr_title.'</div></div>';
                   ?>
-                   
+
                   </td>
                 </tr>
                 <?php /* ONE SHINY END */ ?>
@@ -345,13 +380,13 @@ $('#button-filter').on('click', function() {
 	if (filter_quantity) {
 		url += '&filter_quantity=' + encodeURIComponent(filter_quantity);
 	}
-  
+
 	var filter_model = $('input[name=\'filter_model\']').val();
 
 	if (filter_model) {
 		url += '&filter_model=' + encodeURIComponent(filter_model);
 	}
-  
+
 	var filter_location = $('#location_select').val();
 
 	if (filter_location != '*') {
@@ -369,13 +404,13 @@ $('#button-filter').on('click', function() {
 	if (length != '*') {
 		url += '&length=' + encodeURIComponent(length);
 	}
-  
+
   var filter_vysota = $('#main__isbn').val();
 
   if (filter_vysota != '*') {
     url += '&filter_vysota=' + encodeURIComponent(filter_vysota);
   }
-  
+
   var version = $('#version').val();
 
   if (version != '*') {
@@ -387,7 +422,7 @@ $('#button-filter').on('click', function() {
   if (sku_season != '*') {
     url += '&sku_season=' + encodeURIComponent(sku_season);
   }
-  
+
   var filter_r = $('#main__mpn').val();
 
   if (filter_r != '*') {
@@ -403,8 +438,8 @@ $('#button-filter').on('click', function() {
   var status_filter = $('#status_filter').val();
 
   url += '&status_filter=' + encodeURIComponent(status_filter);
-  
-  
+
+
 	location = url;
 });
 
@@ -416,29 +451,67 @@ $('#button-clear').on('click', function() {
 <script>
    $(document).ready(function() {
 		$('body').on('click','.printQrOuterLists', function(){
-				var idThis = $(this).data('qrid');//здесь получаем ID 	
+				var idThis = $(this).data('qrid');//здесь получаем ID
 				var modelThis = $(this).data('qrmodel');//здесь получаем Model
 				var titlesThis = $(this).data('titles'); // получаем title
 				var this_elem = $(this);
-						
+
 				var frame = window.frames['imgFrame'];
 				frame.document.write('<html><head><style>@print{@page :footer {color: #fff }@page :header {color: #fff}}</style></head><body style="font-family: Open Sans, sans-serif;" onload="window.print()"><div style="margin:0 auto;color:#000;display:flex;align-items:center;max-width:275px;border:1px solid #000;"><div><img src="https://d4.by/gd/qr_shiny/'+modelThis+'_main.png" style="width:110px;"></div><div style="text-align:center;font-size:12px;margin:0 auto;padding-left:10px;font-weight:bold;line-height:18px;">'+titlesThis+'</div></div></body></html>');
 				frame.document.close();
-		}); 
+		});
   });
 
 $(document).ready(function() {
-	
+
 	$(".deletedButton").on("click", function () {
 		return confirm("Вы действительно хотите удалить это объявление ?");
 	});
+
+    $('body').on("click", ".pensil_action",function (){
+
+        if($(this).find('.fa').hasClass('fa-save')){
+            if($('.value_input_price').val() == undefined || $('.value_input_price').val() == null || $('.value_input_price').val() == ""){
+                var price = $(this).data("price");
+                $(this).prev('.pensil_action_input').html(price + " USD");
+            } else{
+                var shinyId = $(this).data("id");
+                var priceShiny = $('.value_input_price').val();
+                $(this).prev('.pensil_action_input').html(priceShiny + " USD");
+
+                $.ajax({
+                    url: 'index.php?route=catalog/shiny/setPriceItem&token=<?php echo $token; ?>&shinyId='+shinyId+'&price='+priceShiny,
+                    dataType: 'html',
+                    data: {
+                        "price" : priceShiny,
+                        "shinyId" : shinyId
+                    },
+                    cache: false,
+                    method: 'POST',
+                    success: function(html) {
+                        console.log(html);
+                    },
+                    error: function(xhr, ajaxOptions, thrownError) {
+                        alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+                    }
+                });
+            }
+            $(this).find('.fa').removeClass('fa-save').addClass('fa-pencil-square-o');
+        }else{
+            var old_price = $('.pensil_action_input').text();
+            $(this).prev('.pensil_action_input').html('<input class="value_input_price" type="text" val="'+old_price+'">');
+            $(this).find('.fa').removeClass('fa-pencil-square-o').addClass('fa-save');
+        }
+
+    });
 });
 $(document).ready(function() {
-		$('body').on('click','.status_favourite', function(){
+		$('body').on('click','.status_favourite', function(e){
+                e.preventDefault();
 				// здесь отслеживаем выбор ID
-				var selectedItem = $(this).data('id');//здесь получаем ID 	
+				var selectedItem = $(this).data('id');//здесь получаем ID
 				var this_elem = $(this);
-							
+
 				$.ajax({
 					url: 'index.php?route=catalog/shiny/actions&token=<?php echo $token_ac; ?>&actions='+selectedItem,
 					dataType: 'html',
@@ -448,20 +521,22 @@ $(document).ready(function() {
 					cache: false,
 					method: 'POST',
 					success: function(html) {
-						var actions = html; 
+						var actions = html;
 						if(actions == '1'){
+                            this_elem.html('Активно');
 							this_elem.attr('title', 'Активно');
-							this_elem.attr('class','fa fa-check-circle fa-lg color_green status_favourite');
+							this_elem.attr('class','btn btn-default fa fa-check-circle fa-lg color_green status_favourite');
 						}else{
+                            this_elem.html('Неактивно');
 							this_elem.attr('title', 'Неактивно');
-							this_elem.attr('class','fa fa-times color_red status_favourite');
+							this_elem.attr('class','btn btn-default fa fa-times color_red status_favourite');
 						}
-						
+
 					},
 					error: function(xhr, ajaxOptions, thrownError) {
 						alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
 					}
-				});	
+				});
 		});
         setInterval(function(){
           $('.status_qe').each(function() {
@@ -476,57 +551,227 @@ $(document).ready(function() {
       });
 </script>
 
-  <script type="text/javascript"><!--
-/*$('input[name=\'filter_name\']').autocomplete({
-	'source': function(request, response) {
-		$.ajax({
-			url: 'index.php?route=catalog/product/autocomplete&token=<?php echo $token; ?>&filter_name=' +  encodeURIComponent(request),
-			dataType: 'json',
-			success: function(json) {
-				response($.map(json, function(item) {
-					return {
-						label: item['name'],
-						value: item['product_id']
-					}
-				}));
-			}
-		});
-	},
-	'select': function(item) {
-		$('input[name=\'filter_name\']').val(item['label']);
-	}
-});*/
-/*
-$('input[name=\'filter_model\']').autocomplete({
-	'source': function(request, response) {
-		$.ajax({
-			url: 'index.php?route=catalog/product/autocomplete&token=<?php echo $token; ?>&filter_model=' +  encodeURIComponent(request),
-			dataType: 'json',
-			success: function(json) {
-				response($.map(json, function(item) {
-					return {
-						label: item['model'],
-						value: item['product_id']
-					}
-				}));
-			}
-		});
-	},
-	'select': function(item) {
-		$('input[name=\'filter_model\']').val(item['label']);
-	}
-});*/
-//--></script></div>
+</div>
 
-<?php /* javascript for bootstrap select */ ?>
+<link rel="stylesheet" href="/admin/view/stylesheet/dropzone.css" />
+<script src="/admin/view/javascript/dropzone.js"></script>
+
+
+<?php $site_url_photo = "https://d4.by/upload.php"; ?>
+
+<div id="myModalBox" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h4 class="modal-title">Загрузка изображения</h4>
+            </div>
+            <div class="modal-body">
+                <div class="modalShowAddPhoto">
+                    <form action="<?=$site_url_photo?>" class="dropzone" id="dropzoneFrom"></form>
+                    <br><br>
+                    <div style="text-align:center;">
+                        <button type="button" class="btn btn-info" id="submit-all">Загрузить изображения</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="myModalBoxHistory" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <!-- Заголовок модального окна -->
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h4 class="modal-title">История объявления <div style="font-size: 13px;" class="modal-subtitle"></div></h4>
+            </div>
+            <!-- Основное содержимое модального окна -->
+            <div class="modal-body">
+                <table class="historyTable1" style="width: 100%;border-collapse: collapse;">
+                    <tr>
+                        <td><strong>Значение</strong></td>
+                        <td><strong>Дата изменения</strong></td>
+                        <td><strong>Старое значение</strong></td>
+                        <td><strong>Новое значение</strong></td>
+                        <td><strong>Пользователь</strong></td>
+                    </tr>
+                </table>
+                <table class="historyTable" style="width: 100%;border-collapse: collapse;"></table>
+            </div>
+
+            <div id="loaderHistory">
+                <img src="/admin/view/images/loading.gif" alt="Загрузка" title="Загрузка" />
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    $(document).ready(function() {
+        $('.addPhotoButton').on('click', function(){
+            $("#myModalBox").modal('show');
+
+            var productid = $(this).data('productid');
+            $('#submit-all').attr('data-productid',productid);
+        });
+
+        // История товара
+        $('.historyProduct').on('click', function() {
+            const productid = $(this).data('productid');
+            const productinfo = $(this).data('productinfo');
+
+            $('#myModalBoxHistoryNumber').text(productid);
+            $('.modal-subtitle').empty();
+            $('.historyTable').empty();
+            $("#myModalBoxHistory").modal('show');
+            loadHistory(productid, productinfo);
+        });
+
+        function loadHistory(productid, productinfo) {
+            $.ajax({
+                url: `index.php?route=catalog/shiny/getChangeProduct&token=<?php echo $token; ?>&product_id=${productid}`,
+                method: 'POST',
+                data: { product_id: productid },
+                dataType: 'json',
+                cache: false,
+                beforeSend: () => $("#loaderHistory").addClass("active"),
+                success: function(data) {
+                    $('#loaderHistory').removeClass("active");
+                    $('.modal-subtitle').html(productinfo);
+                    if (data.changes.length) {
+                        data.changes.forEach(change => {
+                            if (!change) return;
+                            if (change.value_name === "Статус") {
+                                change.value_old = change.value_old == 1 ? "Активно" : "Неактивно";
+                                change.value_new = change.value_new == 1 ? "Активно" : "Неактивно";
+                            }
+                            $('.historyTable').append(`
+                                            <tr>
+                                                <td>${change.value_name}</td>
+                                                <td>${change.data_change}</td>
+                                                <td class="column_data">${change.value_old}</td>
+                                                <td class="column_data">${change.value_new}</td>
+                                                <td>${change.firstname ? change.firstname + " " + change.lastname : "Неизвестно"}</td>
+                                            </tr>
+                                        `);
+                        });
+                    }
+                },
+                error: () => loadHistory(productid, productinfo)
+            });
+        }
+    });
+
+    // add photo
+    $(document).ready(function() {
+        Dropzone.options.dropzoneFrom = {
+            autoProcessQueue: false,
+            maxFilesize: 2500, // MB
+            parallelUploads: 20,
+            maxThumbnailFilesize: 200,
+            resizeWidth: 800,
+            timeout: 180000000,
+            acceptedFiles: ".png,.jpg,.gif,.bmp,.jpeg",
+            renameFile: function (file) {
+                let newName = new Date().getTime() + '_' + file.name;
+
+                return newName;
+            },
+            init: function() {
+                var submitButton = document.querySelector('#submit-all');
+                myDropzone = this;
+                submitButton.addEventListener("click", function() {
+                    myDropzone.processQueue();
+                });
+                this.on("queuecomplete", function(data) {
+
+                    <?php
+                    $date_now = date("d.m.Y");
+                    $time = strtotime($date_now);
+                        ?>
+                    var imgUpload = "";
+                    var path = 'image/catalog/d4_img';
+                    var folder_name = path + "/<?=$time?>/";
+                    var mask_name = 'catalog/d4_img/' + "<?=$time?>/";
+
+                    for(var cheker = 0;cheker <= myDropzone.files.length; cheker++){
+                        if(myDropzone.files[cheker]){
+                            // начало ajax добавление изображения в БД
+                            $.ajax({
+                                url: 'index.php?route=catalog/shiny/addImageListPage&token=<?php echo $token; ?>',
+                                dataType: 'html',
+                                data: {
+                                    "product_id" : $('#submit-all').attr('data-productid'),
+                                    "image": mask_name + myDropzone.files[cheker].upload.filename
+                                },
+                                cache: false,
+                                method: 'POST',
+                                success: function(html) {
+                                    //alert('фотка добавлена в БД!');
+                                },
+                                error: function(xhr, ajaxOptions, thrownError) {
+                                    alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+                                }
+                            });
+                            // конец ajax добавление изображения
+                        }
+                    }
+
+                    this.removeAllFiles();
+                    $("#myModalBox").modal('hide');
+                });
+
+            },
+        };
+
+    });
+    // end add photo
+
+</script>
 <script src="view/javascript/bootstrap-select.min.js"></script>
 <script src="view/javascript/jquery.chained.js"></script>
 <script>
-$(document).ready(function() { // 
+$(document).ready(function() { //
   $('.selectpicker').selectpicker();
 });
 </script>
 <style>
+    .shiny_change {
+        margin-left: 2px;
+        background: #000000;
+        border-radius: 50%;
+        width: 13px;
+        height: 13px;
+        position: absolute;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+        top: -5px;
+        right: 0;
+        border: 1px solid red;
+    }
+    #loaderHistory{
+        display: none;align-items: center;justify-content: center;padding: 20px;
+    }
+    #loaderHistory.active{
+        display: flex;
+    }
+    .sku_qe_br{
+        word-break: break-all;
+    }
+    .historyTable tr,.historyTable td{
+        border: 1px solid black;text-align:center;
+    }
+    .historyTable1 tr,.historyTable1 td{
+        border: 1px solid black;text-align:center;
+    }
+    .historyTable td,.historyTable1 td {
+        width: 20%;padding: 5px;
+    }
     body{
         color:#000;
         font-size: 13px !important;
@@ -539,6 +784,9 @@ $(document).ready(function() { //
     input.form-control{
         color:#000 !important;
     }
+    .value_input_price{
+        width: 100px;
+    }
 </style>
 <link type="text/css" href="view/stylesheet/bootstrap-select.css" rel="stylesheet" media="screen" />
 <style>
@@ -547,10 +795,16 @@ $(document).ready(function() { //
     background-color: #f5f5f5;
   }
   .color_green {
-      color: green;
+      color: green !important;
+      outline: none !important;
+      border-color: green !important;
+      background-color: unset !important;
   }
   .color_red {
-    color: red;
+    color: red !important;
+    border-color: red !important;
+    outline: none !important;
+    background-color: unset !important;
   }
   .well .form-group{
     clear: both;
@@ -559,6 +813,9 @@ $(document).ready(function() { //
   }
   .js-td-images{
     min-width:350px;
+  }
+  .addPhotoButton{
+      cursor: pointer;
   }
 </style>
 <?php echo $footer; ?>

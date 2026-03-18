@@ -10,7 +10,7 @@ class ModelLocalisationCurrency extends Model {
 		}
 
 		$this->cache->delete('currency');
-		
+
 		return $currency_id;
 	}
 
@@ -77,9 +77,9 @@ class ModelLocalisationCurrency extends Model {
 
 			return $query->rows;
 		} else {
-			$currency_data = $this->cache->get('currency');
+			//$currency_data = $this->cache->get('currency');
 
-			if (!$currency_data) {
+			//if (!$currency_data) {
 				$currency_data = array();
 
 				$query = $this->db->query("SELECT * FROM " . DB_PREFIX . "currency ORDER BY title ASC");
@@ -99,7 +99,7 @@ class ModelLocalisationCurrency extends Model {
 				}
 
 				$this->cache->set('currency', $currency_data);
-			}
+			//}
 
 			return $currency_data;
 		}

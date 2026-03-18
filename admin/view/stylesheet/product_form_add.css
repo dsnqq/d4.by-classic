@@ -1,0 +1,114 @@
+html, body{
+    color:#000;
+}
+
+.selected.active span{  color:#fff;}
+.bootstrap-select > .dropdown-toggle.bs-placeholder, .bootstrap-select > .dropdown-toggle.bs-placeholder:hover, .bootstrap-select > .dropdown-toggle.bs-placeholder:focus, .bootstrap-select > .dropdown-toggle.bs-placeholder:active{
+    color:#000 !important;
+}
+
+input,textarea{
+    color: #000 !important;
+}
+
+select{
+    color: #000 !important;
+}
+
+.dropdown-menu > li > a{
+    color: #000 !important;
+}
+
+input::placeholder,textarea::placeholder{
+    color: #000 !important;
+}
+
+.activeMain{
+    background: #1C7ED6 !important;
+    color: #fff !important;
+    font-weight: bold !important;
+}
+
+.disk_hide{
+    display:none;
+}
+
+#tab-photo{
+    margin-top:25px;
+}
+
+.tab-content .form-group{
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+
+.tab-content .form-control{
+    padding: 3px 5px;
+    height:25px;
+}
+
+.form-horizontal .control-label{
+    font-size: 11px;
+    font-weight: 600;
+    text-align:left;
+}
+
+.table-bordered{
+    max-width:700px;
+}
+
+.padding-r-2{
+    padding-right:2px !important;
+}
+
+.padding-l-r-2{
+    padding-left:2px !important;
+    padding-right:2px !important;
+}
+
+.removeMoreProduct{
+    color: #ff0000;
+    font-weight: bold;
+    top: 3px;
+    cursor: pointer;
+    text-align:right;
+    display:none;
+}
+
+.addMoreProduct{
+    color: #042cee;
+    font-weight: bold;
+    top: 3px;
+    cursor: pointer;
+    margin-bottom: 15px;
+}
+
+.addMoreProduct:hover,.removeMoreProduct:hover{
+    opacity: 0.8
+}
+
+.addMoreSection .bootstrap-select{
+    margin-top:5px;
+}
+
+.itemsBlockFlex{
+    display:flex;
+    flex-wrap: wrap;
+    margin-left: 0px;
+    margin-bottom: 35px;
+}
+
+.itemsBlock{
+    display: grid;
+    margin-right: 15px;
+    margin-bottom: 15px;
+}
+
+.itemsBlock img{
+    height: auto !important;
+    width: 100px !important;
+}
+
+.bootstrap-select .dropdown-menu {
+    max-height: 300px !important;
+}

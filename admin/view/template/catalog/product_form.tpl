@@ -3,101 +3,7 @@
 
 <link rel="stylesheet" href="/admin/view/stylesheet/dropzone.css" />
 <script src="/admin/view/javascript/dropzone.js"></script>
-
-
-
-<style>
-  html, body{
-    color:#000;
-  }
-  .selected.active span{  color:#fff;}
-  .bootstrap-select > .dropdown-toggle.bs-placeholder, .bootstrap-select > .dropdown-toggle.bs-placeholder:hover, .bootstrap-select > .dropdown-toggle.bs-placeholder:focus, .bootstrap-select > .dropdown-toggle.bs-placeholder:active{
-    color:#000 !important;
-  }
-  input,textarea{
-    color: #000 !important;
-  }
-  select{
-    color: #000 !important;
-  }
-  .dropdown-menu > li > a{
-    color: #000 !important;
-
-  }
-  input::placeholder,textarea::placeholder{
-    color: #000 !important;
-  }
-  .activeMain{
-    background: #1C7ED6 !important;
-    color: #fff !important;
-    font-weight: bold !important;
-  }
-  .disk_hide{
-    display:none;
-  }
-  #tab-photo{
-    margin-top:25px;
-  }
-  .tab-content .form-group{
-    padding-top: 5px;
-    padding-bottom: 5px;
-  }
-  .tab-content .form-control{
-    padding: 3px 5px;
-    height:25px;
-  }
-  .form-horizontal .control-label{
-    font-size: 11px;
-    font-weight: 600;
-    text-align:left;
-  }
-  .table-bordered{
-    max-width:700px;
-  }
-  .padding-r-2{
-    padding-right:2px !important;
-  }
-  .padding-l-r-2{
-    padding-left:2px !important;
-    padding-right:2px !important;
-  }
-  .removeMoreProduct{
-    color: #ff0000;
-    font-weight: bold;
-    top: 3px;
-    cursor: pointer;
-    text-align:right;
-    display:none;
-  }
-  .addMoreProduct{
-    color: #042cee;
-    font-weight: bold;
-    top: 3px;
-    cursor: pointer;
-    margin-bottom: 15px;
-  }
-  .addMoreProduct:hover,.removeMoreProduct:hover{
-    opacity: 0.8
-  }
-  .addMoreSection .bootstrap-select{
-    margin-top:5px;
-  }
-  .itemsBlockFlex{
-    display:flex;
-    flex-wrap: wrap;
-    margin-left: 0px;
-    margin-bottom: 35px;
-  }
-  .itemsBlock{
-    display: grid;
-    margin-right: 15px;
-    margin-bottom: 15px;
-  }
-  .itemsBlock img{
-    height: auto !important;
-    width: 100px !important;
-  }
-</style>
+<link rel="stylesheet" href="/admin/view/stylesheet/product_form_add.css" />
 <link type="text/css" href="view/stylesheet/bootstrap-select.css" rel="stylesheet" media="screen" />
 <?php echo $column_left; ?>
 
@@ -128,19 +34,6 @@
       </div>
       <div class="panel-body">
         <form action="<?php echo $action; ?>" method="post" enctype="multipart/form-data" id="form-product" class="form-horizontal">
-          <!---<ul class="nav nav-tabs">
-            <li class="active"><a href="#tab-general" data-toggle="tab"><?php echo $tab_general; ?></a></li>
-            <li><a href="#tab-data" data-toggle="tab"><?php echo $tab_data; ?></a></li>
-            <li><a href="#tab-links" data-toggle="tab"><?php echo $tab_links; ?></a></li>
-            <li><a href="#tab-attribute" data-toggle="tab"><?php echo $tab_attribute; ?></a></li>
-            <li><a href="#tab-option" data-toggle="tab"><?php echo $tab_option; ?></a></li>
-            <?php /*<li><a href="#tab-recurring" data-toggle="tab"><?php echo $tab_recurring; ?></a></li> */?>
-            <li><a href="#tab-discount" data-toggle="tab"><?php echo $tab_discount; ?></a></li>
-            <?php /*<li><a href="#tab-special" data-toggle="tab"><?php echo $tab_special; ?></a></li>*/?>
-            <li><a href="#tab-image" data-toggle="tab"><?php echo $tab_image; ?></a></li>
-            <?php /*<li><a href="#tab-reward" data-toggle="tab"><?php echo $tab_reward; ?></a></li>*/?>
-            <?php /* <li><a href="#tab-design" data-toggle="tab"><?php echo $tab_design; ?></a></li>*/?>
-          </ul>--->
           <div class="tab-content">
             <div class="tab-pane active" id="tab-general">
 
@@ -231,7 +124,7 @@
             <div class="col-sm-2">
               <select id="" name="length" class="form-control selectpicker" data-live-search="true">
                 <option value="" <?php echo (round($length, 2) == "") ? "selected='selected'" : "" ; ?>>Выберите год</option>
-                <?php $year_max = date('Y');$year_max = (int)$year_max; ?>
+                <?php $year_max = "2025"; $year_max = (int)$year_max; ?>
                 <?php for($year_iteration = 1980; $year_iteration <= $year_max; $year_iteration++){ ?>
                 <option value="<?php echo $year_iteration; ?>"  <?php echo (round($length, 2) == $year_iteration) ? "selected='selected'" : "" ; ?>><?php echo $year_iteration; ?></option>
                 <?php } ?>
@@ -245,8 +138,13 @@
           <div class="form-group ">
             <?php /* Объем */ ?>
             <label class="col-sm-2 control-label" for="input-jan">Объем (л), топливо и тип: </span></label>
-            <div class="col-sm-1 padding-r-2">
-              <input type="text" name="jan" value="<?php echo $jan; ?>" placeholder="1.1" id="input-jan" class="form-control" />
+            <div class="col-sm-2 padding-r-2">
+              <select id="main__jan" name="jan" class="form-control selectpicker" data-live-search="true">
+                <option value="" <?php echo ($jan == "") ? "selected='selected'" : "" ; ?>>Выберите</option>
+                <?php foreach($jan_array as $jan_value){ ?>
+                <option data-chained="<?php echo $jan_value; ?>" value="<?php echo $jan_value; ?>" <?php echo ($jan_value == $jan) ? "selected='selected'" : "" ; ?>><?php echo $jan_value; ?></option>
+                <?php } ?>
+              </select>
             </div>
 
             <?php /* Топливо */ ?>
@@ -275,7 +173,7 @@
           <div class="form-group">
             <label class="col-sm-2 control-label">Тип кузова и коробка: </label>
             <div class="col-sm-2  padding-r-2">
-              <select id="" name="ean" class="form-control selectpicker" data-live-search="true">
+              <select id="" name="ean" class="form-control selectpicker">
                 <option value="" <?php echo ($ean == "") ? "selected='selected'" : "" ; ?>>Выберите</option>
                 <?php foreach($ean_array as $ean_array_item){ ?>
                 <option value="<?php echo $ean_array_item; ?>" <?php echo ($ean_array_item == $ean) ? "selected='selected'" : "" ; ?>><?php echo $ean_array_item; ?></option>
@@ -297,7 +195,7 @@
           <?php /* Запчасть */ ?>
           <div class="form-group required ">
             <label class="col-sm-2 control-label" for="input-manufacturer"><?php echo $entry_manufacturer; ?></label>
-            <div class="col-sm-5">
+            <div class="col-sm-7">
               <select id="input-manufacturer" name="manufacturer_id" class="form-control selectpicker" data-live-search="true">
                 <option value="0" selected="selected"><?php echo $text_none; ?></option>
                 <?php foreach ($manufacturers as $manufacturer) { ?>
@@ -414,7 +312,8 @@
                       auto = $("#main_category_id option:selected").text();
                       auto = auto.replace(/\s+/g,'');
                       auto = auto.replace('>', ' ');
-                      year = $('input[name="length"]').val();
+                      year = $('select[name="length"]').val();
+                      console.log(name, auto, year);
                       $('#input-name1').val(name + ' к ' + auto + ' ' + year + ' г.');
                   }, 500);
               </script>
@@ -493,6 +392,12 @@
 			$exect_sale = 100 - $exect_sale;
 		   } ?>
             <input type="number" data-min="0" data-max="100" name="procent_price" value="<?php echo($product_specials[0]['price'] && $product_specials[0]['price'] != 0) ? $exect_sale : "0"; ?>" placeholder="Процент скидки (мин.5%)" class="form-control procent_price" />
+          </div>
+        </div>
+        <div class="form-group ">
+          <label class="col-sm-2 control-label" for="input-youtube">Код видео с youtube.com</label>
+          <div class="col-sm-3">
+            <input type="text" name="youtube" value="<?php echo $youtube; ?>" placeholder="Видео" id="input-youtube" class="form-control" />
           </div>
         </div>
         <div class="" id="special_class">
@@ -1159,7 +1064,7 @@
 
         <?php foreach ($product_images as $product_photo) { ?>
         <div class="itemsBlock">
-          <img src="https://d4.by/image/<?=$product_photo['image']?>" class="img-thumbnail" width="175" height="175" style="height:175px;" />
+          <img src="<?=$product_photo['thumb']?>" class="img-thumbnail" width="175" height="175" style="height:175px;" />
           <input type="hidden" class="image_for_main" name="product_image[<?=$photo_num?>][image]" value="<?=$product_photo['image']?>" id="input-photo1">
           <input type="hidden" name="product_image[<?=$photo_num?>][sort_order]" value="<?php echo $product_photo['sort_order']; ?>" class="sort_order">
           <button type="button" class="btn btn-link remove_image" id="/image/<?=$product_photo['image']?>">Удалить</button>
@@ -1430,7 +1335,10 @@
   echo '<div style="display:flex;align-items:center;max-width:275px;border:1px solid #000;"><div>'.$img_sm_qr1.'</div><div style="text-align:center;font-size:12px;padding-left:10px;margin:0 auto;font-weight:bold;line-height:18px;">'.$qr_title.'</div></div>';
 
   ?>
-  <button id="printBut" class="btn btn-danger" style="float: right;">Печать QR код</button>
+  <div style="float: right;">
+    <button id="printBut" class="btn btn-danger">Печать QR код</button><br><br>
+    <a class="btn btn-success" href="https://d4.by/admin/index.php?route=catalog/product/addCopyProduct&product_id=<?php echo $_GET['product_id']; ?>&token=<?php echo $_GET['token'];?>" title="Копировать объявление">Копировать объявление</a>
+  </div>
   <div style="clear:both;"></div>
   <iframe name="imgFrame" style="width: 0; height: 0; border: 0;color:#fff;"></iframe>
 
@@ -1458,7 +1366,8 @@
         <!-- Основное содержимое модального окна -->
         <div class="modal-body">
           <div class="modalShowAddPhoto">
-            <form action="<?=$site_url_photo?>" class="dropzone" id="dropzoneFrom"></form>
+            <!---<form action="<?=$site_url_photo?>" class="dropzone" id="dropzoneFrom"></form>-->
+            <div class="dropzone" id="dropzoneFrom"></div>
             <br><br>
             <div style="text-align:center;">
               <button type="button" class="btn btn-info" id="submit-all">Загрузить изображения</button>
@@ -1482,13 +1391,17 @@
       });
       $(document).ready(function() {
           Dropzone.options.dropzoneFrom = {
+              url: 'https://d4.by/upload.php',
               autoProcessQueue: false,
-              maxFilesize: 2500, // MB
+              //maxFilesize: 2500, // MB
+              //parallelUploads: 20,
               parallelUploads: 20,
-              maxThumbnailFilesize: 200,
-              resizeWidth: 800,
+              //maxThumbnailFilesize: 200,
+              maxThumbnailFilesize: 2000,
+              resizeWidth: 1200,
+              //resizeQuality: 0.99,
               timeout: 180000000,
-              acceptedFiles: ".png,.jpg,.gif,.bmp,.jpeg",
+              //acceptedFiles: ".png,.jpg,.gif,.bmp,.jpeg",
               renameFile: function (file) {
                   let newName = new Date().getTime() + '_' + file.name;
                   return newName;
@@ -1503,6 +1416,7 @@
                     myDropzone.removeFile(file);
                   });*/
                   this.on("queuecomplete", function(data) {
+                      //dropzoneDiv
                       //console.log(myDropzone.files); // name
                   <?php
                           $date_now = date("d.m.Y");
@@ -2170,7 +2084,7 @@
             });
 
             $('.addMoreProduct').on('click', function(){
-                if(moreAuto <= 6){
+                if(moreAuto <= 11){
                     $('#main_category_id').clone().addClass('addMoreSection'+moreAuto).appendTo('.addMoreSection');
                     $(".addMoreSection"+moreAuto).prop("name", "main_category_dop[]");
                     $(".addMoreSection"+moreAuto).selectpicker('refresh');
@@ -2178,7 +2092,7 @@
 
                     moreAuto++;
                 } else{
-                    alert('Ограничение в 6 штук!');
+                    alert('Ограничение в 11 штук!');
                 }
             });
         }
@@ -2214,7 +2128,7 @@
                 $('#main__weight option:first').prop('selected', true);
                 $('#main__diadiametr option:first').prop('selected', true);
                 $('#input-etvylet').val('');
-                
+
                 $('#main__location').selectpicker('refresh');
                 $('#main__width').selectpicker('refresh');
                 $('#main__height').selectpicker('refresh');

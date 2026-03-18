@@ -1,6 +1,8 @@
 <?php
 class ControllerCommonHeader extends Controller {
 	public function index() {
+        $this->load->language('user/user');
+
 		$data['title'] = $this->document->getTitle();
 
 		if (isset($this->request->server['HTTPS']) && (($this->request->server['HTTPS'] == 'on') || ($this->request->server['HTTPS'] == '1'))) {
@@ -18,6 +20,8 @@ class ControllerCommonHeader extends Controller {
 		$data['lang'] = $this->language->get('lang');
 		$data['direction'] = $this->language->get('direction');
 		$data['user_id'] = $this->session->data['user_id'];
+		$data['username'] = $this->user->getUserName();
+
 
 		$this->load->language('common/header');
 
@@ -42,6 +46,8 @@ class ControllerCommonHeader extends Controller {
 		$data['text_support'] = $this->language->get('text_support');
 		$data['text_logged'] = sprintf($this->language->get('text_logged'), $this->user->getUserName());
 		$data['text_logout'] = $this->language->get('text_logout');
+
+		$data['link_to_new_version'] = ($this->request->get['route'] === "catalog/product" || $this->request->get['route'] === "catalog/product/add");
 
 		if (!isset($this->request->get['token']) || !isset($this->session->data['token']) || ($this->request->get['token'] != $this->session->data['token'])) {
 			$data['logged'] = '';

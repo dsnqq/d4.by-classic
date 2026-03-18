@@ -221,6 +221,7 @@ class ControllerSaleOrder extends Controller {
 				'telephone'	    => $result['telephone'],
 				'firstname'		=> $result['firstname'],
 				'lastname'		=> $result['lastname'],
+                'information'   => ($result['shipping_city']) ? $result['shipping_city'] : $result['payment_city'],
 				'shipping_adress'=> $result['shipping_address_1'],
 				'comment'		=> $result['comment'],
 				'order_status'  => $result['order_status'] ? $result['order_status'] : $this->language->get('text_missing'),

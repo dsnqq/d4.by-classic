@@ -430,7 +430,6 @@ class ControllerCatalogAqeCategory extends Controller {
 						}
 						$row[$column] = $result['image'];
 						$row['thumb'] = $image;
-						// $row['name'] = $result['name'];
 					} else if ($column == 'store') {
 						$stores = $this->model_catalog_category->getCategoryStores($result['category_id']);
 						$category_stores = array();

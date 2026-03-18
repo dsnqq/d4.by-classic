@@ -1,33 +1,34 @@
 <?php
-    /* 
-    $hostname = "localhost"; // название/путь сервера, с MySQL
-    $username = "dby_user"; // имя пользователя (в Denwer`е по умолчанию "root")
-    $password = "LhePBA4v6Lc8k6"; // пароль пользователя (в Denwer`е по умолчанию пароль отсутствует, этот параметр можно оставить пустым)
-    $dbName = "dby_bd"; // название базы данных
-    */
-    require_once "config.php";
-    $hostname = DB_HOSTNAME;
-    $username = DB_USERNAME;
-    $password = DB_PASSWORD;
-    $dbName = DB_DATABASE;
+    require_once('config.php');
 
-    $link = mysqli_connect($hostname, $username, $password, $dbName) 
-    or die("Ошибка " . mysqli_error($link));
-
-    /* Получить модификации */
-    $category_id = $_POST['category_id'];
-
-    $query = "SELECT filter_id FROM oc_category_filter WHERE category_id = '" . (int)$category_id . "'";
-    $result = mysqli_query($link, $query) or die("Ошибка " . mysqli_error($link)); 
-    while($filter_group = mysqli_fetch_array($result)){
-        
-        $query_desc = "SELECT name FROM oc_filter_description WHERE filter_id = '" . (int)$filter_group["filter_id"] . "'";
-        $result_desc = mysqli_query($link, $query_desc) or die("Ошибка " . mysqli_error($link)); 
-        while($filter_name = mysqli_fetch_array($result_desc)){
-            echo "<div class='link_modification'> - ".$filter_name['name'].'</div>';
-        }
+    // Устанавливаем подключение к базе данных с использованием подготовленных выражений
+    $link = mysqli_connect(DB_HOSTNAME, DB_USERNAME, DB_PASSWORD, DB_DATABASE);
+    if (!$link) {
+        die("Ошибка подключения: " . mysqli_connect_error());
     }
 
+    // Получаем ID категории
+    $category_id = (int)$_POST['category_id'];
 
+    // Подготовленный запрос для получения всех названий фильтров для данной категории
+    $query = "
+        SELECT fd.name
+        FROM oc_category_filter cf
+        JOIN oc_filter_description fd ON cf.filter_id = fd.filter_id
+        WHERE cf.category_id = ?
+    ";
+    $stmt = mysqli_prepare($link, $query);
+    mysqli_stmt_bind_param($stmt, 'i', $category_id);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+
+    // Выводим результаты
+    while ($filter_name = mysqli_fetch_assoc($result)) {
+        echo "<div class='link_modification'> - " . htmlspecialchars($filter_name['name']) . "</div>";
+    }
+
+    // Закрытие соединения
+    mysqli_free_result($result);
+    mysqli_stmt_close($stmt);
     mysqli_close($link);
 ?>

@@ -1,6 +1,7 @@
 <?php
 class ControllerProductCategory extends Controller {
 	public function index() {
+
 		$this->load->language('product/category');
 
 		$this->load->model('catalog/category');
@@ -20,13 +21,13 @@ class ControllerProductCategory extends Controller {
 		if (isset($this->request->get['sort'])) {
 			$sort = $this->request->get['sort'];
 		} else {
-			$sort = 'p.sort_order';
+			$sort = 'p.date_added';
 		}
 
 		if (isset($this->request->get['order'])) {
 			$order = $this->request->get['order'];
 		} else {
-			$order = 'ASC';
+			$order = 'DESC';
 		}
 
 		if (isset($this->request->get['page'])) {
@@ -229,9 +230,9 @@ class ControllerProductCategory extends Controller {
 
 				$catprod = array();
 				$catprod2 = array();
-				
+
 				$product_category = $this->model_catalog_product->getCategories($result['product_id']);
-				
+
 				foreach ($product_category as $prodcat) {
 				$category_info = $this->model_catalog_category->getCategory($prodcat['category_id']);
 					if ($category_info) {
@@ -240,16 +241,16 @@ class ControllerProductCategory extends Controller {
 						'parent_id'     => $category_info['parent_id']
 						);
 					}
-				} 
-	
+				}
+
 				$category_info2 = $this->model_catalog_category->getCategory($category_info['parent_id']);
 				if ($category_info2) {
 						$catprod2[] = array(
 						'name'     => $category_info2['name']
 						);
 					}
-				
-				
+
+
 				$datetime1 = date_create($result['date_added']);
 				if($currency_code == "BYN"){
 					$price_2 = "$".round($result['price'], '0');
@@ -260,8 +261,8 @@ class ControllerProductCategory extends Controller {
 				} elseif($currency_code == "USD"){
 					$price_2 = round($this->currency->convert(substr($price, 1), $currency_code, 'BYN'), '0')."BYN";
 					$price_3 = round($this->currency->convert(substr($price, 1), $currency_code, 'EUR'), '0')."€";
-				} 
-	
+				}
+
 				$data['products'][] = array(
 					'product_id'  => $result['product_id'],
 					'thumb'       => $image,
@@ -277,7 +278,7 @@ class ControllerProductCategory extends Controller {
 					'jan'             => $result['jan'],
 					'isbn'            => $result['isbn'],
 					'mpn'             => $result['mpn'],
-					
+
 
 					'description' => utf8_substr(strip_tags(html_entity_decode($result['description'], ENT_QUOTES, 'UTF-8')), 0, $this->config->get($this->config->get('config_theme') . '_product_description_length')) . '..',
 					'price'       => $price,
@@ -290,7 +291,7 @@ class ControllerProductCategory extends Controller {
 					'sku'	  => $result['sku'],
 					'ean'	  => $result['ean'],
 					'special'     => $special,
-					'auto'		  => $catprod, 
+					'auto'		  => $catprod,
 					'price_2'	  => $price_2,
 					'price_3'     => $price_3,
 					'date'        => date_format($datetime1,"d.m.Y"),
@@ -321,7 +322,7 @@ class ControllerProductCategory extends Controller {
 				'href'  => $this->url->link('product/category', 'path=' . $this->request->get['path'] . '&sort=p.sort_order&order=ASC' . $url)
 			);
 
-			$data['sorts'][] = array(
+			/*$data['sorts'][] = array(
 				'text'  => $this->language->get('text_name_asc'),
 				'value' => 'pd.name-ASC',
 				'href'  => $this->url->link('product/category', 'path=' . $this->request->get['path'] . '&sort=pd.name&order=ASC' . $url)
@@ -331,7 +332,7 @@ class ControllerProductCategory extends Controller {
 				'text'  => $this->language->get('text_name_desc'),
 				'value' => 'pd.name-DESC',
 				'href'  => $this->url->link('product/category', 'path=' . $this->request->get['path'] . '&sort=pd.name&order=DESC' . $url)
-			);
+			);*/
 
 			$data['sorts'][] = array(
 				'text'  => $this->language->get('text_price_asc'),
@@ -359,7 +360,7 @@ class ControllerProductCategory extends Controller {
 				);
 			}
 
-		
+
 			$data['sorts'][] = array(
 				'text'  => "Дата добаления (по возрастанию)",
 				'value' => 'p.date_added-ASC',
@@ -440,12 +441,12 @@ class ControllerProductCategory extends Controller {
 			if ($limit && ceil($product_total / $limit) > $page) {
 			    $this->document->addLink($this->url->link('product/category', 'path=' . $category_info['category_id'] . '&page='. ($page + 1), true), 'next');
 			}*/
-			if ($page > 1) {
-				//$this->document->addLink($this->url->link('product/category', 'path=' . $category_info['category_id'], true), 'canonical');
+			if ($page > 0) {
+				$this->document->addLink($this->url->link('product/category', 'path=' . $category_info['category_id'], true), 'canonical');
 			} elseif ($page == 2) {
-			    //$this->document->addLink($this->url->link('product/category', 'path=' . $category_info['category_id'], true), 'prev');
+			    $this->document->addLink($this->url->link('product/category', 'path=' . $category_info['category_id'], true), 'prev');
 			} else {
-			   // $this->document->addLink($this->url->link('product/category', 'path=' . $category_info['category_id'] . '&page='. ($page - 1), true), 'prev');
+			   $this->document->addLink($this->url->link('product/category', 'path=' . $category_info['category_id'] . '&page='. ($page - 1), true), 'prev');
 			}
 
 			/*if ($limit && ceil($product_total / $limit) > $page) {

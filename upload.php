@@ -1,6 +1,6 @@
 <?php
-
 // PARAMS
+set_time_limit(0);
 $date_now = date("d.m.Y");
 $time = strtotime($date_now);
 $path = 'image/catalog/d4_img';

@@ -128,14 +128,17 @@ $(document).ready(function() {
 		localStorage.setItem('display', 'grid');
 	});
 
-	if (localStorage.getItem('display') == 'list') {
-		$('#list-view').trigger('click');
-		$('#list-view').addClass('active');
-		$('.row_s').addClass('view');
-	} else {
-		$('#grid-view').trigger('click');
-		$('#grid-view').addClass('active');
-		$('.row_s').removeClass('view');
+
+	if(window.location.pathname !== "/cars/"){
+		if (localStorage.getItem('display') == 'list') {
+			$('#list-view').trigger('click');
+			$('#list-view').addClass('active');
+			$('.row_s').addClass('view');
+		} else {
+			$('#grid-view').trigger('click');
+			$('#grid-view').addClass('active');
+			$('.row_s').removeClass('view');
+		}
 	}
 	/*window.onload = function(){
 

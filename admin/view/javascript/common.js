@@ -46,7 +46,8 @@ $(document).ready(function() {
 		$('#menu #dashboard').addClass('active');
 	} else {
 		// Sets active and open to selected page in the left column menu.
-		$('#menu a[href=\'' + sessionStorage.getItem('menu') + '\']').parents('li').addClass('active open');
+		//$('#menu a[href=\'' + sessionStorage.getItem('menu') + '\']').parents('li').addClass('active open');
+		$('#menu a[href=\'' + window.location.href + '\']').parents('li').addClass('active open');
 	}
 
 	if (localStorage.getItem('column-left') == 'active') {

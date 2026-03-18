@@ -284,7 +284,7 @@ class ControllerCatalogNews extends Controller {
 
 	}
 
-	private function getForm() { 
+	private function getForm() {
 
 		$this->load->language('catalog/news');
 	

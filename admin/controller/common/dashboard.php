@@ -1,7 +1,7 @@
 <?php
 class ControllerCommonDashboard extends Controller {
 	public function index() {
-		
+
 		$this->load->language('common/dashboard');
 
 		$this->document->setTitle($this->language->get('heading_title'));
@@ -10,7 +10,7 @@ class ControllerCommonDashboard extends Controller {
 
 		$data['breadcrumbs'] = array();
 
-		
+
 		$this->load->model('catalog/product');
 		$this->load->model('catalog/shiny');
 
@@ -19,8 +19,8 @@ class ControllerCommonDashboard extends Controller {
 
 		$data['shinyCount'] = $this->model_catalog_shiny->getProductCount();
 		$data['shinyCountNo'] = $this->model_catalog_shiny->getProductCountStatusNo();
-		
 
+        $data['token'] = $this->session->data['token'];
 		$data['link_shiny'] = $this->url->link('catalog/shiny', 'token=' . $this->session->data['token'], true);
 		$data['link_shiny_add'] = $this->url->link('catalog/shiny/add', 'token=' . $this->session->data['token'], true);
 
@@ -32,12 +32,13 @@ class ControllerCommonDashboard extends Controller {
 		$data['link_auto'] = $this->url->link('catalog/category', 'token=' . $this->session->data['token'], true);
 		$data['link_zch_name'] = $this->url->link('catalog/manufacturer', 'token=' . $this->session->data['token'], true);
 		$data['setting_setting'] = $this->url->link('setting/setting', 'token=' . $this->session->data['token'], true);
-		
-		
+
+
 		$data['cart_shopper'] = $this->url->link('extension/module/simple&abandoned', 'token=' . $this->session->data['token'], true);
 		$data['setting_valute'] = $this->url->link('localisation/currency', 'token=' . $this->session->data['token'], true);
 		$data['setting_valute_te'] = $this->url->link('extension/module/ucur', 'token=' . $this->session->data['token'], true);
 		$user_id = $this->session->data['user_id'];
+        $data['user_id_com'] = $user_id;
 
         $this->load->model('localisation/currency');
 
@@ -72,12 +73,12 @@ class ControllerCommonDashboard extends Controller {
 
 		// Get a list of installed modules
 		$extensions = $this->model_extension_extension->getInstalled('dashboard');
-		
+
 		// Add all the modules which have multiple settings for each module
 		foreach ($extensions as $code) {
 			if ($this->config->get('dashboard_' . $code . '_status') && $this->user->hasPermission('access', 'extension/dashboard/' . $code)) {
 				$output = $this->load->controller('extension/dashboard/' . $code . '/dashboard');
-				
+
 				if ($output) {
 					$dashboards[] = array(
 						'code'       => $code,
@@ -96,20 +97,20 @@ class ControllerCommonDashboard extends Controller {
 		}
 
 		array_multisort($sort_order, SORT_ASC, $dashboards);
-		
+
 		// Split the array so the columns width is not more than 12 on each row.
 		$width = 0;
 		$column = array();
 		$data['rows'] = array();
-		
+
 		foreach ($dashboards as $dashboard) {
 			$column[] = $dashboard;
-			
+
 			$width = ($width + $dashboard['width']);
-			
+
 			if ($width >= 12) {
 				$data['rows'][] = $column;
-				
+
 				$width = 0;
 				$column = array();
 			}
@@ -125,15 +126,19 @@ class ControllerCommonDashboard extends Controller {
 
 			$this->model_localisation_currency->refresh();
 		}
-
+        
 		$this->response->setOutput($this->load->view('common/dashboard', $data));
-		if($user_id == 4 || $user_id == 5){
+		if($user_id == 5){
 			$this->response->redirect($this->url->link('catalog/product', 'token=' . $this->session->data['token'], true));
-		} elseif($user_id == 2 || $user_id == 1 || $user_id == 6 || $user_id == 7){
+		} elseif($user_id == 2 || $user_id == 7 || $user_id == 8 || $user_id == 28){
 			$this->response->setOutput($this->load->view('common/dashboard', $data));
+		} elseif($user_id == 34){
+			$this->response->redirect($this->url->link('accounting/product_accounting', 'token=' . $this->session->data['token'], true));
 		} else{
-			$this->response->redirect($this->url->link('catalog/product', 'token=' . $this->session->data['token'], true));
-		}
-
+            $this->response->redirect($this->url->link('catalog/product', 'token=' . $this->session->data['token'], true));
+        }
+        // 29 ID разрабочтик Даниил для тестирования
 	}
 }
+
+

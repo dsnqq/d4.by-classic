@@ -1,0 +1,260 @@
+<?php echo $header; ?>
+<div id="content">
+    <div class="page-header">
+        <div class="container-fluid">
+            <h1>Проданные запчасти</h1>
+        </div>
+    </div>
+    <style>
+        .content {
+            padding: 15px 10px 3px;
+        }
+        .filter-section {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+        }
+        .filter-group {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            align-items: flex-end;
+        }
+        .filter-item {
+            min-width: 200px;
+        }
+        .filter-item label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .btn-filter {
+            height: 38px;
+        }
+        .table-responsive {
+            overflow-x: auto;
+        }
+        .status-deleted {
+            color: #dc3545;
+            font-weight: bold;
+        }
+        .status-archived {
+            color: #6c757d;
+            font-weight: bold;
+        }
+        .pagination {
+            margin-top: 20px;
+        }
+        .stats-box {
+            background: #e9f7fe;
+            padding: 10px 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            border-left: 4px solid #17a2b8;
+        }
+        .date-filter {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        .date-filter input {
+            width: 150px;
+        }
+        .action-buttons {
+            display: flex;
+            gap: 5px;
+        }
+        .btn-restore {
+            background-color: #28a745;
+            border-color: #28a745;
+        }
+        .btn-restore:hover {
+            background-color: #218838;
+            border-color: #1e7e34;
+        }
+    </style>
+
+    <div class="container-fluid">
+        <div class="content">
+            <!-- Статистика -->
+            <div class="stats-box">
+                <h4>Статистика продаж</h4>
+                <div class="row">
+                    <div class="col-md-3">
+                        <strong>Всего продано:</strong> <span class="badge badge-danger">152</span>
+                    </div>
+                    <div class="col-md-3">
+                        <strong>За сегодня:</strong> <span class="badge badge-warning">3</span>
+                    </div>
+                    <div class="col-md-3">
+                        <strong>За неделю:</strong> <span class="badge badge-info">18</span>
+                    </div>
+                    <div class="col-md-3">
+                        <strong>За месяц:</strong> <span class="badge badge-primary">47</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Фильтры -->
+            <div class="filter-section">
+                <form method="get" id="filter-form">
+                    <div class="filter-group">
+                        <div class="filter-item">
+                            <label>Дата продажи:</label>
+                            <div class="date-filter">
+                                <input type="text" name="date_from" value="2024-01-01" class="form-control date-filter">
+                                <span>по</span>
+                                <input type="text" name="date_to" value="2024-03-20" class="form-control date-filter">
+                            </div>
+                        </div>
+
+                        <div class="filter-item">
+                            <button type="submit" class="btn btn-primary btn-filter">
+                                <i class="fa fa-filter"></i> Фильтровать
+                            </button>
+                            <button type="button" class="btn btn-default btn-filter" id="reset-filters">
+                                <i class="fa fa-refresh"></i> Сбросить
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Таблица проданных запчастей -->
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">
+                        <i class="fa fa-trash"></i> Список проданных запчастей
+                        <span class="badge">125 записей</span>
+                    </h3>
+                    <div class="pull-right">
+                        <button class="btn btn-default btn-sm" id="export-csv">
+                            <i class="fa fa-download"></i> Экспорт в CSV
+                        </button>
+                    </div>
+                </div>
+                <div class="panel-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover">
+                            <thead>
+                            <tr>
+                                <th style="width: 50px;">ID</th>
+                                <th>Наименование запчасти</th>
+                                <th>Артикул</th>
+                                <th>Цена</th>
+                                <th>Дата продажи</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td>2457</td>
+                                <td><strong>Двигатель к Mercedes C W203, 2003г.</strong></td>
+                                <td>BR-2457-F</td>
+                                <td>20$</td>
+                                <td>2024-03-20 14:30</td>
+                            </tr>
+                            <tr>
+                                <td>1893</td>
+                                <td><strong>Двигатель к Alfa Romeo 146, 1996г.</strong></td>
+                                <td>ST-1893-M</td>
+                                <td>20$</td>
+                                <td>2024-03-19 11:15</td>
+                            </tr>
+                            <tr>
+                                <td>3124</td>
+                                <td><strong>Насос вакуумный к Peugeot 806, 1999г.</strong></td>
+                                <td>SH-3124-L</td>
+                                <td>28$</td>
+                                <td>2024-03-18 16:45</td>
+                            </tr>
+                            <tr>
+                                <td>2789</td>
+                                <td><strong>Насос вакуумный к Peugeot 806, 1999г.</strong></td>
+                                <td>LH-2789-R</td>
+                                <td>35$</td>
+                                <td>2024-03-17 09:20</td>
+                            </tr>
+                            <tr>
+                                <td>1956</td>
+                                <td><strong>Насос вакуумный к Audi A6, 2007г.</strong></td>
+                                <td>FP-1956-H</td>
+                                <td>18$</td>
+                                <td>2024-03-16 13:10</td>
+                            </tr>
+                            <tr>
+                                <td>3321</td>
+                                <td><strong>Турбина к Peugeot 806, 1999г.</strong></td>
+                                <td>AT-3321-A</td>
+                                <td>19$</td>
+                                <td>2024-03-15 10:05</td>
+                            </tr>
+                            <tr>
+                                <td>2678</td>
+                                <td><strong>Турбина к Peugeot 806, 2008г.</strong></td>
+                                <td>SR-2678-P</td>
+                                <td>80$</td>
+                                <td>2024-03-14 15:30</td>
+                            </tr>
+                            <tr>
+                                <td>2987</td>
+                                <td><strong>Турбина к Peugeot 806, 1999г.</strong></td>
+                                <td>CAT-2987-S</td>
+                                <td>200$</td>
+                                <td>2024-03-13 12:25</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Пагинация -->
+                    <div class="row">
+                        <div class="col-sm-6 text-left">
+                            <ul class="pagination">
+                                <li class="active"><span>1</span></li>
+                                <li><a href="#">2</a></li>
+                                <li><a href="#">3</a></li>
+                                <li><a href="#">4</a></li>
+                                <li><a href="#">5</a></li>
+                                <li><a href="#">&gt;</a></li>
+                                <li><a href="#">&gt;&gt;</a></li>
+                            </ul>
+                        </div>
+                        <div class="col-sm-6 text-right">
+                            <p>Показано с 1 по 8 из 125 записей</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function() {
+        // Сброс фильтров
+        $('#reset-filters').click(function() {
+            $('#filter-form')[0].reset();
+            $('#filter-form').submit();
+        });
+
+        // Экспорт в CSV
+        $('#export-csv').click(function() {
+            window.location.href = 'index.php?route=report/deleted/export&token=<?php echo $token; ?>&' + $('#filter-form').serialize();
+        });
+
+        $("input.date-filter").datetimepicker({
+            pickTime: false,           // Не показывать выбор времени[citation:3]
+            format: "YYYY-MM-DD",      // Формат даты[citation:4]
+            keepInvalid: true,         // Сохранять невалидные значения[citation:3]
+            language: 'ru',            // Русский язык интерфейса[citation:5]
+            weekStart: 1,              // Начало недели с понедельника[citation:4]
+            todayBtn: true,            // Кнопка "Сегодня"
+            todayHighlight: true,      // Подсветка сегодняшней даты
+            autoclose: true            // Закрывать после выбора даты[citation:3]
+        });
+    });
+</script>
+
+<?php echo $footer; ?>

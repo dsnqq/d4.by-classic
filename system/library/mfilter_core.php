@@ -1054,15 +1054,15 @@ class MegaFilterCore {
 						case 'mpn' :
 						case 'location' : {
 							$ftmp = $value;
-							
-							if( isset( $this->_settings['base_attribs'][$key]['display_as_type'] ) && $this->_settings['base_attribs'][$key]['display_as_type'] == 'text' ) {
+
+							//if( isset( $this->_settings['base_attribs'][$key]['display_as_type'] ) && $this->_settings['base_attribs'][$key]['display_as_type'] == 'text' ) {
 								foreach( $value as $k => $v ) {
 									$ftmp[$k] = '%' . $v . '%';
 								}
-							}
-							
+							//}
+
 							$this->_conditions['in'][$key] = "( `p`.`" . $key . "` LIKE " . implode( " OR `p`.`" . $key . "` LIKE ", $this->parseArrayToStr( $ftmp ) ) . ' )';
-							
+
 							break;
 						}
 						case 'search_oc' :
@@ -2645,8 +2645,8 @@ class MegaFilterCore {
 		
 		$lifetime = isset( $this->_settings['cache_lifetime'] ) ? (int) $this->_settings['cache_lifetime'] : 24;
 		
-		file_put_contents( DIR_SYSTEM . 'cache_mfp/' . $name, serialize( $value ) );
-		file_put_contents( DIR_SYSTEM . 'cache_mfp/' . $name . '.time', time() + 60 * 60 * $lifetime );
+		//file_put_contents( DIR_SYSTEM . 'cache_mfp/' . $name, serialize( $value ) );
+		//file_put_contents( DIR_SYSTEM . 'cache_mfp/' . $name . '.time', time() + 60 * 60 * $lifetime );
 		
 		return true;
 	}

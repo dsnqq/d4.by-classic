@@ -504,7 +504,7 @@
 		<?php echo htmlspecialchars_decode( $settings['javascript'] ); ?>
 	<?php } ?>
 	
-	jQuery().ready(function(){			
+	jQuery().ready(function(){
 		jQuery('#mfilter-box-<?php echo $_idx; ?>').each(function(){
 			var _t = jQuery(this).addClass('init'),
 				_p = { };

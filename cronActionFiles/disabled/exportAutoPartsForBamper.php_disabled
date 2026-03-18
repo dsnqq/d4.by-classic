@@ -1,0 +1,163 @@
+<?php
+    function kama_create_csv_file($create_data, $file = null, $col_delimiter = ';', $row_delimiter = "\r\n") {
+        if (!is_array($create_data)) return false;
+        if ($file && !is_dir(dirname($file))) return false;
+
+        // Создаем CSV строку
+        $CSV_str = '';
+
+        // Перебираем данные
+        foreach ($create_data as $row) {
+            $cols = array_map(function ($col_val) use ($row_delimiter) {
+                // Экранирование специальных символов и добавление кавычек
+                if (preg_match('/[",;\r\n]/', $col_val)) {
+                    if ($row_delimiter === "\r\n") {
+                        $col_val = str_replace(["\r\n", "\r"], ['\n', ''], $col_val);
+                    } elseif ($row_delimiter === "\n") {
+                        $col_val = str_replace("\n", '\r', $col_val);
+                    }
+                    $col_val = str_replace('"', '""', $col_val);  // экранирование кавычек
+                }
+                return '"' . $col_val . '"';  // обрамление в кавычки
+            }, $row);
+
+            $CSV_str .= implode($col_delimiter, $cols) . $row_delimiter;  // добавляем строку в результат
+        }
+
+        $CSV_str = rtrim($CSV_str, $row_delimiter);
+
+        // Если указан файл, записываем в него
+        if ($file) {
+            return file_put_contents($file, $CSV_str) ? $CSV_str : false;
+        }
+
+        return $CSV_str;
+    }
+
+    // Подключение к базе данных
+    require_once('/home/dby/sites/d4.by/config.php');
+
+    $connection = mysqli_connect(DB_HOSTNAME, DB_USERNAME, DB_PASSWORD, DB_DATABASE) or die("Ошибка " . mysqli_error($connection));
+
+    // Запрос для получения товаров
+    $query = "SELECT * FROM `oc_product` WHERE status != '0' AND price > 4";
+    $result = mysqli_query($connection, $query) or die("Ошибка " . mysqli_error($connection));
+
+    $create_data = [
+        ['ID_EXT', 'МАРКА', 'МОДЕЛЬ', 'ГОД', 'ЗАПЧАСТЬ', 'ВЕРСИЯ', 'ТОПЛИВО', 'ОБЪЕМ', 'ТИП ДВИГАТЕЛЯ', 'КОРОБКА', 'ТИП КУЗОВА', 'R ДИАМЕТР', 'J ШИРИНА', 'КОЛ ОТВЕРСТИЙ', 'ET ВЫЛЕТ', 'DIA', 'PCD', 'НОМЕР', 'ОПИСАНИЕ', 'НОВАЯ', 'ПОД ЗАКАЗ', 'СКЛАДСКАЯ ИНФОРМАЦИЯ', 'ЦЕНА', 'ВАЛЮТА', 'СКИДКА', 'АДРЕС', 'ТЕЛЕФОНЫ', 'EMAIL', 'ИМЯ', 'ФОТО'],
+    ];
+
+    while ($result_item = mysqli_fetch_array($result)) {
+        // Извлечение изображений
+        $query_images = "SELECT * FROM `oc_product_image` WHERE product_id = " . (int)$result_item['product_id'] . " ORDER BY sort_order ASC";
+        $result_images = mysqli_query($connection, $query_images);
+        $images_product = '';
+        while ($row_image = mysqli_fetch_array($result_images)) {
+            if ($row_image['image']) {
+                $images_product .= HTTPS_SERVER . 'image/' . $row_image['image'] . ',';
+            }
+        }
+        $images_product = rtrim($images_product, ',');
+
+        // Извлечение атрибутов
+        $tel = $sklad = $city_s = '';
+        $query_attr = "SELECT * FROM `oc_product_attribute` WHERE product_id = " . (int)$result_item['product_id'];
+        $result_attr = mysqli_query($connection, $query_attr);
+        while ($row_attr = mysqli_fetch_row($result_attr)) {
+            if ($row_attr[1] == 13) $tel = $row_attr[3];
+            elseif ($row_attr[1] == 12) $sklad = $row_attr[3];
+            elseif ($row_attr[1] == 17) $city_s = $row_attr[3];
+        }
+
+        // Описание товара
+        $query_desc = "SELECT * FROM `oc_product_description` WHERE product_id = " . (int)$result_item['product_id'];
+        $result_desc = mysqli_query($connection, $query_desc);
+        $row_desc = mysqli_fetch_row($result_desc);
+
+        // Скидка
+        $special_price = '';
+        $query_special = "SELECT * FROM `oc_product_special` WHERE product_id = " . (int)$result_item['product_id'];
+        $result_special = mysqli_query($connection, $query_special);
+        $row_special = mysqli_fetch_row($result_special);
+        if ($row_special[4]) {
+            $special_price = (int)(100 - ((float)$row_special[4] * 100) / (float)$result_item['price']);
+        }
+
+        // Тип запчасти
+        $query_type = "SELECT * FROM `oc_manufacturer` WHERE manufacturer_id = " . (int)$result_item['manufacturer_id'];
+        $result_type = mysqli_query($connection, $query_type);
+        $row_type = mysqli_fetch_row($result_type);
+
+        // Марка и модель
+        $query_auto = "SELECT * FROM `oc_product_to_category` WHERE product_id = " . (int)$result_item['product_id'];
+        $result_auto = mysqli_query($connection, $query_auto);
+        $row_auto = mysqli_fetch_row($result_auto);
+
+        $query_marka = "SELECT * FROM `oc_category_description` WHERE category_id = " . (int)$row_auto[1];
+        $result_marka = mysqli_query($connection, $query_marka);
+        $row_marka = mysqli_fetch_row($result_marka);
+
+        // Модификация
+        $query_version = "SELECT filter_id FROM `oc_category_filter` WHERE category_id = " . (int)$row_auto[1];
+        $result_version = mysqli_query($connection, $query_version);
+        $modifications = [];
+        while ($row_version = mysqli_fetch_row($result_version)) {
+            if ($row_version[0]) {
+                $query_pro = "SELECT name FROM `oc_filter_description` WHERE filter_id = " . $row_version[0];
+                $result_pro = mysqli_query($connection, $query_pro);
+                $row_x = mysqli_fetch_row($result_pro);
+                $modifications[] = $row_x[0];
+            }
+        }
+
+        $my_modification = '';
+        foreach ($modifications as $mod) {
+            if (strpos($mod, 'это наша модификация') !== false) {
+                $my_modification = $mod;
+                break;
+            }
+        }
+
+        // Окончательная строка данных
+        $create_data[] = [
+            $result_item['model'], // ext_id
+            $row_marka[2],         // марка
+            $row_marka[2],         // модель
+            $result_item['length'], // год
+            $row_type[1],          // тип запчасти
+            $result_item['version'], // версия
+            $result_item['isbn'],  // топливо
+            $result_item['jan'],   // объем
+            $result_item['mpn'],   // тип двигателя
+            $result_item['upc'],   // коробка
+            $result_item['ean'],   // тип кузова
+            $result_item['location'], // диаметр R
+            $result_item['width'], // ширина J
+            $result_item['height'], // кол-во отверстий
+            $result_item['etvylet'],
+            $result_item['diadiametr'],
+            $result_item['weight'], // pcd
+            $result_item['sku'],    // номер з/ч
+            strip_tags($row_desc[3]), // описание
+            0,                      // новая
+            0,                      // под заказ
+            $sklad,                 // складская информация
+            $result_item['price'],  // цена
+            'USD',                  // валюта
+            $special_price,         // скидка
+            $city_s,                // адрес
+            $tel,                   // телефон
+            '',                     // email
+            '',                     // имя
+            $images_product,        // фото
+        ];
+    }
+
+    echo 'Выполнено обновление файла для заливки З/Ч на bamper.by. ';
+    echo "Дата и Время: " . date("d.m.Y") . " " . date("H:i:s");
+
+    // Записываем в CSV файл
+    kama_create_csv_file($create_data, '/home/dby/sites/d4.by/bamper/csv_for_bamper.csv');
+
+    // Закрытие соединения
+    mysqli_close($connection);

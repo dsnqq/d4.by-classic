@@ -16,6 +16,57 @@ class ModelCatalogProduct extends Model {
 		}
 	}
 
+    public function updateProductStatistics($product_id, $nameStatic)
+    {
+        $file = DIR_SYSTEM . 'product_views.log';
+        $data = [
+            'product_id' => (int)$product_id,
+            'nameStatic' => $nameStatic,
+            'timestamp' => strtotime(date('Y-m-d H:i:s'))
+        ];
+
+        file_put_contents($file, json_encode($data) . PHP_EOL, FILE_APPEND | LOCK_EX);
+    }
+
+    /*public function updateProductStatistics($product_id, $nameStatic) {
+        $product_id = (int)$product_id;
+
+        $current_ts = strtotime(date('d.m.Y H:i:s'));
+
+        $query = $this->db->query("SELECT * FROM `" . DB_PREFIX . "product_statistics` WHERE `product_id` = " . (int)$product_id . " LIMIT 1");
+
+        if ($query->num_rows) {
+            $row = $query->row;
+
+            $new_view_count = (int)$row['view_count'] + 1;
+
+            $date_list = isset($row['view_date_list']) ? (string)$row['view_date_list'] : '';
+
+            if (!empty($date_list)) {
+                $date_array = explode(',', $date_list);
+            } else {
+                $date_array = [];
+            }
+
+            $date_array[] = $current_ts;
+            $new_date_list = implode(',', $date_array);
+
+            $this->db->query("UPDATE `" . DB_PREFIX . "product_statistics`
+                SET
+                    `view_count` = " . (int)$new_view_count . ",
+                    `view_date_list` = '" . $this->db->escape($new_date_list) . "',
+                    `nameStatic` = '" . $this->db->escape($nameStatic) . "'
+                WHERE `product_id` = " . (int)$product_id . "
+            ");
+
+        } else {
+            $new_view_count = 1;
+            $new_date_list = $current_ts;
+
+            $this->db->query("INSERT INTO `" . DB_PREFIX . "product_statistics` SET `product_id` = " . (int)$product_id . ", `view_count` = " . (int)$new_view_count . ", `view_date_list` = '" . $this->db->escape($new_date_list) . "', `nameStatic` = '" . $this->db->escape($nameStatic) . "'");
+        }
+    }*/
+
 	public function getProduct($product_id) {
 		$query = $this->db->query("SELECT DISTINCT *, pd.name AS name, p.image, (SELECT md.name FROM " . DB_PREFIX . "manufacturer_description md WHERE md.manufacturer_id = p.manufacturer_id AND md.language_id = '" . (int)$this->config->get('config_language_id') . "') AS manufacturer, (SELECT price FROM " . DB_PREFIX . "product_discount pd2 WHERE pd2.product_id = p.product_id AND pd2.customer_group_id = '" . (int)$this->config->get('config_customer_group_id') . "' AND pd2.quantity = '1' AND ((pd2.date_start = '0000-00-00' OR pd2.date_start < NOW()) AND (pd2.date_end = '0000-00-00' OR pd2.date_end > NOW())) ORDER BY pd2.priority ASC, pd2.price ASC LIMIT 1) AS discount, (SELECT price FROM " . DB_PREFIX . "product_special ps WHERE ps.product_id = p.product_id AND ps.customer_group_id = '" . (int)$this->config->get('config_customer_group_id') . "' AND ((ps.date_start = '0000-00-00' OR ps.date_start < NOW()) AND (ps.date_end = '0000-00-00' OR ps.date_end > NOW())) ORDER BY ps.priority ASC, ps.price ASC LIMIT 1) AS special, (SELECT points FROM " . DB_PREFIX . "product_reward pr WHERE pr.product_id = p.product_id AND customer_group_id = '" . (int)$this->config->get('config_customer_group_id') . "') AS reward, (SELECT ss.name FROM " . DB_PREFIX . "stock_status ss WHERE ss.stock_status_id = p.stock_status_id AND ss.language_id = '" . (int)$this->config->get('config_language_id') . "') AS stock_status, (SELECT wcd.unit FROM " . DB_PREFIX . "weight_class_description wcd WHERE p.weight_class_id = wcd.weight_class_id AND wcd.language_id = '" . (int)$this->config->get('config_language_id') . "') AS weight_class, (SELECT lcd.unit FROM " . DB_PREFIX . "length_class_description lcd WHERE p.length_class_id = lcd.length_class_id AND lcd.language_id = '" . (int)$this->config->get('config_language_id') . "') AS length_class, (SELECT AVG(rating) AS total FROM " . DB_PREFIX . "review r1 WHERE r1.product_id = p.product_id AND r1.status = '1' GROUP BY r1.product_id) AS rating, (SELECT COUNT(*) AS total FROM " . DB_PREFIX . "review r2 WHERE r2.product_id = p.product_id AND r2.status = '1' GROUP BY r2.product_id) AS reviews, p.sort_order FROM " . DB_PREFIX . "product p LEFT JOIN " . DB_PREFIX . "product_description pd ON (p.product_id = pd.product_id) LEFT JOIN " . DB_PREFIX . "product_to_store p2s ON (p.product_id = p2s.product_id) LEFT JOIN " . DB_PREFIX . "manufacturer m ON (p.manufacturer_id = m.manufacturer_id) WHERE p.product_id = '" . (int)$product_id . "' AND pd.language_id = '" . (int)$this->config->get('config_language_id') . "' AND p.status = '1' AND p.date_available <= NOW() AND p2s.store_id = '" . (int)$this->config->get('config_store_id') . "'");
 
@@ -35,6 +86,7 @@ class ModelCatalogProduct extends Model {
 				'ean'              => $query->row['ean'],
 				'jan'              => $query->row['jan'],
 				'isbn'             => $query->row['isbn'],
+				'youtube'             => $query->row['youtube'],
 				'mpn'              => $query->row['mpn'],
 				'location'         => $query->row['location'],
 				'diadiametr'         => $query->row['diadiametr'],
@@ -177,6 +229,7 @@ class ModelCatalogProduct extends Model {
 			'p.price',
 			'rating',
 			'p.sort_order',
+            'p.image',
 			'p.date_added'
 		);
 
@@ -185,9 +238,12 @@ class ModelCatalogProduct extends Model {
 				$sql .= " ORDER BY LCASE(" . $data['sort'] . ")";
 			} elseif ($data['sort'] == 'p.price') {
 				$sql .= " ORDER BY (CASE WHEN special IS NOT NULL THEN special WHEN discount IS NOT NULL THEN discount ELSE p.price END)";
+			} elseif($data['sort'] == 'p.image') {
+                //$sql .= " ORDER BY (image <> 'no_image.png'), " . $data['sort'];
+                $sql .= " ORDER BY " . $data['sort'];
 			} else {
-				$sql .= " ORDER BY " . $data['sort'];
-			}
+                $sql .= " ORDER BY " . $data['sort'];
+            }
 		} else {
 			$sql .= " ORDER BY p.sort_order";
 		}

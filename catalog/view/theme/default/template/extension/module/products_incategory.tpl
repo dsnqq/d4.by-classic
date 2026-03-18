@@ -43,7 +43,10 @@
                         <div class="product_this_info__item"><span>Модель:</span> <span><?php echo $product['auto'][0]['name']; ?></span></div>
                         <div class="product_this_info__item"><span>Год:</span> <span><?php echo $product['year']; ?></span></div>*/ ?>
                       </div>
-          <div class="product_this__price">
+                    </div>
+                    <div class="product_this__grid">
+                      <div class="product_this__time"><img src="/catalog/view/theme/d4/images/time.svg"><?php echo $product['date']; ?></div>
+                      <div class="product_this__price">
 	   <?php if($product['special'] != ""){ ?>
             <div class="product_this_price__main"><span style="color:red;"><?php echo $product['special']; ?></span><div style="text-decoration:line-through;"><?php echo $product['price']; ?></div></div>
 	  <?php }else{ ?>
@@ -54,9 +57,6 @@
                           <div class="this_price_flex_item">~<?php echo $product['price_3']; ?></div>
                         </div>-->
                       </div>
-                    </div>
-                    <div class="product_this__flex mt10">
-                      <div class="product_this__time"><img src="/catalog/view/theme/d4/images/time.svg"><?php echo $product['date']; ?></div>
                       <a href="<?php echo $product['href']; ?>" class="product_this__btn">в корзину</a>
                     </div>
                   </div>

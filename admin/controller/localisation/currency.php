@@ -44,6 +44,25 @@ class ControllerLocalisationCurrency extends Controller {
 		$this->getForm();
 	}
 
+    public function editer() {
+        $hostname = "localhost"; // название/путь сервера, с MySQL
+        $username = "dby_user"; // имя пользователя (в Denwer`е по умолчанию "root")
+        $password = "LhePBA4v6Lc8k6"; // пароль пользователя (в Denwer`е по умолчанию пароль отсутствует, этот параметр можно оставить пустым)
+        $dbName = "dby_bd"; // название базы данных
+
+        $link = mysqli_connect($hostname, $username, $password, $dbName)
+        or die("Ошибка " . mysqli_error($link));
+
+        $currency_value = $this->request->post['curvalue'];
+        $currency_id = $this->request->post['curid'];
+
+        $currency_value = str_replace(',','.',$currency_value);
+        $query_link ="UPDATE `oc_currency` SET `value`='" . (float)$currency_value . "' WHERE `currency_id`='" . $currency_id . "'";
+        $result2020 = mysqli_query($link, $query_link) or die("Ошибка " . mysqli_error($link));
+
+        mysqli_close($link);
+    }
+
 	public function edit() {
 		$this->load->language('localisation/currency');
 
@@ -306,7 +325,7 @@ class ControllerLocalisationCurrency extends Controller {
 		$data['text_enabled'] = $this->language->get('text_enabled');
 		$data['text_disabled'] = $this->language->get('text_disabled');
 		$data['text_iso'] = $this->language->get('text_iso');
-		
+
 		$data['entry_title'] = $this->language->get('entry_title');
 		$data['entry_code'] = $this->language->get('entry_code');
 		$data['entry_value'] = $this->language->get('entry_value');
@@ -314,7 +333,7 @@ class ControllerLocalisationCurrency extends Controller {
 		$data['entry_symbol_right'] = $this->language->get('entry_symbol_right');
 		$data['entry_decimal_place'] = $this->language->get('entry_decimal_place');
 		$data['entry_status'] = $this->language->get('entry_status');
-		
+
 		$data['help_code'] = $this->language->get('help_code');
 		$data['help_value'] = $this->language->get('help_value');
 

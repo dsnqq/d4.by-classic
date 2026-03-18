@@ -105,7 +105,7 @@ class ControllerProductSpecial extends Controller {
 				$image = $this->model_tool_image->resize('placeholder.png', $this->config->get($this->config->get('config_theme') . '_image_product_width'), $this->config->get($this->config->get('config_theme') . '_image_product_height'));
 			}
 
-			
+
 			if ($this->customer->isLogged() || !$this->config->get('config_customer_price')) {
 				$price = $this->currency->format($this->tax->calculate($result['price'], $result['tax_class_id'], $this->config->get('config_tax')), $this->session->data['currency']);
 			} else {
@@ -162,7 +162,7 @@ class ControllerProductSpecial extends Controller {
 			'href'  => $this->url->link('product/special', 'sort=p.sort_order&order=ASC' . $url)
 		);
 
-		$data['sorts'][] = array(
+		/*$data['sorts'][] = array(
 			'text'  => $this->language->get('text_name_asc'),
 			'value' => 'pd.name-ASC',
 			'href'  => $this->url->link('product/special', 'sort=pd.name&order=ASC' . $url)
@@ -172,7 +172,7 @@ class ControllerProductSpecial extends Controller {
 			'text'  => $this->language->get('text_name_desc'),
 			'value' => 'pd.name-DESC',
 			'href'  => $this->url->link('product/special', 'sort=pd.name&order=DESC' . $url)
-		);
+		);*/
 
 		$data['sorts'][] = array(
 			'text'  => $this->language->get('text_price_asc'),
@@ -252,9 +252,11 @@ class ControllerProductSpecial extends Controller {
 
 		$pagination = new Pagination();
 		$pagination->total = $product_total;
-		$pagination->page = $page;
+		$pagination->page = $page;	
 		$pagination->limit = $limit;
-		$pagination->url = $this->url->link('product/special', $url . '&page={page}');
+		$pagination->num_links = 4;
+		$pagination->text_last = ceil($product_total / $limit);
+		$pagination->url = $this->url->link($current_page, $url . '&page={page}');
 
 		$data['pagination'] = $pagination->render();
 

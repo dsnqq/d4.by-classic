@@ -1,8 +1,8 @@
-<?php  
+<?php
 class ControllerModuleMegaFilter extends Controller {
-	
+
 	public static $_seo = null;
-	
+
     /**
      * How frequently to execute garbage collection of cache
      *
@@ -16,9 +16,9 @@ class ControllerModuleMegaFilter extends Controller {
     protected function _gc( $lifetime ) {
         $expire = time() - $lifetime * 60 * 60;
         $dir	= DIR_SYSTEM . 'cache_mfp';
-		
+
 		if( ! is_dir( $dir ) || ! is_writable( $dir ) ) return false;
-		
+
         foreach( new DirectoryIterator( $dir ) as $file ) {
             if( ! $file->isDot() && ! $file->isDir() ) {
                 if( $file->getMTime() < $expire ) {
@@ -27,48 +27,48 @@ class ControllerModuleMegaFilter extends Controller {
             }
         }
     }
-	
-	public function index( $setting ) {	
 
-		
+	public function index( $setting ) {
+
+
 		$this->load->model('module/mega_filter');
-		
+
 		if( ! class_exists( 'MegaFilterModule' ) || $this->rget('mfilterAjax') ) {
 			return '';
 		}
-		
-		if( self::seo( $this ) ) {			
+
+		if( self::seo( $this ) ) {
 			if( self::$_seo['meta_title'] ) {
 				$this->document->setTitle(self::$_seo['meta_title']);
 			}
-				
+
 			if( self::$_seo['meta_description'] ) {
 				$this->document->setDescription(self::$_seo['meta_description']);
 			}
-				
+
 			if( self::$_seo['meta_keyword'] ) {
 				$this->document->setKeywords(self::$_seo['meta_keyword']);
 			}
 		}
-		
-		
+
+
 		/* @var $settings array */
 		$settings = $this->config->get('mega_filter_settings');
-		
+
         if( ! empty( $settings['cache_enabled'] ) && mt_rand( 1, $this->_gcFreq ) == 1 ) {
             $this->_gc( isset( $settings['cache_lifetime'] ) ? (int) $settings['cache_lifetime'] : 24 );
         }
-		
+
 		/**
 		 * Use this variable if you need to set any data to the view of MFP
-		 * 
+		 *
 		 * @var $data
 		 */
 		//$data = array();
-		
+
 		return MegaFilterModule::newInstance( $this )/*->setData( $data )*/->render( $setting );
 	}
-	
+
 	public static function seo( & $ctrl ) {
 		if( self::$_seo === null && isset( $ctrl->request->request['mfp_seo_alias'] ) ) {
 			self::$_seo = $ctrl->db->query( "
@@ -82,108 +82,108 @@ class ControllerModuleMegaFilter extends Controller {
 					`store_id` = " . (int) $ctrl->config->get('config_store_id') . "
 			")->row;
 		}
-		
+
 		return self::$_seo;
 	}
-	
+
 	public function js_direction(){
 		header('Content-type: text/javascript');
-		
+
 		echo 'var MFP_RTL = ' . ( $this->language->get('direction') == 'rtl' ? 'true' : 'false' ) . ';';
 	}
-	
+
 	public function getajaxmodule() {
 		header('X-Robots-Tag: noindex');
-		
+
 		$this->load->model('module/mega_filter');
-		
+
 		if( ! class_exists( 'MegaFilterModule' ) ) {
 			return '';
 		}
-		
+
 		return MegaFilterModule::newInstance( $this )->render(array());
 	}
-	
+
 	private function rget( $name ) {
 		if( isset( $this->request->post[$name] ) ) {
 			return $this->request->post[$name];
 		}
-		
+
 		if( isset( $this->request->get[$name] ) ) {
 			return $this->request->get[$name];
 		}
-		
+
 		return null;
 	}
-	
 
-	
-	
+
+
+
 
 	public function getajaxinfo() {
 		header('X-Robots-Tag: noindex');
-		
+
 		$this->load->model('module/mega_filter');
-		
+
 		$idx = 0;
-		
+
 		if( $this->rget('mfilterIdx') !== null ) {
 			$idx = (int) $this->rget('mfilterIdx');
 		}
-		
+
 		$baseTypes = array( 'stock_status', 'manufacturers', 'rating', 'attributes', 'options', 'filters' );
-		
+
 		if( $this->rget('mfilterBTypes') !== null ) {
 			$baseTypes = explode( ',', $this->rget('mfilterBTypes') );
 		}
-		
+
 		if( false !== ( $idx2 = array_search( 'categories:tree', $baseTypes ) ) ) {
 			unset( $baseTypes[$idx2] );
 		}
-		
+
 		/**
 		 * Settings
 		 */
 		$settings	= $this->config->get('mega_filter_settings');
 		$setting	= $this->model_module_mega_filter->getModuleSettings( $idx );
-		
+
 		if( isset( $setting['configuration'] ) ) {
 			foreach( $setting['configuration'] as $k => $v ) {
 				$settings[$k] = $v;
 			}
 		}
-		
+
 		$core = MegaFilterCore::newInstance( $this, NULL, array( 'mfp_overwrite_path' => true ), $settings );
-		
+
 		$cache = null;
-		
+
 		if( ! empty( $settings['cache_enabled'] ) ) {
 			$cache = 'idx.' . $idx . '.getajaxinfo.' . $core->cacheName();
 		}
-		
+
 		/**
 		 * Cache
 		 */
 		if( ! $cache || NULL == ( $response = $core->_getCache( $cache ) ) ) {
 			$response = base64_encode( json_encode( $core->getJsonData($baseTypes, $idx) ) );
-			
+
 			if( ! empty( $settings['cache_enabled'] ) ) {
 				$core->_setCache( $cache, $response );
 			}
 		}
-		
+
 		echo '<div id="mfilter-json">' . $response . '</div>';
 	}
-	
+
 
 	public function getcategories() {
 		header('X-Robots-Tag: noindex');
-		
+
 		$cats = array();
-		
+
 		if( ! empty( $this->request->post['cat_id'] ) ) {
 			$this->load->model('catalog/category');
-			
+
 			foreach( $this->model_catalog_category->getCategories( $this->request->post['cat_id'] ) as $cat ) {
 				$cats[] = array(
 					'id' => $cat['category_id'],
@@ -191,65 +191,65 @@ class ControllerModuleMegaFilter extends Controller {
 				);
 			}
 		}
-		
+
 		echo json_encode( $cats );
 	}
-	
+
 	public function results() {
 		$data = array();
     	$data = $this->language->load('product/search');
-		
-		$this->load->model('catalog/category');		
-		$this->load->model('catalog/product');		
+
+		$this->load->model('catalog/category');
+		$this->load->model('catalog/product');
 		$this->load->model('tool/image');
-		
-		$keys	= array( 'sort' => 'p.sort_order', 'order' => 'ASC', 'page' => 1, 'limit' => $this->config->get('config_catalog_limit') );
-		
+
+		$keys	= array( 'sort' => 'p.date_added', 'order' => 'DESC', 'page' => 1, 'limit' => $this->config->get('config_catalog_limit') );
+
 		$url = '';
-		
+
 		foreach( $keys as $key => $keyDef ) {
 			${$key} = isset( $this->request->get[$key] ) ? $this->request->get[$key] : $keyDef;
-			
+
 			if( isset( $this->request->get[$key] ) ) {
 				$url .= '&' . $key . '=' . $this->request->get[$key];
 			}
-			
-		}
-		
 
-		$this->document->setTitle($this->language->get('heading_title'));					
+		}
+
+
+		$this->document->setTitle($this->language->get('heading_title'));
 
 		/**
-		 * Breadcrumb 
+		 * Breadcrumb
 		 */
 		$data['breadcrumbs'] = array();
-   		$data['breadcrumbs'][] = array( 
+   		$data['breadcrumbs'][] = array(
        		'text'      => $this->language->get('text_home'),
 			'href'      => $this->url->link('common/home'),
       		'separator' => false
    		);
-		
+
    		$data['breadcrumbs'][] = array(
        		'text'      => $this->language->get('heading_title'),
 			'href'      => $this->url->link('module/mega_filter/results', $url),
       		'separator' => $this->language->get('text_separator')
    		);
-		
+
 		$data['text_compare'] = sprintf($this->language->get('text_compare'), (isset($this->session->data['compare']) ? count($this->session->data['compare']) : 0));
 		$data['compare'] = $this->url->link('product/compare');
-		
+
 		$data['products'] = array();
 
 		if (isset($this->request->get['sort'])) {
 			$sort = $this->request->get['sort'];
 		} else {
-			$sort = 'p.sort_order';
+			$sort = 'p.date_added';
 		}
 
 		if (isset($this->request->get['order'])) {
 			$order = $this->request->get['order'];
 		} else {
-			$order = 'ASC';
+			$order = 'DESC';
 		}
 
 		if (isset($this->request->get['page'])) {
@@ -267,38 +267,38 @@ class ControllerModuleMegaFilter extends Controller {
 				$limit = $this->config->get('config_product_limit');
 			}
 		}
-		
+
 		if( $limit < 1 ) {
 			$limit = 1;
 		}
-		
+
 		$filter_data = array(
 			'sort'                => $sort,
 			'order'               => $order,
 			'start'               => ($page - 1) * $limit,
 			'limit'               => $limit
 		);
-		
+
 		//if( empty( $this->request->get['path'] ) && ! empty( $this->request->get['mfilterPath'] ) ) {
 		//	$this->request->get['path'] = MegaFilterCore::__parsePath( $this, $this->request->get['mfilterPath'] );
 		//}
-		
+
 		if( ! empty( $this->request->get['path'] ) ) {
 			$filter_data['filter_category_id'] = explode( '_', $this->request->get['path'] );
 			$filter_data['filter_category_id'] = end( $filter_data['filter_category_id'] );
 		}
-		
+
 		$currency_code = $this->session->data['currency'];
-		$product_total = $this->model_catalog_product->getTotalProducts($filter_data);								
+		$product_total = $this->model_catalog_product->getTotalProducts($filter_data);
 		$results = $this->model_catalog_product->getProducts($filter_data);
-		
-		foreach ($results as $result) {			
+
+		foreach ($results as $result) {
 			$description = '';
 			$image = false;
-			
+
 			if( version_compare( VERSION, '2.2.0.0', '>=' ) ) {
 				$description = utf8_substr(strip_tags(html_entity_decode($result['description'], ENT_QUOTES, 'UTF-8')), 0, $this->config->get($this->config->get('config_theme') . '_product_description_length')) . '..';
-				
+
 				if ($result['image']) {
 					$image = $this->model_tool_image->resize($result['image'], $this->config->get($this->config->get('config_theme') . '_image_product_width'), $this->config->get($this->config->get('config_theme') . '_image_product_height'), 'product_popup');
 				} else {
@@ -306,17 +306,17 @@ class ControllerModuleMegaFilter extends Controller {
 				}
 			} else {
 				$description = utf8_substr(strip_tags(html_entity_decode($result['description'], ENT_QUOTES, 'UTF-8')), 0, $this->config->get('config_product_description_length')) . '..';
-				
+
 				if ($result['image']) {
 					$image = $this->model_tool_image->resize($result['image'], $this->config->get('config_image_product_width'), $this->config->get('config_image_product_height'));
 				} else {
 					$image = $this->model_tool_image->resize('placeholder.png', $this->config->get('config_image_product_width'), $this->config->get('config_image_product_height'));
 				}
 			}
-			
+
 			if($_COOKIE["geoip_currency"]){
 				$this->session->data['currency'] = $_COOKIE["geoip_currency"];
-			}	
+			}
 			if (($this->config->get('config_customer_price') && $this->customer->isLogged()) || !$this->config->get('config_customer_price')) {
 				if(version_compare( VERSION, '2.2.0.0', '>=' )) {
 					$price = $this->currency->format($this->tax->calculate($result['price'], $result['tax_class_id'], $this->config->get('config_tax')), $this->session->data['currency']);
@@ -326,7 +326,7 @@ class ControllerModuleMegaFilter extends Controller {
 			} else {
 				$price = false;
 			}
-				
+
 			if ((float)$result['special']) {
 				if(version_compare( VERSION, '2.2.0.0', '>=' )) {
 					$special = $this->currency->format($this->tax->calculate($result['special'], $result['tax_class_id'], $this->config->get('config_tax')), $this->session->data['currency']);
@@ -335,8 +335,8 @@ class ControllerModuleMegaFilter extends Controller {
 				}
 			} else {
 				$special = false;
-			}	
-				
+			}
+
 			if ($this->config->get('config_tax')) {
 				if(version_compare( VERSION, '2.2.0.0', '>=' )) {
 					$tax = $this->currency->format((float)$result['special'] ? $result['special'] : $result['price'], $this->session->data['currency']);
@@ -345,8 +345,8 @@ class ControllerModuleMegaFilter extends Controller {
 				}
 			} else {
 				$tax = false;
-			}				
-				
+			}
+
 			if ($this->config->get('config_review_status')) {
 				$rating = (int)$result['rating'];
 			} else {
@@ -357,9 +357,9 @@ class ControllerModuleMegaFilter extends Controller {
 
 			$catprod = array();
 			$catprod2 = array();
-			
+
 			$product_category = $this->model_catalog_product->getCategories($result['product_id']);
-			
+
 			foreach ($product_category as $prodcat) {
 			$category_info = $this->model_catalog_category->getCategory($prodcat['category_id']);
 				if ($category_info) {
@@ -368,7 +368,7 @@ class ControllerModuleMegaFilter extends Controller {
 					'parent_id'     => $category_info['parent_id']
 					);
 				}
-			} 
+			}
 
 			$category_info2 = $this->model_catalog_category->getCategory($category_info['parent_id']);
 			if ($category_info2) {
@@ -376,8 +376,8 @@ class ControllerModuleMegaFilter extends Controller {
 					'name'     => $category_info2['name']
 					);
 				}
-			
-			
+
+
 			$datetime1 = date_create($result['date_added']);
 			if($currency_code == "BYN"){
 				$price_2 = "$".round($result['price'], '0');
@@ -388,7 +388,7 @@ class ControllerModuleMegaFilter extends Controller {
 			} elseif($currency_code == "USD"){
 				$price_2 = round($this->currency->convert(substr($price, 1), $currency_code, 'BYN'), '0')."BYN";
 				$price_3 = round($this->currency->convert(substr($price, 1), $currency_code, 'EUR'), '0')."€";
-			} 
+			}
 
 
 			$data['products'][] = array(
@@ -400,8 +400,8 @@ class ControllerModuleMegaFilter extends Controller {
 				'model'        => $result['model'],
 				'ean'        => $result['ean'],
 				'price'       => $price,
-				'auto'		  => $catprod, 
-				
+				'auto'		  => $catprod,
+
 				'location'        => $result['location'],
 				'width'           => $result['width'],
 				'height'          => $result['height'],
@@ -431,84 +431,84 @@ class ControllerModuleMegaFilter extends Controller {
 				'href'        => $this->url->link('product/product', 'product_id=' . $result['product_id'] . $url),
 			);
 		}
-					
+
 		$url = '';
-						
+
 		$data['sorts'] = array();
-			
+
 		$data['sorts'][] = array(
 			'text'  => $this->language->get('text_default'),
-			'value' => 'p.sort_order-ASC',
-			'href'  => $this->url->link('module/mega_filter/results', 'sort=p.sort_order&order=ASC' . $url)
+			'value' => 'p.date_added-DESC',
+			'href'  => $this->url->link('module/mega_filter/results', 'sort=p.date_added&order=DESC' . $url)
 		);
-			
-		$data['sorts'][] = array(
+
+		/*$data['sorts'][] = array(
 			'text'  => $this->language->get('text_name_asc'),
 			'value' => 'pd.name-ASC',
 			'href'  => $this->url->link('module/mega_filter/results', 'sort=pd.name&order=ASC' . $url)
-		); 
-	
+		);
+
 		$data['sorts'][] = array(
 			'text'  => $this->language->get('text_name_desc'),
 			'value' => 'pd.name-DESC',
 			'href'  => $this->url->link('module/mega_filter/results', 'sort=pd.name&order=DESC' . $url)
-		);
-	
+		);*/
+
 		$data['sorts'][] = array(
 			'text'  => $this->language->get('text_price_asc'),
 			'value' => 'p.price-ASC',
 			'href'  => $this->url->link('module/mega_filter/results', 'sort=p.price&order=ASC' . $url)
-		); 
-	
+		);
+
 		$data['sorts'][] = array(
 			'text'  => $this->language->get('text_price_desc'),
 			'value' => 'p.price-DESC',
 			'href'  => $this->url->link('module/mega_filter/results', 'sort=p.price&order=DESC' . $url)
-		); 
-			
+		);
+
 		if ($this->config->get('config_review_status')) {
 			$data['sorts'][] = array(
 				'text'  => $this->language->get('text_rating_desc'),
 				'value' => 'rating-DESC',
 				'href'  => $this->url->link('module/mega_filter/results', 'sort=rating&order=DESC' . $url)
-			); 
-				
+			);
+
 			$data['sorts'][] = array(
 				'text'  => $this->language->get('text_rating_asc'),
 				'value' => 'rating-ASC',
 				'href'  => $this->url->link('module/mega_filter/results', 'sort=rating&order=ASC' . $url)
 			);
 		}
-			
-	
+
+
 		$data['sorts'][] = array(
-			'text'  => "Дата добаления (по возрастанию)",
+			'text'  => "Дата добавления (по возрастанию)",
 			'value' => 'p.date_added-ASC',
 			'href'  => $this->url->link('module/mega_filter/results', '&sort=p.date_added&order=ASC' . $url)
 		);
 
 		$data['sorts'][] = array(
-			'text'  => "Дата добаления (по убыванию)",
+			'text'  => "Дата добавления (по убыванию)",
 			'value' => 'p.date_added-DESC',
 			'href'  => $this->url->link('module/mega_filter/results', '&sort=p.date_added&order=DESC' . $url)
 		);
-	
+
 		$url = '';
-						
+
 		if (isset($this->request->get['sort'])) {
 			$url .= '&sort=' . $this->request->get['sort'];
-		}	
-	
+		}
+
 		if (isset($this->request->get['order'])) {
 			$url .= '&order=' . $this->request->get['order'];
 		}
-			
+
 		$data['limits'] = array();
-	
+
 		$limits = array_unique(array($this->config->get('config_catalog_limit'), 25, 50, 75, 100));
-			
+
 		sort($limits);
-	
+
 		foreach($limits as $limits){
 			$data['limits'][] = array(
 				'text'  => $limits,
@@ -516,26 +516,31 @@ class ControllerModuleMegaFilter extends Controller {
 				'href'  => $this->url->link('module/mega_filter/results', $url . '&limit=' . $limits)
 			);
 		}
-					
+
 		$url = '';
-										
+
 		if (isset($this->request->get['sort'])) {
 			$url .= '&sort=' . $this->request->get['sort'];
-		}	
-	
+		}
+
 		if (isset($this->request->get['order'])) {
 			$url .= '&order=' . $this->request->get['order'];
 		}
-			
+
 		if (isset($this->request->get['limit'])) {
 			$url .= '&limit=' . $this->request->get['limit'];
-		}		
+		}
+
+
 
 		$pagination = new Pagination();
 		$pagination->total = $product_total;
-		$pagination->page = $page;
+		$pagination->page = $page;	
 		$pagination->limit = $limit;
-		$pagination->url = $this->url->link('module/mega_filter/results', $url . '&page={page}');
+		$pagination->num_links = 4;
+		$pagination->text_last = ceil($product_total / $limit);
+		$current_page = "module/mega_filter/results";
+		$pagination->url = $this->url->link($current_page, $url . '&page={page}');
 
 		$data['pagination'] = $pagination->render();
 
@@ -548,13 +553,13 @@ class ControllerModuleMegaFilter extends Controller {
 		if ($pagination->page > 1) {
 			$this->document->addLink($this->url->link('module/mega_filter/results', $url . '&page=' . ($pagination->page - 1)), 'prev');
 		}
-		
+
 		$data['results'] = sprintf(
-			$this->language->get('text_pagination'), 
-			($product_total) ? 
-				(($page - 1) * $limit) + 1 : 0, ((($page - 1) * $limit) > ($product_total - $limit)) ? $product_total : 
-				((($page - 1) * $limit) + $limit), 
-			$product_total, 
+			$this->language->get('text_pagination'),
+			($product_total) ?
+				(($page - 1) * $limit) + 1 : 0, ((($page - 1) * $limit) > ($product_total - $limit)) ? $product_total :
+				((($page - 1) * $limit) + $limit),
+			$product_total,
 			ceil($product_total / $limit)
 		);
 
@@ -570,7 +575,7 @@ class ControllerModuleMegaFilter extends Controller {
 		$data['content_bottom'] = $this->load->controller('common/content_bottom');
 		$data['footer'] = $this->load->controller('common/footer');
 		$data['header'] = $this->load->controller('common/header');
-		
+
 		/**
 		 * Template
 		 */

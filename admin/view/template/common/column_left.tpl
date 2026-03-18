@@ -5,10 +5,15 @@
     <?php } ?>
     <div>
       <h4><?php echo $firstname; ?> <?php echo $lastname; ?></h4>
-      <small><?php echo $user_group; ?></small>
+      <small>
+        <?php if($user_groupe__info == "Босс"){ ?>
+          Босс
+        <?php } ?>
+      </small>
+
     </div>
   </div>
-  <?php if($user_groupe__info != "Менеджер простой"){ ?>
+  <?php if($user_groupe__info != "Менеджер простой" && $user_groupe__info != "Менеджер - добавляет и продаёт" && $user_groupe__info != "Менеджер по продажам" && $user_groupe__info != "Менеджер - добавляет объявления" && $user_groupe__info != "Менеджер - добавляет объявления и продажи" && $user_groupe__info != "Босс" && $user_groupe__info != "QR - печать"){ ?>
   <ul id="menu">
     <?php foreach ($menus as $menu) { ?>
     <li id="<?php echo $menu['id']; ?>">
@@ -54,6 +59,11 @@
     <?php } ?>
   </ul>
   <?php } else{ ?>
+  <style>
+    #header #button-menu {
+      display: none !important;
+    }
+  </style>
   <ul id="menu">
     <?php foreach ($menus as $menu) { ?>
       <?php if ($menu['children']) { ?>

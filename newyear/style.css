@@ -1,4 +1,4 @@
-/*body{
+body{
 	position:relative;
 	z-index:0;
 	margin:0;
@@ -8,9 +8,9 @@
 	background-size: cover;
 	background-attachment: fixed;
 	background-position: center top;
-}*/
+}
 
-.b-page__content{min-height:79px}
+.b-page__content{min-height:80px}
 .b-head-decor{display:none}
 .b-page_newyear .b-head-decor{
    position:absolute;

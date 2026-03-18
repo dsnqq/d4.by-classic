@@ -21,23 +21,16 @@
           <div class="title_d">Запчасти б/у для автомобилей</div>
           <div class="grid_template_auto">
               <?php foreach ($categories as $category) { ?>
-              <a href="<?php echo $category['href']; ?>" style="padding-left:10px;"><?php echo $category['name']; ?></a>
+              <a href="<?php echo $category['href']; ?>" style="padding-left:10px;">
+                <?php echo $category['name']; ?>
+                <small><?php echo $category['product_count']; ?></small>
+              </a>
               <?php } ?>
           </div>
       </div>
   </div>
-
-  <div class="container">
-      <div class="auto_all_link">
-          <div class="title_d">О компании</div>
-          <div class="same_text">
-
-          </div>
-      </div>
-  </div>
-
-  <div class="container">
-      <div class="auto_all_link">
+  <div class="about">
+      <div class="auto_all_link container">
           <div class="adishional_icons">
               <div class="adishional_icons__item">
                 <div class="adishional_icons_item__img"><img src="/catalog/view/theme/d4/images/icon1.svg"></div>

@@ -1,4 +1,4 @@
-<?php 
+<?php
 waterMark($_SERVER['DOCUMENT_ROOT'].$_SERVER['REQUEST_URI'], "watermark.png", "bottom=5,right=5");
 
 

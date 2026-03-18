@@ -159,7 +159,7 @@
                         </div>-->
                       </div>
                     </div>
-                    <div class="product_this__flex mt10">
+                    <div class="product_this__flex">
                       <div class="product_this__time"><img src="/catalog/view/theme/d4/images/time.svg"><?php echo $product['date']; ?></div>
                       <a href="<?php echo $product['href']; ?>" class="product_this__btn">в корзину</a>
                     </div>

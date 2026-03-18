@@ -3352,6 +3352,8 @@ MegaFilter.prototype = {
 	setFiltersByUrl: function( params ) {
 		var self	= this;
 		
+		console.log(params);
+		
 		if( typeof params == 'undefined' ) {
 			params = self.urlToFilters();
 		}

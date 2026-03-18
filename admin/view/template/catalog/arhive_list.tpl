@@ -146,8 +146,15 @@
                   <td><?php echo $product['date_delete']; ?></td>
                   <td><?php echo $product['description']; ?></td>
                   <td>
+                    <a data-productid="<?php echo $product['product_id']; ?>" style="width: 100%;"  class="btn btn-info historyProduct">История</a>
                     <a style="width: 100%;" href="<?php echo $product['edit']; ?>" class="btn btn-primary">Смотреть</a>
-                    <?php if($product['date_delete'] != ""){ ?>
+                    <?php
+                      $now = time();
+                      $your_date = strtotime($product['date_delete']);
+                      $datediff = $now - $your_date;
+                      $deleteDay = round($datediff / (60 * 60 * 24));
+                    ?>
+                    <?php if($product['date_delete'] != "" && $deleteDay <= 30){ ?>
                       <br>
                       <a style="width: 100%;"  data-textrest="Вы точно хотите восстановить запчасть '<?php echo $product['manufacturer']; ?>' - <?php echo preg_replace('/<.+>/U', ' ', $product['category']); ?>?" href="<?php echo $product['restore']; ?>" class="restoreButton btn btn-success">Восстановить</a>
                     <?php } ?>
@@ -175,8 +182,37 @@
   <script src="view/javascript/bootstrap-select.min.js"></script>
   <script src="view/javascript/jquery.chained.js"></script>
 
+  <!-- HTML-код модального окна -->
+  <div id="myModalBoxHistory" class="modal fade">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <!-- Заголовок модального окна -->
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+          <h4 class="modal-title">История запчасти</h4>
+        </div>
+        <!-- Основное содержимое модального окна -->
+        <div class="modal-body">
+          <table class="historyTable1" style="width: 100%;border-collapse: collapse;">
+            <tr>
+              <td><strong>Значение</strong></td>
+              <td><strong>Дата изменения</strong></td>
+              <td><strong>Старое значение</strong></td>
+              <td><strong>Новое значение</strong></td>
+              <td><strong>Пользователь</strong></td>
+            </tr>
+          </table>
+          <table class="historyTable" style="width: 100%;border-collapse: collapse;"></table>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <style>
     .sku_qe_br{white-space:pre}
+    .historyTable tr,.historyTable td{border: 1px solid black;text-align:center;}
+    .historyTable1 tr,.historyTable1 td{border: 1px solid black;text-align:center;}
+    .historyTable td,.historyTable1 td {width: 20%;padding: 5px;}
   </style>
   <script>
       $(document).ready(function() { //
@@ -193,6 +229,52 @@
                   $(this).text(newString);
               });
           }
+
+
+        $('.historyProduct').on('click', function(){
+          $("#myModalBoxHistory").modal('show');
+
+          var productid = $(this).data('productid');
+          $('#myModalBoxHistoryNumber').text(productid);
+          $.ajax({
+            url: 'index.php?route=catalog/product/getChangeProduct&token=<?php echo $token; ?>&product_id='+productid,
+            data: {
+              "product_id" : productid
+            },
+            dataType: 'json',
+            cache: false,
+            method: 'POST',
+            success: function(data) {
+              $('.historyTable').html("");
+              if(data.changes.length != 0){
+                for(let i = 0; i <= data.changes.length; i++){
+                  let row = "";
+
+                  //var now = new Date(data.changes[i]["data_change"]);
+                  //now = now.format("dd.mm.yyyy"); // 20.08.2012
+
+                  if(data.changes[i]["value_name"] == "Статус") {
+                    data.changes[i]["value_old"] = (data.changes[i]["value_old"] == 1) ? "Активно" : "Неактивно";
+                    data.changes[i]["value_new"] = (data.changes[i]["value_new"] == 1) ? "Активно" : "Неактивно";
+                  }
+
+                  row +=	"<tr>";
+                  row +=	"<td>" + data.changes[i]["value_name"] + "</td>";
+                  row +=	"<td>" + data.changes[i]["data_change"] + "</td>";
+                  row +=	"<td>" + data.changes[i]["value_old"] + "</td>";
+                  row +=	"<td>" + data.changes[i]["value_new"] + "</td>";
+                  if(data.changes[i]["firstname"] == null) {
+                    row +=	"<td> Неизвестно </td>";
+                  } else {
+                    row +=	"<td>" + data.changes[i]["firstname"] + " " + data.changes[i]["lastname"] + "</td>";
+                  }
+                  row +=	"</tr>";
+                  $('.historyTable').append(row);
+                }
+              }
+            },
+          });
+        });
       });
   </script>
 
@@ -261,12 +343,6 @@ $('#button-filter').on('click', function() {
 
 	if (filter_isbn != '*') {
 		url += '&filter_isbn=' + encodeURIComponent(filter_isbn);
-	}
-
-	var filter_status = $('#input-status').val();
-
-	if (filter_status != '*') {
-		url += '&filter_status=' + encodeURIComponent(filter_status);
 	}
 
 	location = url;

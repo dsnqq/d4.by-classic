@@ -316,9 +316,9 @@ select.selectpicker {
 }
 .bs-caret:before {
   content: '';
-  width: 8px;
-  height: 5px;
-  top: calc(50% - 2.5px);
+  width: 12px;
+  height: 7px;
+  top: calc(50% - 3.5px);
   background: url(/catalog/view/theme/d4/images/polylang.svg) no-repeat;
   position: absolute;
 }

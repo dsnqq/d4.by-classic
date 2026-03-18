@@ -1,4 +1,7 @@
 <?php
+
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 // Version
 define('VERSION', '2.3.0.2.3');
 
@@ -7,8 +10,6 @@ if (is_file('config.php')) {
 	require_once('config.php');
 }
 
-// special comment
-//phpinfo();
 // Install
 if (!defined('DIR_APPLICATION')) {
 	header('Location: install/index.php');
