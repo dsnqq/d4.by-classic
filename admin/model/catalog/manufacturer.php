@@ -67,14 +67,6 @@ class ModelCatalogManufacturer extends Model {
 			$this->db->query("INSERT INTO " . DB_PREFIX . "url_alias SET query = 'manufacturer_id=" . (int)$manufacturer_id . "', keyword = '" . $this->db->escape($data['keyword']) . "'");
 		}
 
-		$this->db->query("DELETE FROM " . DB_PREFIX . "manufacturer_links WHERE manufacturer_id = '" . (int)$manufacturer_id . "'");
-
-		if (isset($data['manufacturer_links'])) {
-			foreach ($data['manufacturer_links'] as $manufacturer_link) {
-				$this->db->query("INSERT INTO " . DB_PREFIX . "manufacturer_links SET manufacturer_id = '" . (int)$manufacturer_id . "', `name` = '" . serialize($manufacturer_link['name']) . "', `link` = '" . serialize($manufacturer_link['link']) . "', `target` = '" . (int)$manufacturer_link['target'] . "', `sort_order` = '" . (int)$manufacturer_link['sort_order'] . "'");
-			}
-		}
-
 		$this->cache->delete('manufacturer');
 	}
 
@@ -167,12 +159,6 @@ class ModelCatalogManufacturer extends Model {
 		}
 
 		return $manufacturer_store_data;
-	}
-
-	public function getManufacturerLinks($manufacturer_id) {
-		$query = $this->db->query("SELECT * FROM " . DB_PREFIX . "manufacturer_links WHERE manufacturer_id = '" . (int)$manufacturer_id . "' ORDER BY sort_order ASC");
-
-		return $query->rows;
 	}
 
 	public function getTotalManufacturers() {

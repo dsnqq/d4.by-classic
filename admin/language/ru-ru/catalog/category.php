@@ -14,14 +14,6 @@ $_['column_name']          			= 'Название авто';
 $_['column_sort_order']          	= 'Порядок сортировки';
 $_['column_action']          		= 'Действие';
 
-$_['column_link_name']  = 'Название ссылки';
-$_['column_url']        = 'Ссылка';
-$_['column_sort_order'] = 'Порядок сортировки';
-$_['column_target']     = 'Открывать в новом окне';
-$_['tab_links']         = 'Ссылки';
-$_['tab_custom_links']  = 'Произвольные ссылки';
-$_['button_remove']     = 'Удалить';
-
 // Entry
 $_['entry_name']          			= 'Название:';
 $_['entry_description']          	= 'Описание';

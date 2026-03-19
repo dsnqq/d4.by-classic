@@ -1065,10 +1065,6 @@ class ControllerCatalogProduct extends Controller {
 		$data['button_special_add'] = $this->language->get('button_special_add');
 		$data['button_image_add'] = $this->language->get('button_image_add');
 		$data['button_remove'] = $this->language->get('button_remove');
-		$data['column_link_name'] = $this->language->get('column_link_name');
-		$data['column_url'] = $this->language->get('column_url');
-		$data['column_sort_order'] = $this->language->get('column_sort_order');
-		$data['column_target'] = $this->language->get('column_target');
 		$data['button_recurring_add'] = $this->language->get('button_recurring_add');
 
 		$data['tab_general'] = $this->language->get('tab_general');
@@ -1080,7 +1076,6 @@ class ControllerCatalogProduct extends Controller {
 		$data['tab_special'] = $this->language->get('tab_special');
 		$data['tab_image'] = $this->language->get('tab_image');
 		$data['tab_links'] = $this->language->get('tab_links');
-		$data['tab_custom_links'] = $this->language->get('tab_custom_links');
 		$data['tab_reward'] = $this->language->get('tab_reward');
 		$data['tab_design'] = $this->language->get('tab_design');
 		$data['tab_openbay'] = $this->language->get('tab_openbay');
@@ -1813,26 +1808,6 @@ class ControllerCatalogProduct extends Controller {
 			$data['points'] = $product_info['points'];
 		} else {
 			$data['points'] = '';
-		}
-
-		$data['product_links'] = array(); 
-		if (isset($this->request->post['product_links'])) {
-			$product_links = $this->request->post['product_links'];
-		} elseif (isset($this->request->get['product_id'])) {
-			$product_links = $this->model_catalog_product->getProductLinks($this->request->get['product_id']);
-		} else {
-			$product_links = array();
-		}
-
-		$data['product_links'] = array();
-
-		foreach ($product_links as $product_link) {
-			$data['product_links'][] = array(
-				'name'       => unserialize($product_link['name']),
-				'link'       => unserialize($product_link['link']),
-				'target'     => $product_link['target'],
-				'sort_order' => $product_link['sort_order']
-			);
 		}
 
 		if (isset($this->request->post['product_reward'])) {

@@ -56,10 +56,4 @@ class ModelCatalogManufacturer extends Model {
 			return $manufacturer_data;
 		}
 	}
-
-	public function getManufacturerLinks($manufacturer_id) {
-		$query = $this->db->query("SELECT * FROM " . DB_PREFIX . "manufacturer_links WHERE manufacturer_id = '" . (int)$manufacturer_id . "' ORDER BY sort_order ASC");
-
-		return $query->rows;
-	}
 }

@@ -16,10 +16,6 @@ $_['text_percent']          	= 'Процент';
 $_['text_amount']         	 	= 'Фиксированная сумма';
 
 // Column
-$_['column_link_name']  = 'Название ссылки';
-$_['column_url']        = 'Ссылка';
-$_['column_sort_order'] = 'Порядок сортировки';
-$_['column_target']     = 'Открывать в новом окне';
 $_['column_name']          		= 'Наименование автозапчасти';
 $_['column_model']          	= 'Номер запчасти';
 $_['column_image']          	= 'Изображение';
@@ -28,8 +24,6 @@ $_['column_price']          	= 'Цена на сайте';
 $_['column_quantity']          	= 'Количество';
 $_['column_status']          	= 'Статус';
 $_['column_action']          	= 'Действие';
-
-$_['tab_custom_links']  = 'Произвольные ссылки';
 
 // Entry
 $_['entry_main_category']       = 'Марка и модель:';

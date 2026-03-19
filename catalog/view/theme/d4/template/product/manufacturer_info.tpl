@@ -23,34 +23,6 @@
         <div class="left_wrapper"><?php echo $column_left; ?></div>
         <div class="right_wrapper"><?php echo $content_top; ?>
           <h1 class="title_h1"><?php echo $heading_title; ?></h1>
-
-          <?php if ($manufacturer_links) { ?> 
-          <div class="row manufacturer-links">
-            <div class="heading-title"><?php echo $text_manufacturer_links_title;?></div>
-            <?php foreach($manufacturer_links as $manufacturer_link) { ?>
-              <div class="col-sm-3">
-                <a class="manufacturer-link" href="<?php echo $manufacturer_link['link']; ?>" <?php echo $manufacturer_link['target'] ? 'target="_blank"' : ''; ?>><?php echo $manufacturer_link['name']; ?></a>
-              </div>
-            <?php } ?>
-          </div>
-          <style>
-          .manufacturer-links {
-            margin-bottom: 20px;
-          }
-          .manufacturer-links .col-sm-3{
-            margin-bottom: 10px;
-          }
-          .manufacturer-link {
-            font-size:16px;
-          }
-          .heading-title {
-            font-size:18px;
-            text-align:center; 
-            margin-bottom:15px;
-          }
-          </style>
-          <?php } ?>
-
           <?php if ($products) { ?>
           <div class="row_product_panel">
             <div class="sort_panel">

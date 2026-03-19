@@ -12,17 +12,9 @@ $_['text_percent']          	= 'Процент';
 $_['text_amount']          		= 'Фиксированная сумма';
 
 // Column
-$_['column_link_name']  = 'Название ссылки';
-$_['column_url']        = 'Ссылка';
-$_['column_sort_order'] = 'Порядок сортировки';
-$_['column_target']     = 'Открывать в новом окне';
 $_['column_name']          		= 'Тип запчасти';
 $_['column_sort_order']         = 'Порядок сортировки';
 $_['column_action']          	= 'Действие';
-
-$_['tab_links']         = 'Ссылки';
-$_['tab_custom_links']  = 'Произвольные ссылки';
-$_['button_remove']     = 'Удалить';
 
 // Entry
 $_['entry_name']          		= 'Название типа запчасти';

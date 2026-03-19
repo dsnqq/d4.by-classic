@@ -340,15 +340,6 @@ class ControllerCatalogCategory extends Controller {
 
 		$data['button_save'] = $this->language->get('button_save');
 		$data['button_cancel'] = $this->language->get('button_cancel');
-		$data['column_link_name'] = $this->language->get('column_link_name');
-		$data['column_url'] = $this->language->get('column_url');
-		$data['column_sort_order'] = $this->language->get('column_sort_order');
-		$data['column_target'] = $this->language->get('column_target');
-		$data['tab_links'] = $this->language->get('tab_links');
-		$data['tab_custom_links'] = $this->language->get('tab_custom_links');
-		$data['text_yes'] = $this->language->get('text_yes');
-		$data['text_no'] = $this->language->get('text_no');
-		$data['button_remove'] = $this->language->get('button_remove');
 
 		$data['tab_general'] = $this->language->get('tab_general');
 		$data['tab_data'] = $this->language->get('tab_data');
@@ -476,27 +467,6 @@ class ControllerCatalogCategory extends Controller {
 		$this->load->model('setting/store');
 
 		$data['stores'] = $this->model_setting_store->getStores();
-
-		$data['category_links'] = array(); 
-
-		if (isset($this->request->post['category_links'])) {
-			$category_links = $this->request->post['category_links'];
-		} elseif (isset($this->request->get['category_id'])) {
-			$category_links = $this->model_catalog_category->getCategoryLinks($this->request->get['category_id']);
-		} else {
-			$category_links = array();
-		}
-
-		$data['category_links'] = array();
-
-		foreach ($category_links as $category_link) {
-			$data['category_links'][] = array(
-				'name'       => unserialize($category_link['name']),
-				'link'       => unserialize($category_link['link']),
-				'target'     => $category_link['target'],
-				'sort_order' => $category_link['sort_order']
-			);
-		}
 
 		if (isset($this->request->post['category_store'])) {
 			$data['category_store'] = $this->request->post['category_store'];

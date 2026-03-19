@@ -127,100 +127,10 @@
               <input type="text" name="sort_order" value="<?php echo $sort_order; ?>" placeholder="<?php echo $entry_sort_order; ?>" id="input-sort-order" class="form-control" />
             </div>
           </div>
-
-          <div class="form-group">
-              <label class="col-sm-2  control-label"><?php echo $tab_links;?></label>
-			  <div class="col-sm-10">
-              <div class="table-responsive">
-                <table id="links" class="table table-striped table-bordered table-hover">
-                  <thead>
-                    <tr>
-                      <td class="text-center"><?php echo $column_link_name; ?></td>
-                      <td class="text-center"><?php echo $column_url; ?></td>
-                      <td class="text-center" style="width:10%"><?php echo $column_sort_order; ?></td>
-                      <td class="text-center" style="width:10%"><?php echo $column_target; ?></td>
-                      <td class="text-center" style="width:10%"></td>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <?php $links_row = 0; ?>
-                    <?php foreach ($manufacturer_links as $manufacturer_link) { ?>
-                    <tr id="links-row<?php echo $links_row; ?>">
-					 
-                      <td class="text-center">
-					  <?php foreach($languages as $language) { ?>
-					  <img src="language/<?php echo $language['code']; ?>/<?php echo $language['code']; ?>.png" style="display:inline-block;"/> <input type="text" name="manufacturer_links[<?php echo $links_row; ?>][name][<?php echo $language['language_id']; ?>]" value="<?php if (isset($manufacturer_link['name'][$language['language_id']])) echo $manufacturer_link['name'][$language['language_id']]; ?>" class="form-control" style="display:inline-block;width:80%;" /><br>
-					  <?php } ?>
-					  </td>
-                      <td class="text-center">
-					  <?php foreach($languages as $language) { ?>
-					  <img src="language/<?php echo $language['code']; ?>/<?php echo $language['code']; ?>.png" style="display:inline-block;"/> <input type="text" name="manufacturer_links[<?php echo $links_row; ?>][link][<?php echo $language['language_id']; ?>]" value="<?php if (isset($manufacturer_link['link'][$language['language_id']])) echo $manufacturer_link['link'][$language['language_id']]; ?>" class="form-control" style="display:inline-block;width:80%;" /><br>
-					  <?php } ?> 
-					  </td>
-                      <td class="text-center"><input type="text" name="manufacturer_links[<?php echo $links_row; ?>][sort_order]" value="<?php echo $manufacturer_link['sort_order']; ?>" class="form-control" /></td>
-                      <td class="text-center">
-					  <label class="radio-inline">
-					 <?php if ($manufacturer_link['target']) { ?>
-                    <input type="radio" name="manufacturer_links[<?php echo $links_row; ?>][target]" value="1" checked="checked" />
-                    <?php echo $text_yes; ?>
-                    <?php } else { ?>
-                    <input type="radio" name="manufacturer_links[<?php echo $links_row; ?>][target]" value="1" />
-                    <?php echo $text_yes; ?>
-                    <?php } ?>
-                  </label>
-                  <label class="radio-inline">
-                    <?php if (!$manufacturer_link['target']) { ?>
-                    <input type="radio" name="manufacturer_links[<?php echo $links_row; ?>][target]" value="0" checked="checked" />
-                    <?php echo $text_no; ?>
-                    <?php } else { ?>
-                    <input type="radio" name="manufacturer_links[<?php echo $links_row; ?>][target]" value="0" />
-                    <?php echo $text_no; ?>
-                    <?php } ?>
-                  </label>
-					  </td>
-                      <td class="text-center"><button type="button" onclick="$('#links-row<?php echo $links_row; ?>').remove();" data-toggle="tooltip" title="<?php echo $button_remove; ?>" class="btn btn-danger"><i class="fa fa-minus-circle"></i></button></td>
-                    </tr>
-                    <?php $links_row++; ?>
-                    <?php } ?>
-                  </tbody>
-                  <tfoot>
-                    <tr>
-                      <td colspan="4"></td>
-                      <td class="text-center"><button type="button" onclick="addLink();" data-toggle="tooltip" class="btn btn-primary"><i class="fa fa-plus-circle"></i></button></td>
-                    </tr>
-                  </tfoot>
-                </table>
-              </div>
-            </div>
-			</div>
         </form>
       </div>
     </div>
   </div>
-  <script type="text/javascript"><!--
-	var links_row = <?php echo isset($links_row) ? $links_row : 0; ?>;
-  function addLink() {
-	html  = '<tr id="links-row' + links_row + '">';
-    html += '  <td class="text-center">';
-	<?php foreach($languages as $language) { ?>
-	html += ' <img src="language/<?php echo $language['code']; ?>/<?php echo $language['code']; ?>.png" style="display:inline-block;"/> <input type="text" name="manufacturer_links[' + links_row + '][name][<?php echo $language['language_id']; ?>]" value="" class="form-control" style="display:inline-block;width:80%;" /><br>';
-	<?php } ?>
-	html += '</td>';
-    html += '  <td class="text-center">';
-	<?php foreach($languages as $language) { ?>
-	html += ' <img src="language/<?php echo $language['code']; ?>/<?php echo $language['code']; ?>.png" style="display:inline-block;"/> <input type="text" name="manufacturer_links[' + links_row + '][link][<?php echo $language['language_id']; ?>]" value="" class="form-control" style="display:inline-block;width:80%;" /><br>';
-	<?php } ?> 
-	html += '</td>';
-	html += '  <td class="text-center" style="width:10%"><input type="text" name="manufacturer_links[' + links_row + '][sort_order]" value=""  class="form-control" /></td>';
-	html += '  <td class="text-center" style="width:10%"><label class="radio-inline"><input type="radio" name="manufacturer_links[' + links_row + '][target]" value="1" /><?php echo $text_yes; ?></label><label class="radio-inline"><input type="radio" name="manufacturer_links[' + links_row + '][target]" value="0" checked="checked" /><?php echo $text_no; ?></label></td>';
-	html += '  <td class="text-center"><button type="button" onclick="$(\'#links-row' + links_row + '\').remove();" data-toggle="tooltip" class="btn btn-danger"><i class="fa fa-minus-circle"></i></button></td>';
-	html += '</tr>';
-
-	$('#links tbody').append(html);
-
-	links_row++;
-}
-//--></script>
   <script type="text/javascript"><!--
     <?php if ($ckeditor) { ?>
     <?php foreach ($languages as $language) { ?>
