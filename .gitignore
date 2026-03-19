@@ -61,6 +61,7 @@
 /php.ini.bak
 /vqmod/vqcache/*
 /vqmod/vqcache/
+/bamper
 /bamper/*
 /gd/qr/*
 /gd/qr_shiny/*
