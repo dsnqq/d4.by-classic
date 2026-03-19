@@ -9,8 +9,6 @@
         public function getOrders($data = array()) {
             $sql = "SELECT * FROM oc_order";
 
-
-
             if (!empty($data['filter_order_id'])) {
                 $sql .= " AND o.order_id = '" . (int)$data['filter_order_id'] . "'";
             }

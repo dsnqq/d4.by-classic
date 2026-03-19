@@ -109,9 +109,6 @@ class ModelCatalogCategory extends Model {
 
             return $query->rows;
         } else {
-            //$currency_data = $this->cache->get('currency');
-
-            //if (!$currency_data) {
             $currency_data = array();
 
             $query = $this->db->query("SELECT * FROM " . DB_PREFIX . "currency ORDER BY title ASC");
@@ -131,7 +128,6 @@ class ModelCatalogCategory extends Model {
             }
 
             $this->cache->set('currency', $currency_data);
-            //}
 
             return $currency_data;
         }

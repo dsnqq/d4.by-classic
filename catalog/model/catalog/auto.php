@@ -92,7 +92,6 @@ class ModelCatalogAuto extends Model {
     }
     
     public function saveCar($id, $data) {
-        //$this->db->query("UPDATE " . DB_PREFIX . "car SET " . $this->db->escape($data['name']) . "=);
         $this->db->query("UPDATE " . DB_PREFIX . "car SET " . $this->db->escape($data['name']) . "= '" . $this->db->escape($data['edits']) . "' WHERE product_id = '" . (int)$id . "'");
 
         $this->cache->delete('car');
