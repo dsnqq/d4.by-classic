@@ -61,6 +61,8 @@
 /php.ini.bak
 /vqmod/vqcache/*
 /vqmod/vqcache/
+/vqmod/vqcache1/
+/image
 /bamper
 /bamper/*
 /gd/qr/*
