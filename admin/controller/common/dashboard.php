@@ -59,6 +59,19 @@ class ControllerCommonDashboard extends Controller {
 			'href' => $this->url->link('common/dashboard', 'token=' . $this->session->data['token'], true)
 		);
 
+		$v = substr(VERSION,0,3);
+		if($v == '2.3'){
+			$version = $this->load->controller('extension/module/apimodule/checkVersion');
+		}else{
+			$version = $this->load->controller('module/apimodule/checkVersion');
+		}
+
+		if ($this->API_VERSION < (float)$version) {
+			$data['update_module'] = "Обновите модуль OPENCART-MOBILE-ADMIN до версии ".$version." или скачайте по ссылке <a target='_blanc' href='https://github.com/pintawebware/opencart-mobile-admin'>скачать </a>";
+		} else {
+			$data['update_module'] = '';
+		}
+
 		// Check install directory exists
 		if (is_dir(dirname(DIR_APPLICATION) . '/install')) {
 			$data['error_install'] = $this->language->get('error_install');

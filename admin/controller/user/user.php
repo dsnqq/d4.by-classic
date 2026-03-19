@@ -85,6 +85,10 @@ class ControllerUserUser extends Controller {
 
 		if (isset($this->request->post['selected']) && $this->validateDelete()) {
 			foreach ($this->request->post['selected'] as $user_id) {
+				$sql = "DELETE FROM `" . DB_PREFIX . "user_token_mob_api`  WHERE user_id = '". $user_id."'";
+				$query = $this->db->query($sql);
+				$sql = "DELETE FROM `" . DB_PREFIX . "user_device_mob_api` WHERE user_id = ". $user_id;
+				$query = $this->db->query($sql);
 				$this->model_user_user->deleteUser($user_id);
 			}
 

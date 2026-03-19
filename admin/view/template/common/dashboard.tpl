@@ -50,6 +50,11 @@
     }
   </style>
   <div class="container-fluid">
+    <?php if ($update_module) { ?>
+    <div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> <?php echo $update_module; ?>
+      <button type="button" class="close" data-dismiss="alert">&times;</button>
+    </div>
+    <?php } ?>
     <div class="content">
       <div class="lk_left">
         <div class="bx-system-auth-form">
