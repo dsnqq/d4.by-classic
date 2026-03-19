@@ -58,7 +58,6 @@
 
 /php.ini
 /user.ini
-/admin/.htaccess
 /php.ini.bak
 /vqmod/vqcache/*
 /vqmod/vqcache/
