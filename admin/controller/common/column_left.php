@@ -1,7 +1,7 @@
 <?php
 class ControllerCommonColumnLeft extends Controller {
 	public function index() {
-		if (isset($this->request->get['token']) && isset($this->session->data['token']) && ($this->request->get['token'] == $this->session->data['token'])) {
+		if ($this->user->isLogged()) {
 			$this->load->language('common/column_left');
 
 			$this->load->model('user/user');

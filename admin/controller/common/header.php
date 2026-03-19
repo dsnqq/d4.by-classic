@@ -49,7 +49,7 @@ class ControllerCommonHeader extends Controller {
 
 		$data['link_to_new_version'] = ($this->request->get['route'] === "catalog/product" || $this->request->get['route'] === "catalog/product/add");
 
-		if (!isset($this->request->get['token']) || !isset($this->session->data['token']) || ($this->request->get['token'] != $this->session->data['token'])) {
+		if (!$this->user->isLogged()) {
 			$data['logged'] = '';
 
 			$data['home'] = $this->url->link('common/dashboard', '', true);
