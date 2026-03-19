@@ -1,4 +1,6 @@
 $(function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const token = urlParams.get('token') || '';
     // Удаление
     $(".deletedButton").on("click", function () {
         return confirm("Вы действительно хотите удалить З/Ч ?");
@@ -57,7 +59,7 @@ $(function() {
 
     function loadHistory(productid, productinfo) {
         $.ajax({
-            url: `index.php?route=catalog/product/getChangeProduct&token=<?php echo $token; ?>&product_id=${productid}`,
+            url: `index.php?route=catalog/product/getChangeProduct&token=${token}&product_id=${productid}`,
             method: 'POST',
             data: { product_id: productid },
             dataType: 'json',
@@ -108,7 +110,7 @@ $(function() {
 
                 myDropzone.files.forEach(file => {
                     if (!file || !file.upload) return;
-                    $.post('index.php?route=catalog/product/addImageListPage&token=<?php echo $token; ?>', {
+                    $.post(`index.php?route=catalog/product/addImageListPage&token=${token}`, {
                         product_id: productId,
                         image: folder + file.upload.filename
                     });
@@ -141,7 +143,7 @@ $(function() {
     $('body').on('click', '.status_favourite', function() {
         const id = $(this).data('id');
         const el = $(this);
-        $.post(`index.php?route=catalog/product/actions&token=<?php echo $token; ?>&actions=${id}`, {
+        $.post(`index.php?route=catalog/product/actions&token=${token}&actions=${id}`, {
             actions: id
         }, function(response) {
             const active = response === '1';
