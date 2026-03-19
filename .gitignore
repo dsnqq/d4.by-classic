@@ -1,5 +1,6 @@
 # Config and Htaccess Files
 /.htaccess
+/admin/.htaccess
 /config.php
 /admin/config.php
 
