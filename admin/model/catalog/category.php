@@ -148,6 +148,14 @@ class ModelCatalogCategory extends Model {
 			$this->db->query("INSERT INTO " . DB_PREFIX . "url_alias SET query = 'category_id=" . (int)$category_id . "', keyword = '" . $this->db->escape($data['keyword']) . "'");
 		}
 
+		$this->db->query("DELETE FROM " . DB_PREFIX . "category_links WHERE category_id = '" . (int)$category_id . "'");
+
+		if (isset($data['category_links'])) {
+			foreach ($data['category_links'] as $category_link) {
+				$this->db->query("INSERT INTO " . DB_PREFIX . "category_links SET category_id = '" . (int)$category_id . "', `name` = '" . serialize($category_link['name']) . "', `link` = '" . serialize($category_link['link']) . "', `target` = '" . (int)$category_link['target'] . "', `sort_order` = '" . (int)$category_link['sort_order'] . "'");
+			}
+		}
+
 		$this->cache->delete('category');
 	}
 
@@ -295,6 +303,12 @@ class ModelCatalogCategory extends Model {
 
         return $query->rows;
     }
+
+	public function getCategoryLinks($category_id) {
+		$query = $this->db->query("SELECT * FROM " . DB_PREFIX . "category_links WHERE category_id = '" . (int)$category_id . "' ORDER BY sort_order ASC");
+
+		return $query->rows;
+	}
 
 	public function getCategoryDescriptions($category_id) {
 		$category_description_data = array();

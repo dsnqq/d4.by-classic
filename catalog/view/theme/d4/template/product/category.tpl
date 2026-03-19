@@ -23,6 +23,32 @@
           <div class="left_wrapper"><?php echo $column_left; ?></div>
           <div class="right_wrapper"><?php echo $content_top; ?>
       <h1 class="title_h1"><?php echo $heading_title; ?></h1>
+            <?php if ($category_links) { ?> 
+	<div class="row category-links">
+	<div class="heading-title"><?php echo $text_category_links_title;?></div>
+	<?php foreach($category_links as $category_link) { ?>
+	<div class="col-sm-3">
+	<a class="category-link" href="<?php echo $category_link['link']; ?>" <?php echo $category_link['target'] ? 'target="_blank"' : ''; ?>><?php echo $category_link['name']; ?></a>
+	</div>
+	<?php } ?>
+	</div>
+	<style>
+	.category-links {
+		margin-bottom: 20px;
+	}
+	.category-links .col-sm-3{
+		margin-bottom: 10px;
+	}
+	.category-link {
+		font-size:16px;
+	}
+	.heading-title {
+		font-size:18px;
+		text-align:center; 
+		margin-bottom:15px;
+	}
+	</style>
+		<?php } ?>
             <?php if ($products) { ?>
             <div class="row_product_panel">
               <div class="sort_panel">

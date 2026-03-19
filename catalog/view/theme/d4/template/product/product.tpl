@@ -134,6 +134,35 @@
         <div class="product_this__time"><img src="/catalog/view/theme/d4/images/time.svg" title="time" alt="images-time"><?php echo date_format($datetime1, "d.m.Y");?></div>
 		<?php if($description){ ?>
         <div class="product_this_desc"><div class="block_white_t">Описание:</div><?php echo $description; ?></div>
+
+        <?php if ($product_links) { ?> 
+        <div class="product_this_desc">
+          <div class="block_white_t"><?php echo $text_product_links_title;?></div>
+          <div class="row product-links">
+            <?php foreach($product_links as $product_link) { ?>
+              <div class="col-sm-3">
+                <a class="product-link" href="<?php echo $product_link['link']; ?>" <?php echo $product_link['target'] ? 'target="_blank"' : ''; ?>><?php echo $product_link['name']; ?></a>
+              </div>
+            <?php } ?>
+          </div>
+        </div>
+        <style>
+        .product-links {
+          margin-bottom: 20px;
+        }
+        .product-links .col-sm-3{
+          margin-bottom: 10px;
+        }
+        .product-link {
+          font-size:16px;
+        }
+        .heading-title {
+          font-size:18px;
+          text-align:center; 
+          margin-bottom:15px;
+        }
+        </style>
+        <?php } ?>
 		<?php } ?>
 
 		  <?php if($youtube){  ?>

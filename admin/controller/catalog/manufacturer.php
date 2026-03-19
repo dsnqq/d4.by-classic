@@ -297,6 +297,15 @@ class ControllerCatalogManufacturer extends Controller {
 
 		$data['button_save'] = $this->language->get('button_save');
 		$data['button_cancel'] = $this->language->get('button_cancel');
+		$data['column_link_name'] = $this->language->get('column_link_name');
+		$data['column_url'] = $this->language->get('column_url');
+		$data['column_sort_order'] = $this->language->get('column_sort_order');
+		$data['column_target'] = $this->language->get('column_target');
+		$data['tab_links'] = $this->language->get('tab_links');
+		$data['tab_custom_links'] = $this->language->get('tab_custom_links');
+		$data['text_yes'] = $this->language->get('text_yes');
+		$data['text_no'] = $this->language->get('text_no');
+		$data['button_remove'] = $this->language->get('button_remove');
 
 		if (isset($this->error['warning'])) {
 			$data['error_warning'] = $this->error['warning'];
@@ -374,6 +383,26 @@ class ControllerCatalogManufacturer extends Controller {
 		$this->load->model('setting/store');
 
 		$data['stores'] = $this->model_setting_store->getStores();
+
+		$data['manufacturer_links'] = array(); 
+		if (isset($this->request->post['manufacturer_links'])) {
+			$manufacturer_links = $this->request->post['manufacturer_links'];
+		} elseif (isset($this->request->get['manufacturer_id'])) {
+			$manufacturer_links = $this->model_catalog_manufacturer->getManufacturerLinks($this->request->get['manufacturer_id']);
+		} else {
+			$manufacturer_links = array();
+		}
+
+		$data['manufacturer_links'] = array();
+
+		foreach ($manufacturer_links as $manufacturer_link) {
+			$data['manufacturer_links'][] = array(
+				'name'       => unserialize($manufacturer_link['name']),
+				'link'       => unserialize($manufacturer_link['link']),
+				'target'     => $manufacturer_link['target'],
+				'sort_order' => $manufacturer_link['sort_order']
+			);
+		}
 
 		if (isset($this->request->post['manufacturer_store'])) {
 			$data['manufacturer_store'] = $this->request->post['manufacturer_store'];

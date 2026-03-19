@@ -142,6 +142,22 @@ class ControllerProductManufacturer extends Controller {
 				'href' => $this->url->link('product/manufacturer/info', 'manufacturer_id=' . $this->request->get['manufacturer_id'] . $url)
 			);
 
+			$data['manufacturer_links'] = array();
+			$data['manufacturer_links_query'] = $this->model_catalog_manufacturer->getManufacturerLinks($manufacturer_id);
+			foreach($data['manufacturer_links_query'] as $manufacturer_link) {
+				$names = unserialize($manufacturer_link['name']);
+				$links = unserialize($manufacturer_link['link']);
+				if (isset($names[$this->config->get('config_language_id')]) && isset($links[$this->config->get('config_language_id')])) {
+					$data['manufacturer_links'][] = array(
+						'name'       => $names[$this->config->get('config_language_id')],
+						'link'       => $links[$this->config->get('config_language_id')],
+						'sort_order' => $manufacturer_link['sort_order'],
+						'target'     => $manufacturer_link['target']
+					);
+				}
+			}
+			$data['text_manufacturer_links_title'] = $this->language->get('text_manufacturer_links_title');
+
 			if ($manufacturer_info['meta_title']) {
 				$this->document->setTitle($manufacturer_info['meta_title']);
 			} else {

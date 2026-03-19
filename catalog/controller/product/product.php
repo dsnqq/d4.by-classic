@@ -626,6 +626,22 @@ class ControllerProductProduct extends Controller {
     public function review() {
         $this->load->language('product/product');
 
+        $data['product_links'] = array();
+        $data['product_links_query'] = $this->model_catalog_product->getProductLinks($product_id);
+        foreach($data['product_links_query'] as $product_link) {
+            $names = unserialize($product_link['name']);
+            $links = unserialize($product_link['link']);
+            if (isset($names[$this->config->get('config_language_id')]) && isset($links[$this->config->get('config_language_id')])) {
+                $data['product_links'][] = array(
+                    'name'       => $names[$this->config->get('config_language_id')],
+                    'link'       => $links[$this->config->get('config_language_id')],
+                    'sort_order' => $product_link['sort_order'],
+                    'target'     => $product_link['target']
+                );
+            }
+        }
+        $data['text_product_links_title'] = $this->language->get('text_product_links_title');
+
         $this->load->model('catalog/review');
 
         $data['text_no_reviews'] = $this->language->get('text_no_reviews');

@@ -1,5 +1,6 @@
 <?php
 // Text
+$_['text_category_links_title']     = 'Ссылки:';
 $_['text_refine']       = 'Уточнить поиск';
 $_['text_product']      = 'Товары';
 $_['text_error']        = 'Категория не найдена!';

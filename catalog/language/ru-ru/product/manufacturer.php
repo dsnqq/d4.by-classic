@@ -3,6 +3,8 @@
 $_['heading_title']     = 'Список запчастей';
 
 // Text
+$_['text_product_links_title']      = 'Ссылки:';
+$_['text_manufacturer_links_title'] = 'Ссылки:';
 $_['text_brand']        = 'Запчасти';
 $_['text_index']        = 'Алфавитный указатель:';
 $_['text_error']        = 'Запчасть не найдена!';

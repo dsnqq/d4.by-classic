@@ -1,5 +1,8 @@
 <?php
 // Text
+$_['text_category_links_title']     = 'Ссылки:';
+$_['text_product_links_title']      = 'Ссылки:';
+$_['text_manufacturer_links_title'] = 'Ссылки:';
 $_['text_search']                             = 'Поиск';
 $_['text_brand']                              = 'Запчасть';
 $_['text_manufacturer']                       = 'Запчасть:';

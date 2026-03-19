@@ -109,6 +109,22 @@ class ControllerProductCategory extends Controller {
 				$data['heading_title'] = $category_info['name'];
 			}
 
+			$data['category_links'] = array();
+			$data['category_links_query'] = $this->model_catalog_category->getCategoryLinks($category_id);
+			foreach($data['category_links_query'] as $category_link) {
+				$names = unserialize($category_link['name']);
+				$links = unserialize($category_link['link']);
+				if (isset($names[$this->config->get('config_language_id')]) && isset($links[$this->config->get('config_language_id')])) {
+					$data['category_links'][] = array(
+						'name'       => $names[$this->config->get('config_language_id')],
+						'link'       => $links[$this->config->get('config_language_id')],
+						'sort_order' => $category_link['sort_order'],
+						'target'     => $category_link['target']
+					);
+				}
+			}
+			$data['text_category_links_title'] = $this->language->get('text_category_links_title');
+
 			$data['text_refine'] = $this->language->get('text_refine');
 			$data['text_empty'] = $this->language->get('text_empty');
 			$data['text_quantity'] = $this->language->get('text_quantity');
