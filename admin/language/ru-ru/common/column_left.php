@@ -1,5 +1,10 @@
 <?php
 // Text
+// FooterMenu
+$_['text_footertitle']                 = 'Заголовки блоков';
+$_['text_footerlink']                  = 'Пункты меню';
+$_['text_footermenu']                  = 'Меню в футере';
+
 $_['text_affiliate']          				= 'Партнеры';
 $_['text_api']          					= 'API';
 $_['text_attribute']          				= 'Атрибуты';

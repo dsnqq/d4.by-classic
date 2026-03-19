@@ -1,5 +1,10 @@
 <?php
 // Text
+// FooterMenu
+$_['text_footertitle']                 = 'Footer title';
+$_['text_footerlink']                  = 'Footer link';
+$_['text_footermenu']                  = 'TMD Footer Menu';
+
 $_['text_affiliate']                 = 'Affiliates';
 $_['text_api']                       = 'API';
 $_['text_attribute']                 = 'Attributes';

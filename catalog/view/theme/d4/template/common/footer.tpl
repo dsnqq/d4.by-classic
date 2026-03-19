@@ -121,8 +121,17 @@
                 </li>
               </ul>
             </div>
-            <?php //footer menu ocmod?>
-            <?php //TODO: ?>
+            <?php // footer menu ocmod?>
+            <?php if ($footer_titles) { foreach ($footer_titles as $footer_title) { ?>
+		   <div class="footer_menu__item">
+              <div class="footer_menu_title"><?php echo $footer_title['title']; ?></div>
+			  <ul class="footer_menu_lists">
+				<?php foreach ($footer_title['sub_title'] as $subtitle) { ?>
+				<li><a href="<?php echo !empty($subtitle['href']) ? $subtitle['href'] : $subtitle['link']; ?>"><?php echo $subtitle['title']; ?></a></li>
+				<?php } ?>
+			  </ul>
+            </div>
+		  <?php } } ?>
           </div>
           <img src="/catalog/view/theme/d4/images/paymant.png" class="paymant_img">
         </div>

@@ -213,6 +213,37 @@ class ControllerCommonColumnLeft extends Controller {
 				);
 			}
 
+			/* TMD Custom Footer Menu */						
+			$customfooter = array();
+		
+			if ($this->user->hasPermission('access', 'catalog/footerlink')) {		
+				$customfooter[] = array(
+					'name'	   => $this->language->get('text_footerlink'),
+					'href'     => $this->url->link('catalog/footerlink', 'token=' . $this->session->data['token'], true),
+					'children' => array()		
+				);					
+			}	
+			
+			if ($this->user->hasPermission('access', 'catalog/footertitle')) {		
+				$customfooter[] = array(
+					'name'	   => $this->language->get('text_footertitle'),
+					'href'     => $this->url->link('catalog/footertitle', 'token=' . $this->session->data['token'], true),
+					'children' => array()		
+				);					
+			}	
+					
+			if ($customfooter) {					
+				$data['menus'][] = array(
+					'id'       => 'menu-customfooter',
+					'icon'	   => 'fa fa-share-alt fa-fw', 
+					'name'	   => $this->language->get('text_footermenu'),
+					'href'     => '',
+					'children' => $customfooter
+				);		
+			}
+			
+			/* TMD Custom Footer Menu */ 
+
 			// Design
 			$design = array();
 

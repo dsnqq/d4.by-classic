@@ -44,6 +44,9 @@ class ControllerCommonFooter extends Controller {
 
 		$this->load->model('catalog/information');
 
+		// Footer menu titles/links
+		$data['footer_titles'] = $this->model_catalog_information->getFotterTitle();
+
 		$data['informations'] = array();
 
 		foreach ($this->model_catalog_information->getInformations() as $result) {

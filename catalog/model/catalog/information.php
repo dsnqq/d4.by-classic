@@ -1,5 +1,32 @@
 <?php
 class ModelCatalogInformation extends Model {
+
+	public function getFotterTitle(){
+		$data = array();
+
+		$query = $this->db->query("SELECT ftd.title,ft.footertitle_id FROM " . DB_PREFIX . "footertitle ft LEFT JOIN " . DB_PREFIX . "footertitle_description ftd ON (ft.footertitle_id = ftd.footertitle_id) WHERE ftd.language_id = '" . (int)$this->config->get('config_language_id') . "' AND ft.status = 1 ORDER BY ft.sort_order");
+
+		foreach ($query->rows as $row) {
+			$query2 = $this->db->query("SELECT * FROM " . DB_PREFIX . "footerlink f LEFT JOIN " . DB_PREFIX . "footerlink_description fd ON (f.footerlink_id = fd.footerlink_id) WHERE fd.language_id = '" . (int)$this->config->get('config_language_id') . "' AND f.status = 1 AND f.selectheading = '" . (int)$row['footertitle_id'] . "' ORDER BY f.sort_order");
+
+			$subtitle = array();
+
+			foreach ($query2->rows as $row2) {
+				$subtitle[] = array(
+					'title' => $row2['title'],
+					'link'  => $row2['link']
+				);
+			}
+
+			$data[] = array(
+				'title'     => $row['title'],
+				'sub_title' => $subtitle
+			);
+		}
+
+		return $data;
+	}
+
 	public function getInformation($information_id) {
 		$query = $this->db->query("SELECT DISTINCT * FROM " . DB_PREFIX . "information i LEFT JOIN " . DB_PREFIX . "information_description id ON (i.information_id = id.information_id) LEFT JOIN " . DB_PREFIX . "information_to_store i2s ON (i.information_id = i2s.information_id) WHERE i.information_id = '" . (int)$information_id . "' AND id.language_id = '" . (int)$this->config->get('config_language_id') . "' AND i2s.store_id = '" . (int)$this->config->get('config_store_id') . "' AND i.status = '1'");
 
