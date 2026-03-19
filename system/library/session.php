@@ -25,8 +25,28 @@ class Session {
 			if (isset($_COOKIE[session_name()]) && !preg_match('/^[a-zA-Z0-9,\-]{22,52}$/', $_COOKIE[session_name()])) {
 				exit('Error: Invalid session ID!');
 			}
-			
-			session_set_cookie_params(0, '/');
+
+			//admin long login behaviour (was in vQmod tv_lolo_oc22)
+			if (defined('APPLICATION_CONFIG') && APPLICATION_CONFIG === 'admin') {
+				include_once(DIR_SYSTEM . 'helper/lolo.php');
+				lolo_log('Setting cookie long timeout for admin');
+
+				lolo_log('Going to set session_save_path to: ' . DIR_SYSTEM . 'sessions');
+				@session_save_path(DIR_SYSTEM . 'sessions');
+				lolo_log('session_save_path is now: ' . session_save_path());
+
+				ini_set('session.gc_maxlifetime', 65535);
+
+				$cookie_expire = time() + (10 * 365 * 24 * 60 * 60);  //10 years
+				lolo_log('Set cookie expire to: ' . $cookie_expire . ' seconds');
+				session_set_cookie_params($cookie_expire, '/');
+			} else {
+				include_once(DIR_SYSTEM . 'helper/lolo.php');
+				lolo_log('Setting cookie normal timeout for customer');
+
+				session_set_cookie_params(0, '/');
+			}
+
 			session_start();
 		}			
 	}

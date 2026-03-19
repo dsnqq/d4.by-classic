@@ -45,6 +45,12 @@ if ($config->get('session_autostart')) {
 
 $registry->set('session', $session);
 
+//admin long login - mirror old vQmod behaviour:
+//if this is admin app and we already have token in session, inject it into request
+if ($application_config === 'admin' && isset($session->data['token'])) {
+	$registry->get('request')->get['token'] = $session->data['token'];
+}
+
 // Cache 
 $registry->set('cache', new Cache($config->get('cache_type'), $config->get('cache_expire')));
 
