@@ -107,7 +107,6 @@ class ControllerProductProduct extends Controller {
             if ($manufacturer_info) {
                 $data['breadcrumbs'][] = array(
                     'text' => $manufacturer_info['name'],
-                    //'text' => $manufacturer. " к ".$catprod2[0]['name']." ".$catprod[0]['name']." ,".$year."г.",
                     'href' => $this->url->link('product/manufacturer/info', 'manufacturer_id=' . $this->request->get['manufacturer_id'] . $url)
                 );
             }
@@ -219,10 +218,6 @@ class ControllerProductProduct extends Controller {
             if (isset($this->request->get['limit'])) {
                 $url .= '&limit=' . $this->request->get['limit'];
             }
-            /*$data['breadcrumbs'][] = array(
-                'text' => $product_info['name'],
-                'href' => $this->url->link('product/product', $url . '&product_id=' . $this->request->get['product_id'])
-            );*/
 
             if ($product_info['meta_title']) {
                 $this->document->setTitle($product_info['meta_title']);
@@ -420,7 +415,6 @@ class ControllerProductProduct extends Controller {
                             'product_option_value_id' => $option_value['product_option_value_id'],
                             'option_value_id'         => $option_value['option_value_id'],
                             'name'                    => $option_value['name'],
-                            //'image'                   => $option_value['image'] ? $this->model_tool_image->resize($option_value['image'], 50, 50) : '',
                             'image'					  => "",
                             'price'                   => $price,
                             'price_prefix'            => $option_value['price_prefix']
@@ -536,54 +530,6 @@ class ControllerProductProduct extends Controller {
             }
 
             $data['recurrings'] = $this->model_catalog_product->getProfiles($this->request->get['product_id']);
-
-
-            // пишем статистику, только если это не администратор
-            /*if($this->request->get['product_id']) {
-                if (!isBot($botname)) {
-                    if (empty($this->session->data['user_id']) && empty($this->session->data['token'])) {
-                        $nameStroke = $product_info['manufacturer'] . " к " . $category_info2['name'] . " " . $category_info['name'] . ", " . $product_info['length'] . "г.";
-                        $this->model_catalog_product->updateStax($this->request->get['product_id'], $nameStroke);
-
-                        $this->addProductStatistic(
-                            $this->request->get['product_id'],
-                            1,
-                            $nameStroke
-                        );
-                    }
-                }
-            }*/
-            /*$product_id = (int)$this->request->get['product_id'];
-
-            if ($product_id) {
-                if (!isBot($botname) && isLikelyHuman()) {
-                    // Только для неавторизованных
-                    if (empty($this->session->data['user_id']) && empty($this->session->data['token'])) {
-
-                        // Проверка на повторный просмотр
-                        $last_view_key = 'last_view_' . $product_id;
-
-                        if (
-                            isset($this->session->data[$last_view_key])
-                            && (time() - $this->session->data[$last_view_key] < 30)
-                        ) {
-                            return;
-                        }
-
-                        $this->session->data[$last_view_key] = time();
-
-                        // Формируем имя
-                        $nameStroke = $product_info['manufacturer'] . " к "
-                            . $category_info2['name'] . " "
-                            . $category_info['name'] . ", "
-                            . $product_info['length'] . "г.";
-
-                        // Обновление статистики
-                        //$this->model_catalog_product->updateStax($product_id, $nameStroke);
-                        $this->model_catalog_product->updateProductStatistics($product_id, $nameStroke);
-                    }
-                }
-            }*/
 
             $data['breadcrumbs'][] = array(
                 'text' => $product_info['manufacturer']. " к ".$category_info2['name']." ".$category_info['name']." ,".$product_info['length']."г.",

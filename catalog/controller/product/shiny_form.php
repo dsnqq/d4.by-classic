@@ -47,7 +47,6 @@ class ControllerProductShinyForm extends Controller {
                 }
             }
 
-            // Set the last category breadcrumb
             $category_info = $this->model_catalog_category->getCategory($category_id);
 
             if ($category_info) {
@@ -107,7 +106,6 @@ class ControllerProductShinyForm extends Controller {
             if ($manufacturer_info) {
                 $data['breadcrumbs'][] = array(
                     'text' => $manufacturer_info['name'],
-                    //'text' => $manufacturer. " к ".$catprod2[0]['name']." ".$catprod[0]['name']." ,".$year."г.",
                     'href' => $this->url->link('product/manufacturer/info', 'manufacturer_id=' . $this->request->get['manufacturer_id'] . $url)
                 );
             }

@@ -162,18 +162,6 @@ class ControllerProductSpecial extends Controller {
 			'href'  => $this->url->link('product/special', 'sort=p.sort_order&order=ASC' . $url)
 		);
 
-		/*$data['sorts'][] = array(
-			'text'  => $this->language->get('text_name_asc'),
-			'value' => 'pd.name-ASC',
-			'href'  => $this->url->link('product/special', 'sort=pd.name&order=ASC' . $url)
-		);
-
-		$data['sorts'][] = array(
-			'text'  => $this->language->get('text_name_desc'),
-			'value' => 'pd.name-DESC',
-			'href'  => $this->url->link('product/special', 'sort=pd.name&order=DESC' . $url)
-		);*/
-
 		$data['sorts'][] = array(
 			'text'  => $this->language->get('text_price_asc'),
 			'value' => 'ps.price-ASC',
@@ -262,7 +250,6 @@ class ControllerProductSpecial extends Controller {
 
 		$data['results'] = sprintf($this->language->get('text_pagination'), ($product_total) ? (($page - 1) * $limit) + 1 : 0, ((($page - 1) * $limit) > ($product_total - $limit)) ? $product_total : ((($page - 1) * $limit) + $limit), $product_total, ceil($product_total / $limit));
 
-		// http://googlewebmastercentral.blogspot.com/2011/09/pagination-with-relnext-and-relprev.html
 		if ($page == 1) {
 		    $this->document->addLink($this->url->link('product/special', '', true), 'canonical');
 		} elseif ($page == 2) {

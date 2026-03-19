@@ -181,22 +181,9 @@ class ControllerProductShinyList extends Controller {
 
             $data['products'] = array();
 
-            $filter_data = array(
-                'filter_category_id' => $category_id,
-                'filter_filter'      => $filter,
-                'sort'               => $sort,
-                'order'              => $order,
-                'start'              => ($page - 1) * $limit,
-                'limit'              => $limit
-            );
-
             $currency_code = $this->session->data['currency'];
-            //$product_total = $this->model_catalog_product->getTotalProducts($filter_data);
 
             $results = $this->model_catalog_shiny->getProducts(0);
-
-            //$mas = $results;
-            //print_r($mas);
 
             foreach ($results as $result) {
                 if ($result['image']) {
@@ -235,18 +222,6 @@ class ControllerProductShinyList extends Controller {
 
                 $catprod = array();
                 $catprod2 = array();
-
-                /*$product_category = $this->model_catalog_product->getCategories($result['product_id']);
-
-                foreach ($product_category as $prodcat) {
-                    $category_info = $this->model_catalog_category->getCategory($prodcat['category_id']);
-                    if ($category_info) {
-                        $catprod[] = array(
-                            'name'     => $category_info['name'],
-                            'parent_id'     => $category_info['parent_id']
-                        );
-                    }
-                }*/
 
                 $category_info2 = $this->model_catalog_category->getCategory($category_info['parent_id']);
                 if ($category_info2) {
@@ -442,58 +417,5 @@ class ControllerProductShinyList extends Controller {
             $data['header'] = $this->load->controller('common/header');
 
             $this->response->setOutput($this->load->view('product/shiny_list', $data));
-        /*} else {
-            $url = '';
-
-            if (isset($this->request->get['path'])) {
-                $url .= '&path=' . $this->request->get['path'];
-            }
-
-            if (isset($this->request->get['filter'])) {
-                $url .= '&filter=' . $this->request->get['filter'];
-            }
-
-            if (isset($this->request->get['sort'])) {
-                $url .= '&sort=' . $this->request->get['sort'];
-            }
-
-            if (isset($this->request->get['order'])) {
-                $url .= '&order=' . $this->request->get['order'];
-            }
-
-            if (isset($this->request->get['page'])) {
-                $url .= '&page=' . $this->request->get['page'];
-            }
-
-            if (isset($this->request->get['limit'])) {
-                $url .= '&limit=' . $this->request->get['limit'];
-            }
-
-            $data['breadcrumbs'][] = array(
-                'text' => $this->language->get('text_error'),
-                'href' => $this->url->link('product/category', $url)
-            );
-
-            $this->document->setTitle($this->language->get('text_error'));
-
-            $data['heading_title'] = $this->language->get('text_error');
-
-            $data['text_error'] = $this->language->get('text_error');
-
-            $data['button_continue'] = $this->language->get('button_continue');
-
-            $data['continue'] = $this->url->link('common/home');
-
-            $this->response->addHeader($this->request->server['SERVER_PROTOCOL'] . ' 404 Not Found');
-
-            $data['column_left'] = $this->load->controller('common/column_left');
-            $data['column_right'] = $this->load->controller('common/column_right');
-            $data['content_top'] = $this->load->controller('common/content_top');
-            $data['content_bottom'] = $this->load->controller('common/content_bottom');
-            $data['footer'] = $this->load->controller('common/footer');
-            $data['header'] = $this->load->controller('common/header');
-
-            $this->response->setOutput($this->load->view('error/not_found', $data));
-        }*/
     }
 }
