@@ -22,14 +22,35 @@ class ControllerStartupStartup extends Controller {
 		}
 		
 		// Settings
-		$query = $this->db->query("SELECT * FROM `" . DB_PREFIX . "setting` WHERE store_id = '0' OR store_id = '" . (int)$this->config->get('config_store_id') . "' ORDER BY store_id ASC");
-		
-		foreach ($query->rows as $result) {
-			if (!$result['serialized']) {
-				$this->config->set($result['key'], $result['value']);
-			} else {
-				$this->config->set($result['key'], json_decode($result['value'], true));
+		// In OC2.x settings are loaded from DB on every request; cache this array to reduce DB load.
+		$store_id = (int)$this->config->get('config_store_id');
+		$version = $this->cache->get('settings_cache_version');
+		if ($version === false) {
+			$version = 1;
+			$this->cache->set('settings_cache_version', $version);
+		}
+
+		$cache_key = 'settings.' . $store_id . '.' . (int)$version;
+		$settings = $this->cache->get($cache_key);
+
+		if ($settings === false) {
+			$settings = array();
+
+			$query = $this->db->query("SELECT * FROM `" . DB_PREFIX . "setting` WHERE store_id = '0' OR store_id = '" . (int)$store_id . "' ORDER BY store_id ASC");
+
+			foreach ($query->rows as $result) {
+				if (!$result['serialized']) {
+					$settings[$result['key']] = $result['value'];
+				} else {
+					$settings[$result['key']] = json_decode($result['value'], true);
+				}
 			}
+
+			$this->cache->set($cache_key, $settings);
+		}
+
+		foreach ($settings as $key => $value) {
+			$this->config->set($key, $value);
 		}
 
 		// Url
