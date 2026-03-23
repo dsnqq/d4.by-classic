@@ -261,6 +261,14 @@ class ControllerExtensionModuleV2Pagecache extends Controller {
         ));
     }
     public function enable() {
+        // Prevent the module admin UI from modifying the main index.php.
+        // We use a manual installation for v2pagecache, so "Enable" would otherwise
+        // re-inject code into index.php and can break the site.
+        $this->response->setOutput(json_encode(array(
+            'error' => 'Включение через админку отключено: v2pagecache установлен вручную. Не выполняйте Enable/Disable, чтобы не править index.php.'
+        )));
+        return;
+
         $status=$this->statusindexphp();
         if ($this->octlversion() < 2.3) {
             $this->response->setOutput(json_encode(
