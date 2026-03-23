@@ -10,7 +10,7 @@
 require_once(DIR_SYSTEM . 'library/session/native.php');
 use Session\Native;
 class V2PageCache {
-    private $expire='1440000'   ; // expire time, in seconds 14400 = 4 hours
+    private $expire='259200'   ; // expire time, in seconds 14400 = 4 hours
     private $lang='ru-ru'        ; // default language for site
     private $currency='USD'   ; // default currency for site
 
