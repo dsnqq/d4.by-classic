@@ -12,10 +12,10 @@
     <?php } else { ?>
     <input type="radio" name="payment_method" value="<?php echo $payment_method['code']; ?>" />
     <?php } ?>
-    <?php echo $payment_method['title']; ?>
-    <?php if ($payment_method['terms']) { ?>
-    (<?php echo $payment_method['terms']; ?>)
-    <?php } ?>
+    <?php if(isset($payment_method['logo']) && $payment_method['logo']) echo '<img src="'.$payment_method['logo'].'"/>'; ?> <?php echo $payment_method['title']; ?>
+    <?php
+     if(isset($payment_method['terms']) && $payment_method['terms']) echo html_entity_decode($payment_method['terms']);
+    ?>
     <?php if (isset($payment_method['description'])) { ?>
     <br /><small><?php echo $payment_method['description']; ?></small>
     <?php } ?>

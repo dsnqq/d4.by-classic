@@ -138,6 +138,10 @@
         </tbody>
       </table>
       <?php } ?>
+      <?php if($payment_instruction){?>
+			    <h3><?php echo $text_payment_instruction; ?></h3>   
+			    <p><?php echo html_entity_decode($payment_instruction); ?></p>
+			  <?php } ?>
       <?php if ($histories) { ?>
       <h3><?php echo $text_history; ?></h3>
       <table class="table table-bordered table-hover">

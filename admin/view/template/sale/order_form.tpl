@@ -1943,7 +1943,7 @@ $('#button-payment-address').on('click', function() {
 			} else {
 				// Payment Methods
 				$.ajax({
-					url: '<?php echo $catalog; ?>index.php?route=api/payment/methods&token=' + token + '&store_id=' + $('select[name=\'store_id\'] option:selected').val(),
+					url: '<?php echo $catalog; ?>index.php?route=api/payment/methods&token=' + token + '&store_id=' + $('select[name=\'store_id\'] option:selected').val() + '&order_id=<?php echo $order_id; ?>&customer_group_id=' + $('select[name=\'customer_group_id\']').val(),
 					dataType: 'json',
 					crossDomain: true,
 					beforeSend: function() {

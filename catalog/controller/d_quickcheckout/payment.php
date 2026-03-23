@@ -42,18 +42,34 @@ class ControllerDQuickcheckoutPayment extends Controller {
 			if($json['payment_popup']){
 				if(!empty($json['cofirm_order'])){
 					if(VERSION < '2.3.0.0'){
-						$json['payment'] = $this->load->controller('extension/payment/' . $this->session->data['payment_method']['code']);
+						if(strstr($this->session->data['payment_method']['code'],'xpayment')){
+							$json['payment'] = $this->load->controller('extension/payment/xpayment');
+						}else{
+							$json['payment'] = $this->load->controller('extension/payment/' . $this->session->data['payment_method']['code']);
+						}
 					}else{
-						$json['payment'] = $this->load->controller('extension/payment/' . $this->session->data['payment_method']['code']);
+						if(strstr($this->session->data['payment_method']['code'],'xpayment')){
+							$json['payment'] = $this->load->controller('extension/payment/xpayment');
+						}else{
+							$json['payment'] = $this->load->controller('extension/payment/' . $this->session->data['payment_method']['code']);
+						}
 					}
 				}else{
 					$json['payment'] = '';
 				}
 			}else{
 				if(VERSION < '2.3.0.0'){
-					$json['payment'] = $this->load->controller('extension/payment/' . $this->session->data['payment_method']['code']);
+					if(strstr($this->session->data['payment_method']['code'],'xpayment')){
+						$json['payment'] = $this->load->controller('extension/payment/xpayment');
+					}else{
+						$json['payment'] = $this->load->controller('extension/payment/' . $this->session->data['payment_method']['code']);
+					}
 				}else{
-					$json['payment'] = $this->load->controller('extension/payment/' . $this->session->data['payment_method']['code']);
+					if(strstr($this->session->data['payment_method']['code'],'xpayment')){
+						$json['payment'] = $this->load->controller('extension/payment/xpayment');
+					}else{
+						$json['payment'] = $this->load->controller('extension/payment/' . $this->session->data['payment_method']['code']);
+					}
 				}
 			}
 			

@@ -111,6 +111,9 @@
       <?php } ?>
     </tfoot>
   </table>
+  <?php if($payment_instruction){?>
+  <p style="margin-top: 0px; margin-bottom: 20px;"><b><?php echo $text_payment_instruction;?>:</b> <?php echo html_entity_decode($payment_instruction); ?></p>
+  <?php } ?>
   <p style="margin-top: 0px; margin-bottom: 20px;"><?php echo $text_footer; ?></p>
 </div>
 </body>

@@ -9,7 +9,11 @@
                 <?php $current_method = false; ?>
                 <select data-onchange="reloadAll" name="payment_method">
                     <?php foreach ($payment_methods as $payment_method) { ?>
-                        <option value="<?php echo $payment_method['code']; ?>" <?php echo !empty($payment_method['dummy']) ? 'disabled="disabled"' : '' ?> <?php echo !empty($payment_method['dummy']) ? 'data-dummy="true"' : '' ?> <?php if ($payment_method['code'] == $code) { ?>selected="selected"<?php } ?>><?php echo $payment_method['title']; ?></option>
+                        <option value="<?php echo $payment_method['code']; ?>" <?php echo !empty($payment_method['dummy']) ? 'disabled="disabled"' : '' ?> <?php echo !empty($payment_method['dummy']) ? 'data-dummy="true"' : '' ?> <?php if ($payment_method['code'] == $code) { ?>selected="selected"<?php } ?>><?php if(isset($payment_method['logo']) && $payment_method['logo']) echo '<img src="'.$payment_method['logo'].'"/>'; ?> <?php echo $payment_method['title']; ?>
+    <?php
+     if(isset($payment_method['terms']) && $payment_method['terms']) echo html_entity_decode($payment_method['terms']);
+    ?>
+</option>
                         <?php if ($payment_method['code'] == $code) { $current_method = $payment_method; } ?>
                     <?php } ?>
                 </select>
@@ -28,10 +32,10 @@
                     <div class="radio">
                         <label for="<?php echo $payment_method['code']; ?>">
                             <input type="radio" data-onchange="reloadAll" name="payment_method" value="<?php echo $payment_method['code']; ?>" <?php echo !empty($payment_method['dummy']) ? 'disabled="disabled"' : '' ?> <?php echo !empty($payment_method['dummy']) ? 'data-dummy="true"' : '' ?> id="<?php echo $payment_method['code']; ?>" <?php if ($payment_method['code'] == $code) { ?>checked="checked"<?php } ?> />
-                            <?php echo $payment_method['title']; ?>
-                            <?php if (isset($payment_method['terms'])) { ?>
-                                <?php echo $payment_method['terms']; ?>
-                            <?php } ?>
+                            <?php if(isset($payment_method['logo']) && $payment_method['logo']) echo '<img src="'.$payment_method['logo'].'"/>'; ?> <?php echo $payment_method['title']; ?>
+                            <?php
+     if(isset($payment_method['terms']) && $payment_method['terms']) echo html_entity_decode($payment_method['terms']);
+                            ?>
                         </label>
                     </div>
                     <?php if (!empty($payment_method['description']) && (!$display_for_selected || ($display_for_selected && $payment_method['code'] == $code))) { ?>

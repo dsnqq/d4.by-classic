@@ -207,6 +207,38 @@ class ControllerAccountOrder extends Controller {
 				$data['invoice_no'] = '';
 			}
 
+			   $this->load->language('extension/payment/xpayment');
+			   $data['text_payment_instruction'] = $this->language->get('text_payment_instruction');
+			   $payment_instruction='';
+			   $order_info['payment_code']=$this->db->query("SELECT payment_code FROM `" . DB_PREFIX . "order` WHERE order_id = '" . (int)$order_id . "' AND customer_id = '" . (int)$this->customer->getId() . "' AND order_status_id > '0'")->row['payment_code'];
+			   if(strstr($order_info['payment_code'],'xpayment')){
+			       
+			        $xpayment=$this->config->get('xpayment');
+		 		    if($xpayment) $xpayment=unserialize(base64_decode($xpayment));
+		  
+		            if(!isset($xpayment['name']))$xpayment['name']=array();
+		            if(!is_array($xpayment['name']))$xpayment['name']=array();
+		            
+		            $language_id=$order_info['language_id'];
+                    
+                    foreach($xpayment['name'] as $no_of_tab=>$names){
+              
+                    if($order_info['payment_code']=='xpayment'.'.xpayment'.$no_of_tab){
+		 	             if(isset($xpayment['inc_order'][$no_of_tab]) && $xpayment['inc_order'][$no_of_tab]) 						  
+		 	             $payment_instruction=$xpayment['instruction'][$no_of_tab][$language_id];
+		 	             break;
+		 	            }
+                    }
+			    }
+			    
+                $amount =$this->currency->format($order_info['total'], $order_info['currency_code'], $order_info['currency_value']);
+			    
+			    $placeholder=array('{orderId}','{orderTotal}');
+		        $replacer=array($order_id,$amount);
+		        $payment_instruction=str_replace($placeholder,$replacer,$payment_instruction);
+			    
+			    $data['payment_instruction'] = $payment_instruction; 
+			    
 			$data['order_id'] = $this->request->get['order_id'];
 			$data['date_added'] = date($this->language->get('date_format_short'), strtotime($order_info['date_added']));
 

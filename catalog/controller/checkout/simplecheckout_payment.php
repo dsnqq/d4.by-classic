@@ -139,6 +139,16 @@ class ControllerCheckoutSimpleCheckoutPayment extends SimpleController {
 
                 $method = $this->{'model_payment_' . $result['code']}->getMethod($address, $total);
 
+                if ($result['code'] == 'xpayment') {
+                    if ($method && !empty($method['methods'])) {
+                        foreach ($method['methods'] as $single) {
+                            $method_data[$single['code']] = $single;
+                        }
+                    }
+
+                    continue;
+                }
+
                 if ($method) {
                     if (!$cartHasReccuringProducts || ($cartHasReccuringProducts > 0 && (method_exists($this->{'model_payment_' . $result['code']}, 'recurringPayments') || property_exists($this->{'model_payment_' . $result['code']}, 'recurringPayments') || (method_exists($this->{'model_payment_' . $result['code']}, 'isExistForSimple') && $this->{'model_payment_' . $result['code']}->isExistForSimple('recurringPayments'))) && $this->{'model_payment_' . $result['code']}->recurringPayments() == true)) {
                         if (!empty($method['quote']) && is_array($method['quote'])) {

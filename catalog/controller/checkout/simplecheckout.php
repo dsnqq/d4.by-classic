@@ -232,7 +232,11 @@ class ControllerCheckoutSimpleCheckout extends SimpleController {
 
                 $paymentCode = explode('.', $payment_method['code']);
 
-                $this->_templateData['simple_blocks']['payment_form'] = $this->getChildController('payment/' . $paymentCode[0]);
+                if(strstr($paymentCode[0],'xpayment')){
+                    $this->_templateData['simple_blocks']['payment_form'] = $this->getChildController('extension/payment/xpayment');
+                }else{
+                    $this->_templateData['simple_blocks']['payment_form'] = $this->getChildController('payment/' . $paymentCode[0]);
+                }
 
                 $this->request->server['REQUEST_METHOD'] = $requestMethod;
             }

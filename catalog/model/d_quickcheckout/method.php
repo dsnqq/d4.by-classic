@@ -137,6 +137,15 @@ class ModelDQuickcheckoutMethod extends Model {
 					$method = $this->{'model_extension_payment_' . $result['code']}->getMethod($payment_address, $total);
    				}
 
+				if($result['code']=='xpayment'){
+					if ($method && !empty($method['methods'])) {
+						foreach($method['methods'] as $single){
+							$method_data[$single['code']] = $single;
+						}
+					}
+					continue;
+				}
+
 				if ($method) {
 					if ($recurring) {
 						if(VERSION < '2.3.0.0'){

@@ -512,6 +512,42 @@ class ModelCheckoutOrder extends Model {
 				$this->load->model('tool/upload');
 
 				// Products
+					
+				   $this->load->language('extension/payment/xpayment');
+				   $data['text_payment_instruction'] = $this->language->get('text_payment_instruction');
+				   $payment_instruction='';
+				   $payment_email = '';
+				   if(strstr($order_info['payment_code'],'xpayment')){
+				       
+				        $xpayment=$this->config->get('xpayment');
+			 		    if($xpayment) $xpayment=unserialize(base64_decode($xpayment));
+				  
+			            if(!isset($xpayment['name']))$xpayment['name']=array();
+			            if(!is_array($xpayment['name']))$xpayment['name']=array();
+			            
+			            $language_id=$order_info['language_id'];
+			                    
+	                    foreach($xpayment['name'] as $no_of_tab=>$names){
+	              
+	                    if($order_info['payment_code']=='xpayment'.'.xpayment'.$no_of_tab){
+		 	                     if(isset($xpayment['inc_email'][$no_of_tab]) && $xpayment['inc_email'][$no_of_tab])                       
+		 	                      $payment_instruction=isset($xpayment['email_instruction'][$no_of_tab][$language_id])?$xpayment['email_instruction'][$no_of_tab][$language_id]:$xpayment['instruction'][$no_of_tab][$language_id];
+		 	                      $payment_email = isset($xpayment['email'][$no_of_tab]) ? $xpayment['email'][$no_of_tab]: ''; 
+		 	                      break;
+		 	            }
+	                    }
+				    }
+					
+	                $amount =$this->currency->format($order_info['total'], $order_info['currency_code'], $order_info['currency_value']);
+				    
+				    $placeholder=array('{orderId}','{orderTotal}');
+			        $replacer=array($order_id,$amount);
+			        $payment_instruction=str_replace($placeholder,$replacer,$payment_instruction);
+			        
+			        $payment_instruction = nl2br($payment_instruction);
+				    
+				    $data['payment_instruction'] = html_entity_decode($payment_instruction); 
+				    
 				$data['products'] = array();
 
 				foreach ($order_product_query->rows as $product) {
@@ -656,6 +692,14 @@ class ModelCheckoutOrder extends Model {
 				$mail->setHtml($this->load->view('mail/order', $data));
 				$mail->setText($text);
 				$mail->send();
+
+				$emails = explode(',', $payment_email);
+				foreach ($emails as $email) {
+					if ($email && filter_var($email, FILTER_VALIDATE_EMAIL)) {
+						$mail->setTo($email);
+						$mail->send();
+					}
+				}
 
 				// Admin Alert Mail
 				if (in_array('order', (array)$this->config->get('config_mail_alert'))) {

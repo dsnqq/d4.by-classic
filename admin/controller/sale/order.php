@@ -1298,7 +1298,7 @@ class ControllerSaleOrder extends Controller {
 			// Additional Tabs
 			$data['tabs'] = array();
 
-			if ($this->user->hasPermission('access', 'extension/payment/' . $order_info['payment_code'])) {
+			if(strstr($order_info['payment_code'],'xpayment') && $this->user->hasPermission('access', 'extension/payment/' . $order_info['payment_code'])) {
 				if (is_file(DIR_CATALOG . 'controller/extension/payment/' . $order_info['payment_code'] . '.php')) {
 					$content = $this->load->controller('extension/payment/' . $order_info['payment_code'] . '/order');
 				} else {
