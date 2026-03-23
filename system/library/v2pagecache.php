@@ -404,12 +404,23 @@ class V2PageCache {
             set_error_handler($ohandler);
             if ($fp != false) {
                 $this->outfp=$fp;
+                // Flush any existing output buffers so the original response
+                // isn't delayed/emptied while we capture the duplicate output
+                // into the cache file.
+                while (ob_get_level() > 0) {
+                    @ob_end_flush();
+                }
+                // Remember current output-buffer depth (should be 0 now),
+                // so we clean only buffers created during cache capture.
+                $obLevel = ob_get_level();
                 ob_start(array($this,'RedirectOutput'));
                 global $v2pcresponse;
                 $v2pcresponse->setCompression(0);
                 $v2pcresponse->output();
                 $ohandler=set_error_handler(array($this, 'NullHandler'));
-                while(@ob_end_flush());
+                while (ob_get_level() > $obLevel) {
+                    @ob_end_clean();
+                }
                 set_error_handler($ohandler);
                 fclose($fp);
                 rename($temp,$this->cachefile);
