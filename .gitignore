@@ -69,3 +69,5 @@
 /gd/qr_shiny/*
 /cronActionFiles/logs/
 /cronActionFiles/logs/*
+/export
+/export/*
