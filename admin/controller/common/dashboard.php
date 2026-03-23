@@ -25,7 +25,7 @@ class ControllerCommonDashboard extends Controller {
 		$data['link_shiny_add'] = $this->url->link('catalog/shiny/add', 'token=' . $this->session->data['token'], true);
 
 		$data['link_zch'] = $this->url->link('catalog/product', 'token=' . $this->session->data['token'], true);
-		$data['link_statistics'] = $this->url->link('report/product_viewed', 'token=' . $this->session->data['token'], true);
+		$data['link_statistics'] = $this->url->link('report/product_statistics', 'token=' . $this->session->data['token'], true);
 		$data['link_zch_add'] = $this->url->link('catalog/product/add', 'token=' . $this->session->data['token'], true);
 		$data['link_logout'] = $this->url->link('common/logout', 'token=' . $this->session->data['token'], true);
 		$data['link_modification'] = $this->url->link('catalog/filter', 'token=' . $this->session->data['token'], true);
