@@ -34,8 +34,8 @@ class V2PageCache {
     // For Omtex Mobile Framework, use 'categorizr'
     //
     // make sure only one of the three lines below is uncommented
-    private $cachebydevice=false;
-    //private $cachebydevice='mobiledetect';
+    //private $cachebydevice=false;
+    private $cachebydevice='mobiledetect';
     //private $cachebydevice='categorizr';
 
     private $skip_urls= array(
