@@ -11,8 +11,8 @@ class Session {
 		} else {
 			throw new \Exception('Error: Could not load session adaptor ' . $adaptor . ' session!');
 		}		
-		
-		if ($this->adaptor) {
+
+		if ($this->adaptor && session_status() !== PHP_SESSION_ACTIVE) {
 			session_set_save_handler($this->adaptor);
 		}
 			
