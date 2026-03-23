@@ -361,6 +361,8 @@ class V2PageCache {
         } else {
             fwrite($this->outfp, $buffer);
         }
+        // Prevent any output from this output-buffer from reaching the client.
+        return '';
     }
 
     public function CachePage() {
@@ -404,14 +406,8 @@ class V2PageCache {
             set_error_handler($ohandler);
             if ($fp != false) {
                 $this->outfp=$fp;
-                // Flush any existing output buffers so the original response
-                // isn't delayed/emptied while we capture the duplicate output
-                // into the cache file.
-                while (ob_get_level() > 0) {
-                    @ob_end_flush();
-                }
-                // Remember current output-buffer depth (should be 0 now),
-                // so we clean only buffers created during cache capture.
+                // Remember current output-buffer depth so we clean only buffers
+                // created during this cache capture.
                 $obLevel = ob_get_level();
                 ob_start(array($this,'RedirectOutput'));
                 global $v2pcresponse;
