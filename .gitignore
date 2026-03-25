@@ -75,7 +75,7 @@
 
 # Docker/local secrets and DB dumps
 .env
-dby_bd-*.sql
+/mysql/*.sql
 
 # ionCube loader binaries (should not be committed)
 /ioncube/

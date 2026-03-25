@@ -39,3 +39,5 @@ COPY ioncube-enable.sh /usr/local/bin/ioncube-enable.sh
 RUN chmod +x /usr/local/bin/ioncube-enable.sh
 ENTRYPOINT ["/usr/local/bin/ioncube-enable.sh"]
 
+CMD ["php-fpm"]
+
