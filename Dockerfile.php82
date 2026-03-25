@@ -34,3 +34,8 @@ WORKDIR /home/dby/sites/d4.by
 
 EXPOSE 9000
 
+# Enable ionCube loader automatically when binary is mounted to /ioncube.
+COPY ioncube-enable.sh /usr/local/bin/ioncube-enable.sh
+RUN chmod +x /usr/local/bin/ioncube-enable.sh
+ENTRYPOINT ["/usr/local/bin/ioncube-enable.sh"]
+

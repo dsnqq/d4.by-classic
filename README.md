@@ -27,6 +27,29 @@
     - фронт: `http(s)://your-domain/`
     - админка: `http(s)://your-domain/admin/`
 
+### Локальный запуск через Docker (PHP 8.2 + MySQL)
+Подходит для разработки и проверки совместимости с PHP 8.2.
+
+1. Убедитесь, что у вас установлен Docker Desktop / Docker Engine и Docker Compose.
+2. Заполните `.env` в корне проекта (в репозитории он не коммитится).
+   - Логин/пароль должны совпадать с `DB_USERNAME` / `DB_PASSWORD` в `config.php` и `admin/config.php`.
+3. Подготовьте ionCube Loader (если в проекте есть ionCube-закодированные файлы).
+   - В корне проекта положите бинарник loader в папку `./ioncube/`.
+   - Ожидаемое имя для PHP 8.2: `ioncube_loader_lin_8.2.so`.
+   - Папка `ioncube/` добавлена в `.gitignore`, чтобы не пушить бинарник.
+4. Запустите стэк:
+   ```bash
+   docker compose up -d --build
+   ```
+5. Откройте:
+   - сайт: `https://localhost:8443/`
+   - HTTP (если нужен): `http://localhost:8081/`
+   - админка: `https://localhost:8443/admin/`
+
+Примечания:
+- Дамп БД `dby_bd-19.03.2026.sql` монтируется в контейнер MySQL и импортируется при **первом** запуске (когда volume `db_data` пустой).
+- Если нужно переимпортировать БД: остановите контейнеры и удалите volume БД (`docker compose down -v`), затем запустите снова.
+
 ### Разработка
 
 - Для доработок рекомендуется придерживаться стандартной структуры MVC OpenCart (controller / model / view).

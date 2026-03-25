@@ -28,6 +28,7 @@ services:
         condition: service_healthy
     volumes:
       - ./:/home/dby/sites/d4.by
+      - ./ioncube:/ioncube:ro
     environment:
       PHP_MEMORY_LIMIT: ${PHP_MEMORY_LIMIT:-512M}
     restart: unless-stopped
