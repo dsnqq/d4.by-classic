@@ -12,7 +12,7 @@ services:
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     volumes:
       - db_data:/var/lib/mysql
-      - ${DB_DUMP_PATH:-./mysql/dump.sql}:/docker-entrypoint-initdb.d/dump.sql:ro
+      - ${DB_DUMP_PATH:-./.docker/mysql/dump.sql}:/docker-entrypoint-initdb.d/dump.sql:ro
     healthcheck:
       test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -p${MYSQL_ROOT_PASSWORD} --silent"]
       interval: 5s
@@ -22,22 +22,21 @@ services:
 
   php:
     build:
-      context: .
-      dockerfile: Dockerfile.php82
+      context: .docker/php
     platform: linux/amd64
     depends_on:
       db:
         condition: service_healthy
     volumes:
       - ./:/home/dby/sites/d4.by
-      - ./ioncube:/ioncube:ro
+      - ./.docker/ioncube:/ioncube:ro
     environment:
       PHP_MEMORY_LIMIT: ${PHP_MEMORY_LIMIT:-512M}
     restart: unless-stopped
 
   nginx:
     build:
-      context: ./nginx
+      context: .docker/nginx
     platform: linux/amd64
     depends_on:
       - php
@@ -50,4 +49,3 @@ services:
 
 volumes:
   db_data:
-

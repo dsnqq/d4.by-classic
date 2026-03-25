@@ -5,6 +5,11 @@ use progroman\CityManager\Driver\Sypex;
 
 if (defined('PROGROMAN_DEV_MODE')) {
     require_once 'core.php';
+} elseif (version_compare(phpversion(), '8.0', '>=')) {
+    // core-encoded-php72.php was compiled for PHP 7.2 and cannot run on PHP 8+.
+    // Load a stub so the site does not crash. Get a PHP 8-compatible version
+    // from the developer: mr.progroman@yandex.ru
+    require_once 'core-stub.php';
 } elseif (version_compare(phpversion(), '7.2', '<')) {
     require_once 'core-encoded-php71.php';
 } else {

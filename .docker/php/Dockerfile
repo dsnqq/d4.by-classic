@@ -40,4 +40,3 @@ RUN chmod +x /usr/local/bin/ioncube-enable.sh
 ENTRYPOINT ["/usr/local/bin/ioncube-enable.sh"]
 
 CMD ["php-fpm"]
-
