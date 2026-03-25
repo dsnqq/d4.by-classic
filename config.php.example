@@ -1,0 +1,40 @@
+<?php
+// =============================================================================
+// Скопируйте этот файл в config.php и заполните своими значениями:
+//   cp config.php.example config.php
+//
+// config.php не коммитится в git — только config.php.example.
+// =============================================================================
+
+// --- Вариант 1: локальная разработка через Docker ---
+// define('HTTP_SERVER', 'http://localhost:8081/');
+// define('HTTPS_SERVER', 'http://localhost:8081/');
+// define('DB_HOSTNAME', 'db');   // имя сервиса из docker-compose.yml
+
+// --- Вариант 2: продакшн-сервер ---
+define('HTTP_SERVER', 'https://YOUR_DOMAIN.com/');
+define('HTTPS_SERVER', 'https://YOUR_DOMAIN.com/');
+
+// DIR — абсолютные пути на сервере. Замените /path/to/site/ на реальный путь.
+// Пример для Docker: /home/dby/sites/d4.by/
+// Пример для сервера: /home/username/public_html/ или /var/www/html/d4.by/
+define('DIR_APPLICATION', '/path/to/site/catalog/');
+define('DIR_SYSTEM',      '/path/to/site/system/');
+define('DIR_IMAGE',       '/path/to/site/image/');
+define('DIR_LANGUAGE',    '/path/to/site/catalog/language/');
+define('DIR_TEMPLATE',    '/path/to/site/catalog/view/theme/');
+define('DIR_CONFIG',      '/path/to/site/system/config/');
+define('DIR_CACHE',       '/path/to/site/system/storage/cache/');
+define('DIR_DOWNLOAD',    '/path/to/site/system/storage/download/');
+define('DIR_LOGS',        '/path/to/site/system/storage/logs/');
+define('DIR_MODIFICATION','/path/to/site/system/storage/modification/');
+define('DIR_UPLOAD',      '/path/to/site/system/storage/upload/');
+
+// DB
+define('DB_DRIVER',   'mysqli');
+define('DB_HOSTNAME', 'localhost'); // Docker: 'db' | Сервер: 'localhost'
+define('DB_USERNAME', 'dby_user');
+define('DB_PASSWORD', 'your_db_password');
+define('DB_DATABASE', 'dby_bd');
+define('DB_PORT',     '3306');
+define('DB_PREFIX',   'oc_');

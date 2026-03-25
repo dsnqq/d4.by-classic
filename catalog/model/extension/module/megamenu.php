@@ -124,11 +124,14 @@ class ModelExtensionModuleMegamenu extends Model {
        
 		}
 		
+        $sort_order = [];
         foreach ($result['children'] as $key => $item) {
             $sort_order[$key] = $item['sort_order'];
         }
 
-        array_multisort($sort_order, SORT_ASC, $result['children']);
+        if (!empty($sort_order)) {
+            array_multisort($sort_order, SORT_ASC, $result['children']);
+        }
         return $result;
 
 		

@@ -567,10 +567,10 @@ $('#same_1').change(function () {
 
 /* city in filter */
 <?php
-    $hostname = "localhost"; // название/путь сервера, с MySQL
-    $username = "dby_user"; // имя пользователя (в Denwer`е по умолчанию "root")
-    $password = "LhePBA4v6Lc8k6"; // пароль пользователя (в Denwer`е по умолчанию пароль отсутствует, этот параметр можно оставить пустым)
-	$dbName = "dby_bd"; // название базы данных
+    $hostname = defined('DB_HOSTNAME') ? DB_HOSTNAME : "localhost";
+    $username = defined('DB_USERNAME') ? DB_USERNAME : "dby_user";
+    $password = defined('DB_PASSWORD') ? DB_PASSWORD : "LhePBA4v6Lc8k6";
+    $dbName   = defined('DB_DATABASE') ? DB_DATABASE : "dby_bd";
 
     $link = mysqli_connect($hostname, $username, $password, $dbName)
 	or die("Ошибка " . mysqli_error($link));
