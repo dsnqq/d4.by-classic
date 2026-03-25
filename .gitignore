@@ -72,3 +72,7 @@
 /export
 /export/*
 /system/product_views.log
+
+# Docker/local secrets and DB dumps
+.env
+dby_bd-*.sql

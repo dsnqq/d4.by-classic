@@ -1,0 +1,49 @@
+services:
+  db:
+    image: mysql:8.0
+    command:
+      - --default-authentication-plugin=mysql_native_password
+      - --sql_mode=TRADITIONAL
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    volumes:
+      - db_data:/var/lib/mysql
+      - ${DB_DUMP_PATH:-./dby_bd-19.03.2026.sql}:/docker-entrypoint-initdb.d/dump.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -p${MYSQL_ROOT_PASSWORD} --silent"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+    restart: unless-stopped
+
+  php:
+    build:
+      context: .
+      dockerfile: Dockerfile.php82
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ./:/home/dby/sites/d4.by
+    environment:
+      PHP_MEMORY_LIMIT: ${PHP_MEMORY_LIMIT:-512M}
+    restart: unless-stopped
+
+  nginx:
+    build:
+      context: ./nginx
+    depends_on:
+      - php
+    volumes:
+      - ./:/home/dby/sites/d4.by:ro
+    ports:
+      - "8081:80"
+      - "8443:443"
+    restart: unless-stopped
+
+volumes:
+  db_data:
+
