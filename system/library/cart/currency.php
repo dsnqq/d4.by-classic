@@ -55,18 +55,18 @@ class Currency {
 
 	public function convert($value, $from, $to) {
 		if (isset($this->currencies[$from])) {
-			$from = $this->currencies[$from]['value'];
+			$from = (float)$this->currencies[$from]['value'];
 		} else {
-			$from = 1;
+			$from = 1.0;
 		}
 
 		if (isset($this->currencies[$to])) {
-			$to = $this->currencies[$to]['value'];
+			$to = (float)$this->currencies[$to]['value'];
 		} else {
-			$to = 1;
+			$to = 1.0;
 		}
 
-		return $value * ($to / $from);
+		return (float)$value * ($to / $from);
 	}
 	
 	public function getId($currency) {

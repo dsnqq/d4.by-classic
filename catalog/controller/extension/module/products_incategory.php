@@ -95,14 +95,14 @@ class ControllerExtensionModuleProductsInCategory extends Controller {
 				
 				$datetime1 = date_create($product_in_category['date_added']);
 				if($currency_code == "BYN"){
-					$price_2 = "$".round($this->currency->convert($price, $currency_code, 'USD'), '0');
-					$price_3 = round($this->currency->convert($price, $currency_code, 'EUR'), '0')."€";
+					$price_2 = "$".round($this->currency->convert($price, $currency_code, 'USD'), 0);
+					$price_3 = round($this->currency->convert($price, $currency_code, 'EUR'), 0)."€";
 				} elseif($currency_code == "EUR"){
-					$price_2 = round($this->currency->convert($price, $currency_code, 'BYN'), '0')."BYN";
-					$price_3 = "$".round($this->currency->convert($price, $currency_code, 'USD'), '0');
+					$price_2 = round($this->currency->convert($price, $currency_code, 'BYN'), 0)."BYN";
+					$price_3 = "$".round($this->currency->convert($price, $currency_code, 'USD'), 0);
 				} elseif($currency_code == "USD"){
-					$price_2 = round($this->currency->convert(substr($price, 1), $currency_code, 'BYN'), '0')."BYN";
-					$price_3 = round($this->currency->convert(substr($price, 1), $currency_code, 'EUR'), '0')."€";
+					$price_2 = round($this->currency->convert(substr($price, 1), $currency_code, 'BYN'), 0)."BYN";
+					$price_3 = round($this->currency->convert(substr($price, 1), $currency_code, 'EUR'), 0)."€";
 				} 
 
 				$data['products_in_category'][] = array(
@@ -126,8 +126,8 @@ class ControllerExtensionModuleProductsInCategory extends Controller {
 					'special'     => $special,
 					'tags'        => $product_information['tag'], //TODO
 					'tax'         => $tax,
-					'height'	  => number_format($product_information['height'], 2),
-					'width'		  => number_format($product_information['width'], 2),
+				'height'	  => number_format((float)$product_information['height'], 2),
+				'width'		  => number_format((float)$product_information['width'], 2),
           			'minimum'     => $product_in_category['minimum'] > 0  || $product_in_category['minimum'] < 0? $product_in_category['minimum'] : 1,
 					'rating'      => $rating,
 					'href'        => $this->url->link('product/product', 'product_id=' . $product_in_category['product_id'])

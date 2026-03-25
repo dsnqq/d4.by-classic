@@ -703,7 +703,7 @@ class ControllerCatalogShiny extends Controller {
 				'name'       => $result['name'],
 				'model'      => $result['model'],
 				'price'      => $result['price'],
-				'price_BYN'	 => round($this->currency->convert($result['price'], "USD", 'BYN'), '0')." р.",
+				'price_BYN'	 => round($this->currency->convert($result['price'], "USD", 'BYN'), 0)." р.",
  				'shirina'	 => $result['jan'],
 				'vysota'	 => $result['isbn'],
 				'r_size'	 => $result['mpn'],

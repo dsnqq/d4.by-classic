@@ -191,19 +191,19 @@ class BaseModelMobileassistantConnector extends Model
     private function delete_users_not_in($users_ids)
     {
         $sql = "DELETE FROM `" . DB_PREFIX . self::T_USERS . "` 
-                WHERE user_id NOT IN ( '" . implode($users_ids, "', '") . "' )";
+                WHERE user_id NOT IN ( '" . implode("', '", $users_ids) . "' )";
         $this->db->query($sql);
 
         $sql = "DELETE FROM `" . DB_PREFIX . self::T_DEVICES . "` 
-                WHERE user_id NOT IN ( '" . implode($users_ids, "', '") . "' )";
+                WHERE user_id NOT IN ( '" . implode("', '", $users_ids) . "' )";
         $this->db->query($sql);
 
         $sql = "DELETE FROM `" . DB_PREFIX . self::T_SESSION_KEYS . "` 
-                WHERE user_id NOT IN ( '" . implode($users_ids, "', '") . "' )";
+                WHERE user_id NOT IN ( '" . implode("', '", $users_ids) . "' )";
         $this->db->query($sql);
 
         $sql = "DELETE FROM `" . DB_PREFIX . self::T_PUSH_NOTIFICATIONS . "` 
-                WHERE user_id NOT IN ( '" . implode($users_ids, "', '") . "' )";
+                WHERE user_id NOT IN ( '" . implode("', '", $users_ids) . "' )";
         $this->db->query($sql);
     }
 

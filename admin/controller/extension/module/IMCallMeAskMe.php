@@ -456,8 +456,7 @@ class ControllerExtensionModuleIMCallMeAskMe extends Controller {
 		);
 
 		$fp = fopen($path, 'w+');
-		fwrite($fp, $content);
-		fclose($fp);
+		if ($fp !== false) { fwrite($fp, $content); fclose($fp); }
 	}
 	
 	// Удаление кода
@@ -471,8 +470,7 @@ class ControllerExtensionModuleIMCallMeAskMe extends Controller {
 		}
 
 		$fp = fopen($path, 'w+');
-		fwrite($fp, $content);
-		fclose($fp);
+		if ($fp !== false) { fwrite($fp, $content); fclose($fp); }
 	}
 
 	/////////////////////////////////////////

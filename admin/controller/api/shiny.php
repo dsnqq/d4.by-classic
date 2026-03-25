@@ -18,7 +18,7 @@ class ControllerApiShiny extends Controller {
                 'name'       => $shiny_item['name'],
                 'model'      => $shiny_item['model'],
                 'price'      => $shiny_item['price'],
-                'price_BYN'	 => round($this->currency->convert($shiny_item['price'], "USD", 'BYN'), '0')." р.",
+                'price_BYN'	 => round($this->currency->convert($shiny_item['price'], "USD", 'BYN'), 0)." р.",
                 'shirina'	 => $shiny_item['jan'],
                 'vysota'	 => $shiny_item['isbn'],
                 'r_size'	 => $shiny_item['mpn'],

@@ -689,7 +689,7 @@ class ControllerCatalogArhiveShiny extends Controller {
                 'name'       => $result['name'],
                 'model'      => $result['model'],
                 'price'      => $result['price'],
-                'price_BYN'	 => round($this->currency->convert($result['price'], "USD", 'BYN'), '0')." р.",
+                'price_BYN'	 => round($this->currency->convert($result['price'], "USD", 'BYN'), 0)." р.",
                 'shirina'	 => $result['jan'],
                 'vysota'	 => $result['isbn'],
                 'date_delete' => date("d-m-Y", strtotime($result['date_delete'])),

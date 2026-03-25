@@ -392,14 +392,14 @@ class ControllerProductShinyForm extends Controller {
             $currency_code = $this->session->data['currency'];
 
             if($currency_code == "BYN"){
-                $data['price_2'] = "$".round($this->currency->convert($data['price'], $currency_code, 'USD'), '0');
-                $data['price_3'] = round($this->currency->convert($data['price'], $currency_code, 'EUR'), '0')."€";
+                $data['price_2'] = "$".round($this->currency->convert($data['price'], $currency_code, 'USD'), 0);
+                $data['price_3'] = round($this->currency->convert($data['price'], $currency_code, 'EUR'), 0)."€";
             } elseif($currency_code == "EUR"){
-                $data['price_2'] = round($this->currency->convert($data['price'], $currency_code, 'BYN'), '0')."BYN";
-                $data['price_3'] = "$".round($this->currency->convert($data['price'], $currency_code, 'USD'), '0');
+                $data['price_2'] = round($this->currency->convert($data['price'], $currency_code, 'BYN'), 0)."BYN";
+                $data['price_3'] = "$".round($this->currency->convert($data['price'], $currency_code, 'USD'), 0);
             } elseif($currency_code == "USD"){
-                $data['price_2'] = round($this->currency->convert(substr($data['price'], 1), $currency_code, 'BYN'), '0')."BYN";
-                $data['price_3'] = round($this->currency->convert(substr($data['price'], 1), $currency_code, 'EUR'), '0')."€";
+                $data['price_2'] = round($this->currency->convert(substr($data['price'], 1), $currency_code, 'BYN'), 0)."BYN";
+                $data['price_3'] = round($this->currency->convert(substr($data['price'], 1), $currency_code, 'EUR'), 0)."€";
             }
 
 

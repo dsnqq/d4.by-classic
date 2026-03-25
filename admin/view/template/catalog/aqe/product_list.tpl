@@ -400,7 +400,7 @@
             </td>
             <?php break; ?>
             <?php case 'status': ?>
-            <td <?php echo ($product[$col] == Активно) ? 'style="background:#23b423;color:#000;font-weight:bold;"' : 'style="color:#000;background:red;font-weight:bold;"'; ?> data-id="<?=$product['product_id']?>" class="
+            <td <?php echo ($product[$col] == 'Активно') ? 'style="background:#23b423;color:#000;font-weight:bold;"' : 'style="color:#000;background:red;font-weight:bold;"'; ?> data-id="<?=$product['product_id']?>" class="
 
             <?php if( $user_id_com != 25 ){ ?>
             status_favourite

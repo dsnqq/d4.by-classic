@@ -69,10 +69,10 @@
                   <td>
                     <?php /* Год */ ?>
                     <select id="select-length" name="length" class=" selectpicker" data-live-search="true">
-                          <option value="*" <?php echo (round($filter_length, 2) == "") ? "selected='selected'" : "" ; ?>>Год</option>
+                          <option value="*" <?php echo (round((float)$filter_length, 2) == "") ? "selected='selected'" : "" ; ?>>Год</option>
                           <?php $year_max = date('Y');$year_max = (int)$year_max; ?>
                           <?php for($year_iteration = 1980; $year_iteration <= $year_max; $year_iteration++){ ?>
-                            <option value="<?php echo $year_iteration; ?>"  <?php echo (round($filter_length, 2) == $year_iteration) ? "selected='selected'" : "" ; ?>><?php echo $year_iteration; ?></option>
+                            <option value="<?php echo $year_iteration; ?>"  <?php echo (round((float)$filter_length, 2) == $year_iteration) ? "selected='selected'" : "" ; ?>><?php echo $year_iteration; ?></option>
                           <?php } ?>
                     </select>
                   </td>

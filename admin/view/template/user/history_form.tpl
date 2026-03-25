@@ -51,14 +51,14 @@
                     <?php foreach($changes as $item){ ?>
                         <tr>
                             <td>
-                                <?php if($item[arhive_status]){ ?>
+                                <?php if($item['arhive_status']){ ?>
                                     <img src="<?php echo $item["arhive_image"]; ?>">
                                 <?php } else{ ?>
                                     <img src="<?php echo $item["image"]; ?>">
                                 <?php } ?>
                             </td>
                             <td>
-                                <?php if($item[arhive_status]){ ?>
+                                <?php if($item['arhive_status']){ ?>
                                     <a href="/admin/index.php?route=catalog/arhive/edit&product_id=<?php echo $item["product_id"]; ?>&token=<?php echo $token_x; ?>">
                                         <?php echo $item['manufacturer_arhive']['name']; ?> к <?php echo $item["auto_arhive"]; ?>, <?php echo $item['year_arhive']; ?>г.
                                     </a>
@@ -94,7 +94,7 @@
                             <td><?php echo $item["value_old"]; ?></td>
                             <td><?php echo $item["value_new"]; ?></td>
                             <td>
-                                <?php if($item[arhive_status]){ ?>
+                                <?php if($item['arhive_status']){ ?>
                                     В архиве (Удалено)
                                 <?php } elseif($product) { ?>
                                     В списке запчастей

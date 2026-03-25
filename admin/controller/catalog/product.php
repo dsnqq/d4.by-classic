@@ -70,7 +70,7 @@ class ControllerCatalogProduct extends Controller {
         //****** ИЗМЕНЕНИЕ КОЛОНКИ СТАТУС СТАРТ ******/
         $data_old = ($filter_group['status'] == '1') ? "1" : "0";
         $data_new = ($filter_group['status'] == '1') ? "0" : "1";
-        $this->model_catalog_product->addChangeProductData((int)$data_old["status"], $data_new, "Статус", $category_id, $user_id);
+        $this->model_catalog_product->addChangeProductData((int)$data_old, $data_new, "Статус", $category_id, $user_id);
 
         //****** ИЗМЕНЕНИЕ КОЛОНКИ СТАТУС КОНЕЦ ******/
 

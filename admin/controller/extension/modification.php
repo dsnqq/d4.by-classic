@@ -411,11 +411,12 @@ class ControllerExtensionModification extends Controller {
 						}
 					}
 
-					$handle = fopen(DIR_MODIFICATION . $key, 'w');
+				$handle = fopen(DIR_MODIFICATION . $key, 'w');
 
+				if ($handle !== false) {
 					fwrite($handle, $value);
-
 					fclose($handle);
+				}
 				}
 			}
 

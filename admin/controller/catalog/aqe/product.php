@@ -531,8 +531,8 @@ class ControllerCatalogAqeProduct extends Controller {
                 $row['data_change'] = $result['data_change'];
 				$row['viewers'] = $product_stax_view['view_count'];
 				$row['view_date_list'] = explode(',', $product_stax_view['view_date_list']);
-				$row['price_BYN'] = round($this->currency->convert($result['price'], "USD", 'BYN'), '0')."р.";
-				$row['price_RUB'] = round($this->currency->convert($result['price'], "USD", 'RUB'), '0')."₽";
+				$row['price_BYN'] = round($this->currency->convert($result['price'], "USD", 'BYN'), 0)."р.";
+				$row['price_RUB'] = round($this->currency->convert($result['price'], "USD", 'RUB'), 0)."₽";
 				$row['special'] = $special;
 				$row['image'] = $result['image'];
 				$row['description'] = $result['description'];
@@ -775,11 +775,11 @@ class ControllerCatalogAqeProduct extends Controller {
 							$row[$column] = '<span style="text-decoration:line-through;">' . $result['price'] . '</span><br/><span style="color: #b00;">$' . round($special) . '</span>';
 						}
 						if($special != "" && $special){
-							$row['price_BYN'] = round($this->currency->convert($special, "USD", 'BYN'), '0')."р.";
-							$row['price_RUB'] = round($this->currency->convert($special, "USD", 'RUB'), '0')."₽";
+							$row['price_BYN'] = round($this->currency->convert($special, "USD", 'BYN'), 0)."р.";
+							$row['price_RUB'] = round($this->currency->convert($special, "USD", 'RUB'), 0)."₽";
 						} else{
-							$row['price_BYN'] = round($this->currency->convert($result['price'], "USD", 'BYN'), '0')."р.";
-							$row['price_RUB'] = round($this->currency->convert($result['price'], "USD", 'RUB'), '0')."₽";
+							$row['price_BYN'] = round($this->currency->convert($result['price'], "USD", 'BYN'), 0)."р.";
+							$row['price_RUB'] = round($this->currency->convert($result['price'], "USD", 'RUB'), 0)."₽";
 						}
 					}
 				}
@@ -2021,7 +2021,7 @@ class ControllerCatalogAqeProduct extends Controller {
 			$this->alert['error']['request'] = $this->language->get('error_update');
 		}
 
-		if ($column == "model" && ((strlen(utf8_decode($data['new'])) < 1) || (strlen(utf8_decode($data['new'])) > 64))) {
+		if ($column == "model" && ((strlen(mb_convert_encoding($data['new'], 'ISO-8859-1', 'UTF-8')) < 1) || (strlen(mb_convert_encoding($data['new'], 'ISO-8859-1', 'UTF-8')) > 64))) {
 			$errors = true;
 			$this->alert['error']['model'] = $this->language->get('error_model');
 		}
@@ -2062,14 +2062,14 @@ class ControllerCatalogAqeProduct extends Controller {
 
 				if (isset($data['value']) && $multilingual_seo) {
 					foreach ((array)$data['value'] as $language_id => $value) {
-						$keyword = utf8_decode($value);
+						$keyword = mb_convert_encoding($value, 'ISO-8859-1', 'UTF-8');
 						if ($this->model_catalog_aqe_product->urlAliasExists($id, $keyword, $language_id)) {
 							$errors = true;
 							$this->error["value[$language_id]"] = $this->language->get('error_duplicate_seo_keyword');
 						}
 					}
 				} else {
-					$keyword = utf8_decode($data['new']);
+					$keyword = mb_convert_encoding($data['new'], 'ISO-8859-1', 'UTF-8');
 					if ($this->model_catalog_aqe_product->urlAliasExists($id, $keyword)) {
 						$errors = true;
 						$this->alert['error']['seo'] = $this->language->get('error_duplicate_seo_keyword');

@@ -260,14 +260,14 @@ class ControllerProductManufacturer extends Controller {
 
                 $datetime1 = date_create($result['date_added']);
                 if($currency_code == "BYN"){
-                    $price_2 = "$".round($result['price'], '0');
-                    $price_3 = round($this->currency->convert($result['price'], "USD", 'EUR'), '0')."€";
+                    $price_2 = "$".round($result['price'], 0);
+                    $price_3 = round($this->currency->convert($result['price'], "USD", 'EUR'), 0)."€";
                 } elseif($currency_code == "EUR"){
-                    $price_2 = round($this->currency->convert($price, $currency_code, 'BYN'), '0')."BYN";
-                    $price_3 = "$".round($this->currency->convert($price, $currency_code, 'USD'), '0');
+                    $price_2 = round($this->currency->convert($price, $currency_code, 'BYN'), 0)."BYN";
+                    $price_3 = "$".round($this->currency->convert($price, $currency_code, 'USD'), 0);
                 } elseif($currency_code == "USD"){
-                    $price_2 = round($this->currency->convert(substr($price, 1), $currency_code, 'BYN'), '0')."BYN";
-                    $price_3 = round($this->currency->convert(substr($price, 1), $currency_code, 'EUR'), '0')."€";
+                    $price_2 = round($this->currency->convert(substr($price, 1), $currency_code, 'BYN'), 0)."BYN";
+                    $price_3 = round($this->currency->convert(substr($price, 1), $currency_code, 'EUR'), 0)."€";
                 }
 
                 $data['products'][] = array(

@@ -10,10 +10,10 @@ $output = '';
 
 // FUNCTIONS
 if(!is_dir($path)){
-    mkdir($path, 0755);
+    mkdir($path, 0777);
 }
 if(!is_dir($path_time)){
-    mkdir($path_time, 0755);
+    mkdir($path_time, 0777);
 }
 $folder_name = $path_time;
 

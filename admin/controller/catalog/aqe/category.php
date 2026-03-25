@@ -1093,14 +1093,14 @@ class ControllerCatalogAqeCategory extends Controller {
 
 				if (isset($data['value']) && $multilingual_seo) {
 					foreach ((array)$data['value'] as $language_id => $value) {
-						$keyword = utf8_decode($value);
+						$keyword = mb_convert_encoding($value, 'ISO-8859-1', 'UTF-8');
 						if ($this->model_catalog_aqe_category->urlAliasExists($id, $keyword, $language_id)) {
 							$errors = true;
 							$this->error["value[$language_id]"] = $this->language->get('error_duplicate_seo_keyword');
 						}
 					}
 				} else {
-					$keyword = utf8_decode($data['new']);
+					$keyword = mb_convert_encoding($data['new'], 'ISO-8859-1', 'UTF-8');
 					if ($this->model_catalog_aqe_category->urlAliasExists($id, $keyword)) {
 						$errors = true;
 						$this->alert['error']['seo'] = $this->language->get('error_duplicate_seo_keyword');
