@@ -1,8 +1,13 @@
-# Config and Htaccess Files
+# Config and Htaccess Files — игнорируем рабочие, .example-версии коммитим
 /.htaccess
 /admin/.htaccess
 /config.php
 /admin/config.php
+# Явно разрешаем example-файлы (на случай если выше есть широкие паттерны)
+!/.htaccess.example
+!/config.php.example
+!/admin/config.php.example
+!/.env.example
 
 # Image File
 !/image/no_image.jpg
@@ -73,9 +78,11 @@
 /export/*
 /system/product_views.log
 
-# Docker/local secrets and DB dumps
+# Docker/local env — не коммитить
 .env
-/mysql/*.sql
 
-# ionCube loader binaries (should not be committed)
-/ioncube/
+# ionCube loader binary — скачивается вручную (get-loader.ioncube.com)
+/.docker/ioncube/*.so
+
+# Дамп БД — не коммитить, хранить локально в .docker/mysql/
+/.docker/mysql/*.sql

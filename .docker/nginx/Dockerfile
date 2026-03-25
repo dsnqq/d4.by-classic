@@ -10,4 +10,3 @@ RUN mkdir -p /etc/nginx/certs && \
     chmod 600 /etc/nginx/certs/localhost.key
 
 COPY opencart.conf /etc/nginx/conf.d/default.conf
-
