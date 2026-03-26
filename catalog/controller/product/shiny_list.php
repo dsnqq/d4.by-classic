@@ -92,23 +92,27 @@ class ControllerProductShinyList extends Controller {
         }
 
         $category_info = $this->model_catalog_shiny->getProduct(0);
-        $category_info = 1;
-        //if ($category_info) {
 
-            if ($category_info['meta_title']) {
-                $this->document->setTitle($category_info['meta_title']);
-            } else {
-                $this->document->setTitle($category_info['name']);
-            }
+        if ($category_info && !empty($category_info['meta_title'])) {
+            $this->document->setTitle($category_info['meta_title']);
+        } elseif ($category_info && !empty($category_info['name'])) {
+            $this->document->setTitle($category_info['name']);
+        } else {
+            $this->document->setTitle('Шины');
+        }
 
-            $this->document->setDescription($category_info['meta_description']);
-            $this->document->setKeywords($category_info['meta_keyword']);
+        $this->document->setDescription($category_info ? $category_info['meta_description'] : '');
+        $this->document->setKeywords($category_info ? $category_info['meta_keyword'] : '');
 
-            if ($category_info['meta_h1']) {
-                $data['heading_title'] = $category_info['meta_h1'];
-            } else {
-                $data['heading_title'] = $category_info['name'];
-            }
+        if ($category_info && !empty($category_info['meta_h1'])) {
+            $data['heading_title'] = $category_info['meta_h1'];
+        } elseif ($category_info && !empty($category_info['name'])) {
+            $data['heading_title'] = $category_info['name'];
+        } else {
+            $data['heading_title'] = 'Шины';
+        }
+
+        if (true) { // всегда показываем страницу
 
             $data['text_refine'] = $this->language->get('text_refine');
             $data['text_empty'] = $this->language->get('text_empty');
@@ -131,18 +135,18 @@ class ControllerProductShinyList extends Controller {
 
             // Set the last category breadcrumb
             $data['breadcrumbs'][] = array(
-                'text' => $category_info['name'],
-                'href' => $this->url->link('product/category', 'path=' . $this->request->get['path'])
+                'text' => $category_info ? $category_info['name'] : 'Шины',
+                'href' => $this->url->link('product/shiny_list', '')
             );
 
-            if ($category_info['image']) {
+            if ($category_info && !empty($category_info['image'])) {
                 $data['thumb'] = $this->model_tool_image->resize($category_info['image'], $this->config->get($this->config->get('config_theme') . '_image_category_width'), $this->config->get($this->config->get('config_theme') . '_image_category_height'));
                 $this->document->setOgImage($data['thumb']);
             } else {
                 $data['thumb'] = '';
             }
 
-            $data['description'] = html_entity_decode($category_info['description'], ENT_QUOTES, 'UTF-8');
+            $data['description'] = $category_info ? html_entity_decode($category_info['description'], ENT_QUOTES, 'UTF-8') : '';
             $data['compare'] = $this->url->link('product/compare');
 
             $url = '';
@@ -223,7 +227,7 @@ class ControllerProductShinyList extends Controller {
                 $catprod = array();
                 $catprod2 = array();
 
-                $category_info2 = $this->model_catalog_category->getCategory($category_info['parent_id']);
+                $category_info2 = $category_info ? $this->model_catalog_category->getCategory($category_info['parent_id']) : false;
                 if ($category_info2) {
                     $catprod2[] = array(
                         'name'     => $category_info2['name']
@@ -231,16 +235,22 @@ class ControllerProductShinyList extends Controller {
                 }
 
 
-                $datetime1 = date_create($result['date_added']);
-                if($currency_code == "BYN"){
-                    $price_2 = "$".round($result['price'], 0);
-                    $price_3 = round($this->currency->convert($result['price'], "USD", 'EUR'), 0)."€";
-                } elseif($currency_code == "EUR"){
-                    $price_2 = round($this->currency->convert($price, $currency_code, 'BYN'), 0)."BYN";
-                    $price_3 = "$".round($this->currency->convert($price, $currency_code, 'USD'), 0);
-                } elseif($currency_code == "USD"){
-                    $price_2 = round($this->currency->convert(substr($price, 1), $currency_code, 'BYN'), 0)."BYN";
-                    $price_3 = round($this->currency->convert(substr($price, 1), $currency_code, 'EUR'), 0)."€";
+                $datetime1 = !empty($result['date_added']) && $result['date_added'] !== '0000-00-00 00:00:00'
+                    ? date_create($result['date_added'])
+                    : false;
+                $raw_price = (float)$result['price'];
+                if ($currency_code == "BYN") {
+                    $price_2 = "$" . round($raw_price, 0);
+                    $price_3 = round($this->currency->convert($raw_price, "USD", 'EUR'), 0) . "€";
+                } elseif ($currency_code == "EUR") {
+                    $price_2 = round($this->currency->convert($raw_price, $currency_code, 'BYN'), 0) . "BYN";
+                    $price_3 = "$" . round($this->currency->convert($raw_price, $currency_code, 'USD'), 0);
+                } elseif ($currency_code == "USD") {
+                    $price_2 = round($this->currency->convert($raw_price, $currency_code, 'BYN'), 0) . "BYN";
+                    $price_3 = round($this->currency->convert($raw_price, $currency_code, 'EUR'), 0) . "€";
+                } else {
+                    $price_2 = '';
+                    $price_3 = '';
                 }
 
                 $data['products'][] = array(
@@ -265,6 +275,7 @@ class ControllerProductShinyList extends Controller {
                     'model_s'	 => $result['upc'],
                     'sostojan'	 => $result['location'],
                     'season'	 => $result['sku'],
+                    'quantity'    => isset($result['quantity']) ? $result['quantity'] : '',
                     'description' => utf8_substr(strip_tags(html_entity_decode($result['description'], ENT_QUOTES, 'UTF-8')), 0, $this->config->get($this->config->get('config_theme') . '_product_description_length')) . '..',
                     'price'       => $price,
                     'year'        => $result['length'],
@@ -278,7 +289,7 @@ class ControllerProductShinyList extends Controller {
                     'special'     => $special,
                     'price_2'	  => $price_2,
                     'price_3'     => $price_3,
-                    'date'        => date_format($datetime1,"d.m.Y"),
+                    'date'        => $datetime1 ? date_format($datetime1, "d.m.Y") : '',
                     'auto_name'	  => $catprod2,
                     'manufacturer'=> $result['manufacturer'],
                     'tax'         => $tax,
@@ -348,13 +359,13 @@ class ControllerProductShinyList extends Controller {
             $data['sorts'][] = array(
                 'text'  => "Дата добаления (по возрастанию)",
                 'value' => 'p.date_added-ASC',
-                'href'  => $this->url->link($current_page, '&sort=p.date_added&order=ASC' . $url)
+                'href'  => $this->url->link('product/shiny_list', '&sort=p.date_added&order=ASC' . $url)
             );
 
             $data['sorts'][] = array(
                 'text'  => "Дата добаления (по убыванию)",
                 'value' => 'p.date_added-DESC',
-                'href'  => $this->url->link($current_page, '&sort=p.date_added&order=DESC' . $url)
+                'href'  => $this->url->link('product/shiny_list', '&sort=p.date_added&order=DESC' . $url)
             );
 
             $url = '';
@@ -406,6 +417,7 @@ class ControllerProductShinyList extends Controller {
             $data['sort'] = $sort;
             $data['order'] = $order;
             $data['limit'] = $limit;
+            $data['pagination'] = '';
 
             $data['continue'] = $this->url->link('common/home');
 
@@ -417,5 +429,6 @@ class ControllerProductShinyList extends Controller {
             $data['header'] = $this->load->controller('common/header');
 
             $this->response->setOutput($this->load->view('product/shiny_list', $data));
+        }
     }
 }

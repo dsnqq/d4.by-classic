@@ -74,18 +74,20 @@ class ModelCatalogShiny extends Model {
 	}
 
 	public function getProducts($data = array()) {
-		$sql = "";
-        $sql .= "SELECT * FROM " . DB_PREFIX . "shiny";
-
-		$product_data = array();
+		$sql = "SELECT * FROM " . DB_PREFIX . "shiny";
 
 		$query = $this->db->query($sql);
 
+		$product_data = array();
+
 		foreach ($query->rows as $result) {
-			$product_data[$result['product_id']] = $this->getProduct($result['product_id']);
+			$product = $this->getProduct($result['product_id']);
+			if ($product) {
+				$product_data[] = $product;
+			}
 		}
 
-		return $query->rows;
+		return $product_data;
 	}
 
 	public function getProductSpecials($data = array()) {
