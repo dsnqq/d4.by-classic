@@ -193,6 +193,14 @@ class ControllerProductCategory extends Controller {
 			$product_total = $this->model_catalog_product->getTotalProducts($filter_data);
 
 			$results = $this->model_catalog_product->getProducts($filter_data);
+
+			$product_ids = array();
+			foreach ($results as $r) {
+				if (isset($r['product_id'])) $product_ids[] = (int)$r['product_id'];
+			}
+			$product_categories_map = $this->model_catalog_product->getCategoriesByProductIds($product_ids);
+
+			$category_cache = array();
 			foreach ($results as $result) {
 				if ($result['image']) {
 					$image = $this->model_tool_image->resize($result['image'], $this->config->get($this->config->get('config_theme') . '_image_product_width'), $this->config->get($this->config->get('config_theme') . '_image_product_height'), 'product_popup');
@@ -225,16 +233,18 @@ class ControllerProductCategory extends Controller {
 				}
 
 
-				$this->load->model('catalog/category');
-
-
 				$catprod = array();
 				$catprod2 = array();
 
-				$product_category = $this->model_catalog_product->getCategories($result['product_id']);
+				$product_category = isset($product_categories_map[(int)$result['product_id']]) ? $product_categories_map[(int)$result['product_id']] : array();
 
+				$category_info = null;
 				foreach ($product_category as $prodcat) {
-				$category_info = $this->model_catalog_category->getCategory($prodcat['category_id']);
+					$cid = (int)$prodcat['category_id'];
+					if (!isset($category_cache[$cid])) {
+						$category_cache[$cid] = $this->model_catalog_category->getCategory($cid);
+					}
+					$category_info = $category_cache[$cid];
 					if ($category_info) {
 						$catprod[] = array(
 						'name'     => $category_info['name'],
@@ -243,7 +253,17 @@ class ControllerProductCategory extends Controller {
 					}
 				}
 
-				$category_info2 = $this->model_catalog_category->getCategory($category_info['parent_id']);
+				$category_info2 = null;
+				if ($category_info && isset($category_info['parent_id'])) {
+					$parent_id = (int)$category_info['parent_id'];
+					if ($parent_id) {
+						if (!isset($category_cache[$parent_id])) {
+							$category_cache[$parent_id] = $this->model_catalog_category->getCategory($parent_id);
+						}
+						$category_info2 = $category_cache[$parent_id];
+					}
+				}
+
 				if ($category_info2) {
 						$catprod2[] = array(
 						'name'     => $category_info2['name']

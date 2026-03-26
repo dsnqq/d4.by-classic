@@ -600,6 +600,28 @@ class ModelCatalogProduct extends Model {
 	}
 
 	/**
+	 * Bulk variant of getCategories().
+	 * Returns map: product_id => rows from product_to_category
+	 */
+	public function getCategoriesByProductIds(array $product_ids) {
+		$product_ids = array_values(array_unique(array_filter(array_map('intval', $product_ids))));
+		if (!$product_ids) return array();
+
+		$query = $this->db->query(
+			"SELECT * FROM " . DB_PREFIX . "product_to_category WHERE product_id IN (" . implode(',', $product_ids) . ")"
+		);
+
+		$map = array();
+		foreach ($query->rows as $row) {
+			$pid = (int)$row['product_id'];
+			if (!isset($map[$pid])) $map[$pid] = array();
+			$map[$pid][] = $row;
+		}
+
+		return $map;
+	}
+
+	/**
 	 * Возвращает количество товаров по переданным фильтрам (для пагинации и счётчиков).
 	 */
 	public function getTotalProducts($data = array()) {
