@@ -10,6 +10,10 @@
 
 <?php echo $column_left; ?>
 <div id="content">
+    <?php
+        $columns = array_values(array_filter((array)$columns, function ($c) { return $c !== 'selector'; }));
+        $colspan_total = count($columns) + (in_array('status', $columns, true) ? 1 : 0);
+    ?>
     <div class="page-header">
         <div class="container-fluid">
             <ul class="breadcrumb bull5i-breadcrumb">
@@ -145,8 +149,8 @@
 									case 'action': ?>
                         <th class="<?php echo $column_info[$col]['align']; ?>">
                             <div class="">
-                                <button type="button" class="btn btn-sm btn-default" id="filter" data-toggle="tooltip" data-container="body" style="font-weight: bold;background: #67d55c;font-size: 20px;" title="<?php echo $text_filter; ?>">Поиск</button>
-                                <br><button type="button" class="btn btn-sm btn-default" id="clear-filter" data-toggle="tooltip" style="font-weight: bold;background: #FFEB3B;font-size: 20px;" data-container="body" title="<?php echo $text_clear_filter; ?>">Сброс</button>
+                                <button type="button" class="btn btn-sm btn-default" id="filter" data-toggle="tooltip" data-container="body" title="<?php echo $text_filter; ?>">Поиск</button>
+                                <br><button type="button" class="btn btn-sm btn-default" id="clear-filter" data-toggle="tooltip" data-container="body" title="<?php echo $text_clear_filter; ?>">Сброс</button>
                             </div>
                         </th>
                         <?php break;
@@ -486,7 +490,7 @@
             <?php } ?>
             <?php } else { ?>
             <tr>
-                <td class="text-center" colspan="<?php echo count($columns) + 1; ?>"><?php echo $text_no_results; ?></td>
+                <td class="text-center" colspan="<?php echo (int)$colspan_total; ?>"><?php echo $text_no_results; ?></td>
             </tr>
             <?php } ?>
             </tbody>
@@ -502,6 +506,235 @@
 </div>
 <iframe name="imgFrame" style="width: 0; height: 0; border: 0;color:#fff;"></iframe>
 <style>
+    :root{
+        --aqe-bg: #f6f7fb;
+        --aqe-card: #ffffff;
+        --aqe-text: #111827;
+        --aqe-muted: #6b7280;
+        --aqe-border: #e5e7eb;
+        --aqe-border-strong: #d1d5db;
+        --aqe-shadow: 0 10px 25px rgba(17,24,39,.08);
+        --aqe-shadow-sm: 0 2px 8px rgba(17,24,39,.08);
+        --aqe-radius: 12px;
+        --aqe-radius-sm: 10px;
+        --aqe-focus: rgba(59,130,246,.18);
+    }
+    body{
+        color: var(--aqe-text);
+    }
+
+    /* Header / navbar */
+    .page-header{
+        background: transparent;
+        border-bottom: 0;
+    }
+    .navbar-placeholder{
+        border-radius: var(--aqe-radius);
+        background: var(--aqe-card);
+    }
+    .navbar.navbar-bull5i{
+        background: var(--aqe-card);
+        border: 0;
+    }
+    .bull5i-navbar-brand{
+        font-weight: 700;
+        letter-spacing: .2px;
+    }
+    .alerts .alert{
+        border-radius: var(--aqe-radius-sm);
+        box-shadow: var(--aqe-shadow-sm);
+        border: 1px solid var(--aqe-border);
+    }
+
+    /* Main container */
+    .bull5i-container{
+        background: var(--aqe-card);
+        border-radius: var(--aqe-radius);
+        box-shadow: var(--aqe-shadow);
+        padding-top: 14px;
+        padding-bottom: 14px;
+    }
+
+    /* Table look */
+    #dT{
+        border: 1px solid var(--aqe-border);
+        border-radius: var(--aqe-radius);
+        background: #fff;
+    }
+    #dT > thead > tr > th{
+        background: #fafafa;
+        border-bottom: 1px solid var(--aqe-border);
+        color: #111827;
+        font-weight: 700;
+        vertical-align: middle;
+        white-space: nowrap;
+    }
+    #dT > tbody > tr > td{
+        border-top: 1px solid var(--aqe-border);
+        vertical-align: middle;
+    }
+    #dT.table-hover > tbody > tr:hover{
+        background: #f9fafb;
+    }
+
+    .table-responsive{
+        border: 0;
+    }
+
+    /* Filters */
+    #dT thead tr.filters{
+        box-shadow: 0 10px 18px rgba(17,24,39,.06);
+    }
+    #dT thead tr.filters .form-control{
+        border-radius: 10px;
+        border: 0 !important;
+        box-shadow: none !important;
+        outline: none !important;
+        transition: border-color .12s ease;
+        background: rgba(17,24,39,.04);
+    }
+    #dT thead tr.filters .form-control:focus{
+        border-color: transparent;
+        box-shadow: none !important;
+        outline: none !important;
+    }
+    /* Text inputs (typeahead) should still look like inputs */
+    #dT thead tr.filters input.form-control.typeahead{
+        background: #fff;
+        border: 1px solid var(--aqe-border) !important;
+    }
+    #dT thead tr.filters input.form-control.typeahead:focus{
+        border-color: var(--aqe-border-strong) !important;
+    }
+    #dT thead tr.filters th{
+        padding-top: 10px;
+        padding-bottom: 10px;
+    }
+    .select2-selection__clear{
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        position: absolute;
+        right: 8px;
+        top: 8px;
+        font-size: 12px;
+        color: var(--aqe-muted);
+        background: transparent;
+        border: 0;
+        border-radius: 999px;
+        padding: 2px 6px;
+        cursor: pointer;
+        user-select: none;
+        opacity: .85;
+    }
+    .select2-selection__clear:hover{
+        opacity: 1;
+        text-decoration: underline;
+    }
+    .same_pick{
+        padding-right: 92px; /* space for "Очистить" pill */
+    }
+
+    /* Filter buttons */
+    #filter, #clear-filter{
+        width: 100%;
+        border-radius: 12px;
+        font-weight: 800;
+        font-size: 14px !important;
+        letter-spacing: .2px;
+        border: 1px solid var(--aqe-border);
+        box-shadow: var(--aqe-shadow-sm);
+        padding: 10px 12px;
+    }
+    #filter{
+        background: #16a34a !important;
+        color: #fff !important;
+        border-color: rgba(22,163,74,.25);
+    }
+    #clear-filter{
+        background: #f59e0b !important;
+        color: #111827 !important;
+        border-color: rgba(245,158,11,.25);
+        margin-top: 8px;
+    }
+
+    /* Buttons in toolbar and rows */
+    .btn{
+        border-radius: 12px;
+    }
+    .btn-xs{
+        border-radius: 10px;
+    }
+    .btn-group-flex{
+        display: inline-flex;
+        flex-wrap: wrap;
+        gap: 4px;
+        align-items: center;
+    }
+    .btn-group-flex > a,
+    .btn-group-flex > button{
+        border-radius: 10px;
+        border: 1px solid var(--aqe-border) !important;
+        box-shadow: none !important;
+        height: 26px;
+        line-height: 24px;
+        padding: 0 8px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        box-sizing: border-box;
+    }
+    /* "Flat" look for the custom action links in the group */
+    .btn-group-flex > a.btn-default,
+    .btn-group-flex > button.btn-default{
+        background: #fff !important;
+        color: #111827 !important;
+    }
+    .btn-group-flex > a.btn-default:hover,
+    .btn-group-flex > button.btn-default:hover{
+        background: #f9fafb !important;
+        border-color: var(--aqe-border-strong) !important;
+    }
+    /* Remove odd borders from inline-styled links inside the group */
+    .btn-group-flex > a[style*="border"],
+    .btn-group-flex > a[style*="border:"]{
+        border: 1px solid var(--aqe-border) !important;
+    }
+
+    /* Ensure all "btn-default btn-xs" links look consistent (some are <a> without .btn) */
+    .btn-group-flex > a.btn-default.btn-xs,
+    .btn-group-flex > a.btn-default{
+        text-decoration: none;
+        border-radius: 10px !important;
+    }
+    .btn-group-flex > a.btn-default i,
+    .btn-group-flex > button.btn-default i{
+        margin: 0;
+    }
+
+    /* Keep complex cells top-aligned */
+    td.col_image,
+    td.col_category,
+    td.col_description{
+        vertical-align: top !important;
+    }
+
+    /* Images cell */
+    td.col_image{
+        background: #fff;
+    }
+    td.col_image .img-thumbnail{
+        border-radius: 12px;
+        border: 1px solid var(--aqe-border);
+        box-shadow: var(--aqe-shadow-sm);
+    }
+
+    /* Status cell: reduce harsh colors a bit */
+    td.status_favourite{
+        border-left: 4px solid rgba(17,24,39,.15);
+    }
+
     .text-left.col_category{
         min-width:170px;
     }
@@ -510,9 +743,6 @@
     }
     .bootstrap-select .dropdown-menu{
         right:-80px !important;
-    }
-    body{
-        color:#000;
     }
     #batch-edit-container{
         display:none !important;
