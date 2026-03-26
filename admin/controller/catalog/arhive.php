@@ -251,7 +251,7 @@ class ControllerCatalogArhive extends Controller {
 					$this->response->redirect($this->url->link($editroute, 'token='.$this->session->data['token'].$url, 'SSL'));
 				}
 			}
-			if($this->request->post['go_list_product'] == 1){
+			if(isset($this->request->post['go_list_product']) && (int)$this->request->post['go_list_product'] == 1){
 				$this->response->redirect($this->url->link('catalog/product', 'token=' . $this->session->data['token'] . $url, true));
 			} else{
 				$this->response->redirect($this->url->link('catalog/product/add', 'token=' . $this->session->data['token'] . $url, true));
@@ -944,7 +944,7 @@ class ControllerCatalogArhive extends Controller {
 
 	protected function getForm() {
 
-	if($this->request->post['go_list_product'] == "0"){
+	if(isset($this->request->post['go_list_product']) && (int)$this->request->post['go_list_product'] == 0){
 		$this->request->post['model'] = '';
 		$this->request->post['image'] = '';
 		$this->request->post['product_image'] = '';
