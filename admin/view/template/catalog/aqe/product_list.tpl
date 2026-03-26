@@ -726,8 +726,7 @@
         flex-direction: column;
         justify-content: center;
         align-items: center;
-        border-left: 0;
-        border-right: 0;
+        border: 0;
     }
 
     /* Images cell */
