@@ -14,7 +14,8 @@ class ModelToolImage extends Model {
 		$extension = pathinfo($filename, PATHINFO_EXTENSION);
 
 		$image_old = $filename;
-		$image_new = 'cache/' . utf8_substr($filename, 0, utf8_strrpos($filename, '.')) . '-' . (int)$width . 'x' . (int)$height . '.' . $extension;
+		$image_new  = 'cache/' . utf8_substr($filename, 0, utf8_strrpos($filename, '.')) . '-' . (int)$width . 'x' . (int)$height . '.' . $extension;
+		$image_webp = 'cache/' . utf8_substr($filename, 0, utf8_strrpos($filename, '.')) . '-' . (int)$width . 'x' . (int)$height . '.webp';
 
 		if (!is_file(DIR_IMAGE . $image_new) || (filectime(DIR_IMAGE . $image_old) > filectime(DIR_IMAGE . $image_new))) {
 			list($width_orig, $height_orig, $image_type) = getimagesize(DIR_IMAGE . $image_old);
@@ -42,9 +43,28 @@ class ModelToolImage extends Model {
 			} else {
 				copy(DIR_IMAGE . $image_old, DIR_IMAGE . $image_new);
 			}
+
+			// сбрасываем WebP-кеш при обновлении оригинала
+			if (is_file(DIR_IMAGE . $image_webp)) {
+				@unlink(DIR_IMAGE . $image_webp);
+			}
 		}
 
-		$imagepath_parts = explode('/', $image_new);
+		// генерируем WebP-версию один раз и кешируем рядом
+		if (function_exists('imagewebp') && !is_file(DIR_IMAGE . $image_webp)) {
+			$image_for_webp = new Image(DIR_IMAGE . $image_new);
+			$image_for_webp->save(DIR_IMAGE . $image_webp);
+		}
+
+		// отдаём WebP браузерам, которые его поддерживают
+		$accept = isset($this->request->server['HTTP_ACCEPT']) ? $this->request->server['HTTP_ACCEPT'] : '';
+		if (function_exists('imagewebp') && strpos($accept, 'image/webp') !== false && is_file(DIR_IMAGE . $image_webp)) {
+			$serve = $image_webp;
+		} else {
+			$serve = $image_new;
+		}
+
+		$imagepath_parts = explode('/', $serve);
 		$new_image = implode('/', array_map('rawurlencode', $imagepath_parts));
 
 		if (isset($this->request->server['HTTPS']) && (($this->request->server['HTTPS'] == 'on') || ($this->request->server['HTTPS'] == '1'))) {
