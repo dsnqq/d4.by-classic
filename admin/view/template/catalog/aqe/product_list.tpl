@@ -363,7 +363,7 @@
                         </td>
                         <?php break;
 											case 'action': ?>
-                        <td class="<?php echo $column_info[$col]['align']; ?> action">
+                        <td class="<?php echo $column_info[$col]['align']; ?> action action-cell">
 
                             <?php if( $user_id_com != 25 ){ ?>
                             <div class="btn-group btn-group-flex">
@@ -718,6 +718,16 @@
     td.col_category,
     td.col_description{
         vertical-align: top !important;
+    }
+
+    /* Action column alignment */
+    td.action.action-cell{
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        border-left: 0;
+        border-right: 0;
     }
 
     /* Images cell */
