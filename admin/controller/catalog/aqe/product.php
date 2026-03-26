@@ -433,6 +433,20 @@ class ControllerCatalogAqeProduct extends Controller {
 
 		$product_total = $this->model_catalog_aqe_product->getTotalProducts();
 
+		$product_ids = array();
+		foreach ($results as $r) {
+			if (isset($r['product_id'])) $product_ids[] = (int)$r['product_id'];
+		}
+
+		$product_images_map = $this->model_catalog_product->getProductImagesByProductIds($product_ids);
+		$product_views_map = $this->model_catalog_product->getProductViewsByProductIds($product_ids);
+		$product_special_price_map = $this->model_catalog_product->getActiveSpecialPricesByProductIds($product_ids);
+
+		$category_cache = array();
+		$manufacturer_cache = array();
+		$this->load->model('catalog/category');
+		$this->load->model('catalog/manufacturer');
+
 		foreach ($results as $result) {
 			$_buttons = array();
 
@@ -502,14 +516,9 @@ class ControllerCatalogAqeProduct extends Controller {
 			}
 
 			$special = false;
-
-			$product_specials = $this->model_catalog_product->getProductSpecials($result['product_id']);
-
-			foreach ($product_specials  as $product_special) {
-				if (($product_special['date_start'] == '0000-00-00' || strtotime($product_special['date_start']) < time()) && ($product_special['date_end'] == '0000-00-00' || strtotime($product_special['date_end']) > time())) {
-					$special = $product_special['price'];
-					break;
-				}
+			$pid = (int)$result['product_id'];
+			if (isset($product_special_price_map[$pid])) {
+				$special = $product_special_price_map[$pid];
 			}
 
 			$row = array(
@@ -520,9 +529,8 @@ class ControllerCatalogAqeProduct extends Controller {
 			$data['product_images'] = array();
 
 
-			$product_images = $this->model_catalog_product->getProductImages($result['product_id']);
-			
-			$product_stax_view = $this->model_catalog_product->getProductViews($result['product_id']);
+			$product_images = isset($product_images_map[$pid]) ? $product_images_map[$pid] : array();
+			$product_stax_view = isset($product_views_map[$pid]) ? $product_views_map[$pid] : array('view_count' => 0, 'view_date_list' => '');
 
 			if (!is_array($columns)) {
 				$row['name'] = $result['name'];
@@ -573,12 +581,17 @@ class ControllerCatalogAqeProduct extends Controller {
 
 						$row['name'] = $result['name'];
 					} else if ($column == 'category') {
-						$this->load->model('catalog/category');
 						$categories = $this->model_catalog_product->getProductCategories($result['product_id']);
 						$category_paths = array();
 						foreach($categories as $cat) {
-							$category = $this->model_catalog_category->getCategory($cat);
-							$category_paths[] = (($category['path']) ? $category['path'] . ' <br /> ' : '') . $category['name'];
+							$cat = (int)$cat;
+							if (!isset($category_cache[$cat])) {
+								$category_cache[$cat] = $this->model_catalog_category->getCategory($cat);
+							}
+							$category = $category_cache[$cat];
+							if ($category) {
+								$category_paths[] = (($category['path']) ? $category['path'] . ' <br /> ' : '') . $category['name'];
+							}
 						}
 						$row[$column] = implode("<br />", $category_paths);
 						$row['jan'] = $result['jan'];
@@ -685,19 +698,26 @@ class ControllerCatalogAqeProduct extends Controller {
                         $row[$column] = $result['sku'];
 					} else if ($column == 'action') {
 
-						$this->load->model('catalog/category');
-						$this->load->model('catalog/product');
 						$categories = $this->model_catalog_product->getProductCategories($result['product_id']);
 						$category_paths = array();
 						foreach($categories as $cat) {
-							$category = $this->model_catalog_category->getCategory($cat);
-							$category_paths[] = (($category['path']) ? $category['path'] . '  ' : '') . $category['name'];
+							$cat = (int)$cat;
+							if (!isset($category_cache[$cat])) {
+								$category_cache[$cat] = $this->model_catalog_category->getCategory($cat);
+							}
+							$category = $category_cache[$cat];
+							if ($category) {
+								$category_paths[] = (($category['path']) ? $category['path'] . '  ' : '') . $category['name'];
+							}
 						}
 						$row['cat_qr'] = implode("<br />", $category_paths);
 
-						$this->load->model('catalog/manufacturer');
-						$manufacturer = $this->model_catalog_manufacturer->getManufacturer((int)$result['manufacturer_id']);
-						$row['manufers'] = $manufacturer['name'];
+						$mid = (int)$result['manufacturer_id'];
+						if (!isset($manufacturer_cache[$mid])) {
+							$manufacturer_cache[$mid] = $this->model_catalog_manufacturer->getManufacturer($mid);
+						}
+						$manufacturer = $manufacturer_cache[$mid];
+						$row['manufers'] = isset($manufacturer['name']) ? $manufacturer['name'] : '';
 
 						$row['modelQR'] = $result['model'];
 						$row['ean'] = $result['ean'];

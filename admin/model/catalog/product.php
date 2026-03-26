@@ -677,6 +677,23 @@ class ModelCatalogProduct extends Model {
 		return $query->rows;
 	}
 
+	public function getProductImagesByProductIds(array $product_ids) {
+		$product_ids = array_values(array_unique(array_filter(array_map('intval', $product_ids))));
+		if (!$product_ids) return array();
+
+		$query = $this->db->query(
+			"SELECT * FROM " . DB_PREFIX . "product_image WHERE product_id IN (" . implode(',', $product_ids) . ") ORDER BY product_id ASC, sort_order ASC"
+		);
+
+		$by_product = array();
+		foreach ($query->rows as $row) {
+			$pid = (int)$row['product_id'];
+			if (!isset($by_product[$pid])) $by_product[$pid] = array();
+			$by_product[$pid][] = $row;
+		}
+		return $by_product;
+	}
+
 	public function getProductDiscounts($product_id) {
 		$query = $this->db->query("SELECT * FROM " . DB_PREFIX . "product_discount WHERE product_id = '" . (int)$product_id . "' ORDER BY quantity, priority, price");
 
@@ -687,6 +704,27 @@ class ModelCatalogProduct extends Model {
 		$query = $this->db->query("SELECT * FROM " . DB_PREFIX . "product_special WHERE product_id = '" . (int)$product_id . "' ORDER BY priority, price");
 
 		return $query->rows;
+	}
+
+	public function getActiveSpecialPricesByProductIds(array $product_ids) {
+		$product_ids = array_values(array_unique(array_filter(array_map('intval', $product_ids))));
+		if (!$product_ids) return array();
+
+		// NOTE: In admin we don't filter by customer_group_id/currency; we only need "active now".
+		$query = $this->db->query(
+			"SELECT product_id, MIN(price) AS special_price
+			 FROM " . DB_PREFIX . "product_special
+			 WHERE product_id IN (" . implode(',', $product_ids) . ")
+			   AND (date_start = '0000-00-00' OR date_start < NOW())
+			   AND (date_end = '0000-00-00' OR date_end > NOW())
+			 GROUP BY product_id"
+		);
+
+		$map = array();
+		foreach ($query->rows as $row) {
+			$map[(int)$row['product_id']] = (float)$row['special_price'];
+		}
+		return $map;
 	}
 
 	public function getProductRewards($product_id) {
@@ -888,6 +926,26 @@ class ModelCatalogProduct extends Model {
             'view_date_list' => $query->row['view_date_list'],
         ];
     }
+
+	public function getProductViewsByProductIds(array $product_ids) {
+		$product_ids = array_values(array_unique(array_filter(array_map('intval', $product_ids))));
+		if (!$product_ids) return array();
+
+		$query = $this->db->query(
+			"SELECT product_id, view_count, view_date_list
+			 FROM " . DB_PREFIX . "product_statistics
+			 WHERE product_id IN (" . implode(',', $product_ids) . ")"
+		);
+
+		$map = array();
+		foreach ($query->rows as $row) {
+			$map[(int)$row['product_id']] = array(
+				'view_count' => isset($row['view_count']) ? (int)$row['view_count'] : 0,
+				'view_date_list' => isset($row['view_date_list']) ? $row['view_date_list'] : '',
+			);
+		}
+		return $map;
+	}
 
 	public function getProductCountStatusNo($data = array()){
 		$query = $this->db->query("SELECT COUNT(*) AS total FROM " . DB_PREFIX . "product WHERE status = '0'");

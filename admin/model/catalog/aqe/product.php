@@ -113,7 +113,7 @@ class ModelCatalogAqeProduct extends Model {
                 'date_added'        => 'p.date_added',
                 'date_available'    => 'p.date_available',
                 'date_modified'     => 'p.date_modified',
-                'data_change'       => 'с.data_change',
+                'data_change'       => 'c.data_change',
             );
         } else {
             $date_filters = array(
