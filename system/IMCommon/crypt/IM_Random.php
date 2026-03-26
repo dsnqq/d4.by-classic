@@ -67,30 +67,18 @@ if (!function_exists('IM_crypt_random_string')) {
      */
     function IM_crypt_random_string($length)
     {
+        // method 0. PHP 7.0+ built-in CSPRNG — always preferred
+        if (function_exists('random_bytes')) {
+            return random_bytes($length);
+        }
+
         if (IM_CRYPT_RANDOM_IS_WINDOWS) {
-            // method 1. prior to PHP 5.3, mcrypt_create_iv() would call rand() on windows
-            if (extension_loaded('mcrypt') && version_compare(PHP_VERSION, '5.3.0', '>=')) {
-                return mcrypt_create_iv($length);
-            }
-            // method 2. openssl_random_pseudo_bytes was introduced in PHP 5.3.0 but prior to PHP 5.3.4 there was,
-            // to quote <http://php.net/ChangeLog-5.php#5.3.4>, "possible blocking behavior". as of 5.3.4
-            // openssl_random_pseudo_bytes and mcrypt_create_iv do the exact same thing on Windows. ie. they both
-            // call php_win32_get_random_bytes():
-            //
-            // https://github.com/php/php-src/blob/7014a0eb6d1611151a286c0ff4f2238f92c120d6/ext/openssl/openssl.c#L5008
-            // https://github.com/php/php-src/blob/7014a0eb6d1611151a286c0ff4f2238f92c120d6/ext/mcrypt/mcrypt.c#L1392
-            //
-            // php_win32_get_random_bytes() is defined thusly:
-            //
-            // https://github.com/php/php-src/blob/7014a0eb6d1611151a286c0ff4f2238f92c120d6/win32/winutil.c#L80
-            //
-            // we're calling it, all the same, in the off chance that the mcrypt extension is not available
-            if (extension_loaded('openssl') && version_compare(PHP_VERSION, '5.3.4', '>=')) {
+            if (extension_loaded('openssl')) {
                 return openssl_random_pseudo_bytes($length);
             }
         } else {
             // method 1. the fastest
-            if (extension_loaded('openssl') && version_compare(PHP_VERSION, '5.3.0', '>=')) {
+            if (extension_loaded('openssl')) {
                 return openssl_random_pseudo_bytes($length);
             }
             // method 2
@@ -102,14 +90,6 @@ if (!function_exists('IM_crypt_random_string')) {
             }
             if ($fp !== true && $fp !== false) { // surprisingly faster than !is_bool() or is_resource()
                 return fread($fp, $length);
-            }
-            // method 3. pretty much does the same thing as method 2 per the following url:
-            // https://github.com/php/php-src/blob/7014a0eb6d1611151a286c0ff4f2238f92c120d6/ext/mcrypt/mcrypt.c#L1391
-            // surprisingly slower than method 2. maybe that's because mcrypt_create_iv does a bunch of error checking that we're
-            // not doing. regardless, this'll only be called if this PHP script couldn't open /dev/urandom due to open_basedir
-            // restrictions or some such
-            if (extension_loaded('mcrypt')) {
-                return mcrypt_create_iv($length, MCRYPT_DEV_URANDOM);
             }
         }
         // at this point we have no choice but to use a pure-PHP CSPRNG

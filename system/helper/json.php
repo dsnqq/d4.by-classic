@@ -123,8 +123,7 @@ if (!function_exists('json_decode')) {
 
 		$json = strtr($json, array_map('stripcslashes', $m2s));
 
-		$function = @create_function('', "return {$json};");
-		$return = ($function) ? $function() : null;
+		$return = @eval("return {$json};");
 
 		unset($s2m);
 		unset($m2s);

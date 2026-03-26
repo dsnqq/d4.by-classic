@@ -1,16 +1,28 @@
 <?php
 final class Encryption {
 	private $key;
+	private $cipher = 'AES-256-CBC';
 
 	public function __construct($key) {
 		$this->key = hash('sha256', $key, true);
 	}
 
 	public function encrypt($value) {
-		return strtr(base64_encode(mcrypt_encrypt(MCRYPT_RIJNDAEL_256, hash('sha256', $this->key, true), $value, MCRYPT_MODE_ECB)), '+/=', '-_,');
+		$ivLen = openssl_cipher_iv_length($this->cipher);
+		$iv = openssl_random_pseudo_bytes($ivLen);
+		$encrypted = openssl_encrypt($value, $this->cipher, $this->key, OPENSSL_RAW_DATA, $iv);
+		return strtr(base64_encode($iv . $encrypted), '+/=', '-_,');
 	}
 
 	public function decrypt($value) {
-		return trim(mcrypt_decrypt(MCRYPT_RIJNDAEL_256, hash('sha256', $this->key, true), base64_decode(strtr($value, '-_,', '+/=')), MCRYPT_MODE_ECB));
+		$data = base64_decode(strtr($value, '-_,', '+/='));
+		$ivLen = openssl_cipher_iv_length($this->cipher);
+		if (strlen($data) <= $ivLen) {
+			return '';
+		}
+		$iv = substr($data, 0, $ivLen);
+		$encrypted = substr($data, $ivLen);
+		$decrypted = openssl_decrypt($encrypted, $this->cipher, $this->key, OPENSSL_RAW_DATA, $iv);
+		return $decrypted !== false ? trim($decrypted) : '';
 	}
 }

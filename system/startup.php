@@ -5,8 +5,8 @@ ini_set('display_errors', '0');
 ini_set('log_errors', '1');
 
 // Check Version
-if (version_compare(phpversion(), '5.4.0', '<') == true) {
-	exit('PHP5.4+ Required');
+if (version_compare(phpversion(), '8.1.0', '<') == true) {
+	exit('PHP 8.1+ Required');
 }
 
 if (!ini_get('date.timezone')) {

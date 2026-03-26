@@ -36,31 +36,25 @@ final class Openbay {
 	}
 
 	public function encrypt($msg, $k, $base64 = false) {
-		$td = mcrypt_module_open('rijndael-256', '', 'ctr', '');
+		$cipher = 'aes-256-ctr';
+		$ivLen  = openssl_cipher_iv_length($cipher);
+		$key    = str_pad(substr($k, 0, 32), 32, "\0");
+		$iv     = random_bytes($ivLen);
 
-		if (!$td) {
+		$encrypted = openssl_encrypt($msg, $cipher, $key, OPENSSL_RAW_DATA, $iv);
+
+		if ($encrypted === false) {
 			return false;
 		}
 
-		$iv = mcrypt_create_iv(32, MCRYPT_RAND);
-
-		if (mcrypt_generic_init($td, $k, $iv) !== 0) {
-			return false;
-		}
-
-		$msg = mcrypt_generic($td, $msg);
-		$msg = $iv . $msg;
-		$mac = $this->pbkdf2($msg, $k, 1000, 32);
-		$msg .= $mac;
-
-		mcrypt_generic_deinit($td);
-		mcrypt_module_close($td);
+		$mac = $this->pbkdf2($iv . $encrypted, $k, 1000, 32);
+		$result = $iv . $encrypted . $mac;
 
 		if ($base64) {
-			$msg = base64_encode($msg);
+			$result = base64_encode($result);
 		}
 
-		return $msg;
+		return $result;
 	}
 
 	public function decrypt($msg, $k, $base64 = false) {
@@ -68,31 +62,30 @@ final class Openbay {
 			$msg = base64_decode($msg);
 		}
 
-		if (!$td = mcrypt_module_open('rijndael-256', '', 'ctr', '')) {
+		$cipher = 'aes-256-ctr';
+		$ivLen  = openssl_cipher_iv_length($cipher);
+		$key    = str_pad(substr($k, 0, 32), 32, "\0");
+
+		if (strlen($msg) <= $ivLen + 32) {
 			return false;
 		}
 
-		$iv = substr($msg, 0, 32);
-		$mo = strlen($msg) - 32;
-		$em = substr($msg, $mo);
-		$msg = substr($msg, 32, strlen($msg) - 64);
-		$mac = $this->pbkdf2($iv . $msg, $k, 1000, 32);
+		$iv         = substr($msg, 0, $ivLen);
+		$em         = substr($msg, -32);
+		$ciphertext = substr($msg, $ivLen, strlen($msg) - $ivLen - 32);
+		$mac        = $this->pbkdf2($iv . $ciphertext, $k, 1000, 32);
 
-		if ($em !== $mac) {
+		if (!hash_equals($em, $mac)) {
 			return false;
 		}
 
-		if (mcrypt_generic_init($td, $k, $iv) !== 0) {
+		$decrypted = openssl_decrypt($ciphertext, $cipher, $key, OPENSSL_RAW_DATA, $iv);
+
+		if ($decrypted === false) {
 			return false;
 		}
 
-		$msg = mdecrypt_generic($td, $msg);
-		$msg = unserialize($msg);
-
-		mcrypt_generic_deinit($td);
-		mcrypt_module_close($td);
-
-		return $msg;
+		return unserialize($decrypted);
 	}
 
 	public function pbkdf2($p, $s, $c, $kl, $a = 'sha256') {

@@ -1451,8 +1451,7 @@ class ModelExtensionShippingXshippingpro extends Model {
 	private function calculate_string( $mathString ) {
 	    $mathString = trim($mathString);     // trim white spaces
 	    $mathString = preg_replace ('[^0-9\+-\*\/\(\) ]', '', $mathString);    // remove any non-numbers chars; exception for math operators
-	    $compute = create_function("", "return (" . html_entity_decode($mathString) . ");" );
-	    return 0 + $compute();
+	    return 0 + eval("return (" . html_entity_decode($mathString) . ");");
 	}
 
 }	
