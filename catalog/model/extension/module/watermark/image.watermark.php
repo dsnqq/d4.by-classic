@@ -399,17 +399,18 @@ class ModelToolImage extends Model {
             );
 
         // Load options
-        if (!$this->conf) {
+        if(!$this->conf)
+        {
             $this->conf = $this->getOptions();
         }
 
-        if (in_array($type, $types) && $this->conf[$type] == 1 && $this->conf['active'] == 1) {
+        if(in_array($type, $types) && $this->conf[$type] == 1 && $this->conf['active'] == 1)
+        {
 
             $extension = pathinfo($filename, PATHINFO_EXTENSION);
 
             $old_image = $filename;
             $new_image = 'cache/' . utf8_substr($filename, 0, utf8_strrpos($filename, '.')) . '-' . $width . 'x' . $height . '-' . $type . '.' . $extension;
-            $new_webp  = 'cache/' . utf8_substr($filename, 0, utf8_strrpos($filename, '.')) . '-' . $width . 'x' . $height . '-' . $type . '.webp';
 
             if (!is_file(DIR_IMAGE . $new_image) || (filectime(DIR_IMAGE . $old_image) > filectime(DIR_IMAGE . $new_image))) {
                 $path = '';
@@ -424,41 +425,27 @@ class ModelToolImage extends Model {
                     }
                 }
 
+                list($width_orig, $height_orig) = getimagesize(DIR_IMAGE . $old_image);
+
                 $image = new ImageWatermark(DIR_IMAGE . $old_image);
                 $image->resize($width, $height);
                 $image->watermark($this->conf);
                 $image->save(DIR_IMAGE . $new_image);
-
-                if (is_file(DIR_IMAGE . $new_webp)) {
-                    @unlink(DIR_IMAGE . $new_webp);
-                }
-            }
-
-            if (function_exists('imagewebp') && !is_file(DIR_IMAGE . $new_webp)) {
-                $img = new Image(DIR_IMAGE . $new_image);
-                $img->save(DIR_IMAGE . $new_webp);
-            }
-
-            $accept = isset($this->request->server['HTTP_ACCEPT']) ? $this->request->server['HTTP_ACCEPT'] : '';
-            if (function_exists('imagewebp') && strpos($accept, 'image/webp') !== false && is_file(DIR_IMAGE . $new_webp)) {
-                $serve = $new_webp;
-            } else {
-                $serve = $new_image;
             }
 
             if ($this->request->server['HTTPS']) {
-                return $this->config->get('config_ssl') . 'image/' . $serve;
+                return $this->config->get('config_ssl') . 'image/' . $new_image;
             } else {
-                return $this->config->get('config_url') . 'image/' . $serve;
+                return $this->config->get('config_url') . 'image/' . $new_image;
             }
 
-        } else {
-
+        }
+        else
+        {
             $extension = pathinfo($filename, PATHINFO_EXTENSION);
 
             $old_image = $filename;
             $new_image = 'cache/' . utf8_substr($filename, 0, utf8_strrpos($filename, '.')) . '-' . $width . 'x' . $height . '.' . $extension;
-            $new_webp  = 'cache/' . utf8_substr($filename, 0, utf8_strrpos($filename, '.')) . '-' . $width . 'x' . $height . '.webp';
 
             if (!is_file(DIR_IMAGE . $new_image) || (filectime(DIR_IMAGE . $old_image) > filectime(DIR_IMAGE . $new_image))) {
                 $path = '';
@@ -482,28 +469,12 @@ class ModelToolImage extends Model {
                 } else {
                     copy(DIR_IMAGE . $old_image, DIR_IMAGE . $new_image);
                 }
-
-                if (is_file(DIR_IMAGE . $new_webp)) {
-                    @unlink(DIR_IMAGE . $new_webp);
-                }
-            }
-
-            if (function_exists('imagewebp') && !is_file(DIR_IMAGE . $new_webp)) {
-                $img = new Image(DIR_IMAGE . $new_image);
-                $img->save(DIR_IMAGE . $new_webp);
-            }
-
-            $accept = isset($this->request->server['HTTP_ACCEPT']) ? $this->request->server['HTTP_ACCEPT'] : '';
-            if (function_exists('imagewebp') && strpos($accept, 'image/webp') !== false && is_file(DIR_IMAGE . $new_webp)) {
-                $serve = $new_webp;
-            } else {
-                $serve = $new_image;
             }
 
             if ($this->request->server['HTTPS']) {
-                return $this->config->get('config_ssl') . 'image/' . $serve;
+                return $this->config->get('config_ssl') . 'image/' . $new_image;
             } else {
-                return $this->config->get('config_url') . 'image/' . $serve;
+                return $this->config->get('config_url') . 'image/' . $new_image;
             }
         }
 

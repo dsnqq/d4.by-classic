@@ -85,18 +85,13 @@ php_value max_execution_time 300
     <FilesMatch "\.(js|css|txt)$">
         Header set Cache-Control "max-age=604800"
     </FilesMatch>
-    <FilesMatch "\.(flv|swf|ico|gif|jpg|jpeg|png|webp)$">
+    <FilesMatch "\.(flv|swf|ico|gif|jpg|jpeg|png)$">
         Header set Cache-Control "max-age=2592000"
     </FilesMatch>
     <FilesMatch "\.(pl|php|cgi|spl|scgi|fcgi)$">
         Header unset Cache-Control
     </FilesMatch>
     Header always set Access-Control-Allow-Origin "*"
-</IfModule>
-
-# WebP MIME-тип (для Apache < 2.4 без встроенного определения)
-<IfModule mod_mime.c>
-    AddType image/webp .webp
 </IfModule>
 
 # Gzip-сжатие
