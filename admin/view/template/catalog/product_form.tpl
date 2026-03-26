@@ -7,7 +7,109 @@
 <link type="text/css" href="view/stylesheet/bootstrap-select.css" rel="stylesheet" media="screen" />
 <?php echo $column_left; ?>
 
-<div id="content">
+<div id="content" class="product-form-modern">
+  <style>
+    #content.product-form-modern{
+      --ui-bg: #f6f7fb;
+      --ui-card: #ffffff;
+      --ui-text: #111827;
+      --ui-muted: #6b7280;
+      --ui-border: #e5e7eb;
+      --ui-border-strong: #d1d5db;
+      --ui-shadow: 0 10px 25px rgba(17,24,39,.08);
+      --ui-shadow-sm: 0 2px 8px rgba(17,24,39,.08);
+      --ui-radius: 12px;
+      --ui-radius-sm: 10px;
+    }
+    body{
+      background: var(--ui-bg);
+      color: var(--ui-text);
+    }
+
+    /* Header */
+    #content.product-form-modern .page-header{
+      background: transparent;
+      border-bottom: 0;
+      margin-bottom: 12px;
+    }
+    #content.product-form-modern .page-header .container-fluid{
+      background: var(--ui-card);
+      border-radius: var(--ui-radius);
+      box-shadow: var(--ui-shadow-sm);
+      padding-top: 14px;
+      padding-bottom: 14px;
+    }
+    #content.product-form-modern h1{
+      font-weight: 800;
+      letter-spacing: .2px;
+    }
+
+    /* Panel -> card */
+    #content.product-form-modern .panel{
+      border: 1px solid var(--ui-border);
+      border-radius: var(--ui-radius);
+      box-shadow: var(--ui-shadow);
+      overflow: visible;
+    }
+    #content.product-form-modern .panel-heading{
+      background: #fafafa;
+      border-bottom: 1px solid var(--ui-border);
+      border-top-left-radius: var(--ui-radius);
+      border-top-right-radius: var(--ui-radius);
+    }
+    #content.product-form-modern .panel-title{
+      font-weight: 800;
+      color: var(--ui-text);
+    }
+    #content.product-form-modern .panel-body{
+      padding-top: 18px;
+    }
+
+    /* Inputs */
+    #content.product-form-modern .form-control{
+      border-radius: 10px;
+      border: 1px solid var(--ui-border-strong);
+      box-shadow: none !important;
+    }
+    #content.product-form-modern .form-control:focus{
+      border-color: #cbd5e1;
+      box-shadow: none !important;
+      outline: none !important;
+    }
+    #content.product-form-modern .control-label{
+      color: var(--ui-muted);
+      font-weight: 700;
+    }
+
+    /* bootstrap-select */
+    #content.product-form-modern .bootstrap-select > .btn{
+      border-radius: 10px;
+      border: 1px solid var(--ui-border-strong);
+      box-shadow: none !important;
+    }
+    #content.product-form-modern .bootstrap-select > .btn:focus,
+    #content.product-form-modern .bootstrap-select > .btn:active,
+    #content.product-form-modern .bootstrap-select > .btn:hover{
+      border-color: #cbd5e1;
+      box-shadow: none !important;
+      outline: none !important;
+    }
+
+    /* Buttons */
+    #content.product-form-modern .btn{
+      border-radius: 12px;
+    }
+    #content.product-form-modern .pull-right .btn{
+      box-shadow: var(--ui-shadow-sm);
+    }
+
+    /* Alerts */
+    #content.product-form-modern .alert{
+      border-radius: var(--ui-radius-sm);
+      border: 1px solid var(--ui-border);
+      box-shadow: var(--ui-shadow-sm);
+    }
+  </style>
   <div class="page-header">
     <div class="container-fluid">
       <div class="pull-right">
