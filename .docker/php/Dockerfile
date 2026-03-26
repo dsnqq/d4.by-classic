@@ -27,6 +27,7 @@ RUN { \
       echo "post_max_size=128M"; \
       echo "max_execution_time=120"; \
       echo "max_input_time=120"; \
+      echo "short_open_tag=Off"; \
       echo "date.timezone=UTC"; \
     } > /usr/local/etc/php/conf.d/99-opencart.ini
 

@@ -232,7 +232,7 @@ class ControllerCatalogShiny extends Controller {
 				$url .= '&page=' . $this->request->get['page'];
 			}
 
-			if($this->request->post['go_list_product'] == 1){
+			if(isset($this->request->post['go_list_product']) && (int)$this->request->post['go_list_product'] == 1){
 				$this->response->redirect($this->url->link('catalog/shiny', 'token=' . $this->session->data['token'] . $url, true));
 			} else{
 				$this->response->redirect($this->url->link('catalog/shiny/add', 'token=' . $this->session->data['token'] . $url, true));
@@ -920,7 +920,7 @@ class ControllerCatalogShiny extends Controller {
      * */
 	protected function getForm() {
 
-	if($this->request->post['go_list_product'] == "0"){
+	if(isset($this->request->post['go_list_product']) && $this->request->post['go_list_product'] == "0"){
 		$this->request->post['model'] = '';
 		$this->request->post['image'] = '';
 		$this->request->post['product_image'] = '';

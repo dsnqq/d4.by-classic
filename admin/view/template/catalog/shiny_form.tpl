@@ -144,7 +144,7 @@
                 <?php /* Высота */ ?>
                 <div class="col-sm-2 padding-l-r-2">
                   <select id="main__isbn" name="isbn" class="form-control selectpicker" data-live-search="true">
-                        <option value="" <?php echo (isbn == "") ? "selected='selected'" : "" ; ?>>Высота *</option>
+                        <option value="" <?php echo ($isbn == "") ? "selected='selected'" : "" ; ?>>Высота *</option>
                         <?php foreach($height_shiny as $height_shiny_item){ ?>
                           <option value="<?php echo $height_shiny_item; ?>" <?php echo ($height_shiny_item == $isbn) ? "selected='selected'" : "" ; ?>><?php echo $height_shiny_item; ?></option>
                         <?php } ?>
