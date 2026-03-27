@@ -5,49 +5,55 @@
 <div id="content">
     <div class="container">
         <ul class="breadcrumb">
-            <li><a href="/">Главная</a></li>
-            <li><a href="/shiny">Шины</a></li>
-            <li style="font-size: 14px;line-height: 20px;color: #8D9293;text-decoration: none;">
-                <?php echo $marka; ?> <?php echo $model_s; ?> <b><?php echo $shirina; ?>/<?php echo $vysota; ?> <?php echo $r_size; ?></b>, <?php echo $quantity; ?> шт., <?php echo $season; ?>, <?php echo $sostojan; ?>
-            </li>
+            <?php
+                $i = 0;
+                $count = count($breadcrumbs);
+            ?>
+            <?php foreach ($breadcrumbs as $breadcrumb) { ?>
+                <?php
+                    $i++;
+                    if ($i != $count) {
+                ?>
+                    <li><a href="<?php echo $breadcrumb['href']; ?>"><?php echo $breadcrumb['text']; ?></a></li>
+                <?php } else { ?>
+                    <li style="font-size: 14px;line-height: 20px;color: #8D9293;text-decoration: none;"><?php echo $breadcrumb['text']; ?></li>
+                <?php } ?>
+            <?php } ?>
         </ul>
-        <div class="wrapper_product_page" id="product">
+        <div class="wrapper_product_page product-modern" id="product">
             <div class="left_product_page">
                 <h1 class="left_product_page_t">
                     <?php echo $marka; ?> <?php echo $model_s; ?> <b><?php echo $shirina; ?>/<?php echo $vysota; ?> <?php echo $r_size; ?></b>, <?php echo $quantity; ?> шт., <?php echo $season; ?>, <?php echo $sostojan; ?>
                 </h1>
                 <div class="product_info_page_g">
                     <div class="thamb_images_product">
-                        <div class="main_img_j"itemscope itemtype="http://schema.org/ImageObject">
-                            <?php if ($thumb || $images) { ?>
-                            <div class = "wrap_thumbnails">
-                                <?php if ($thumb) { ?>
-                                <a id = "gallery_zoom" href="<?php echo $popup; ?>" class="MagicZoom" data-options="zoomPosition: inner"><img src="<?php echo $popup; ?>" title="<?php echo $manufacturer; ?> к <?php echo $catprod2[0]['name']; ?> <?php echo $catprod[0]['name']; ?>" alt="<?php echo $manufacturer; ?> к <?php echo $catprod2[0]['name']; ?> <?php echo $catprod[0]['name']; ?>" itemprop="contentUrl" /></a>
-                                <?php } else{ ?>
-                                <a id = "gallery_zoom" href="<?php echo $popup; ?>" class="MagicZoom" data-options="zoomPosition: inner"><img src="<?php echo $popup; ?>" title="<?php echo $manufacturer; ?> к <?php echo $catprod2[0]['name']; ?> <?php echo $catprod[0]['name']; ?>" alt="<?php echo $manufacturer; ?> к <?php echo $catprod2[0]['name']; ?> <?php echo $catprod[0]['name']; ?>" itemprop="contentUrl" /></a>
-                                <?php } ?>
-                                </ul>
+                        <?php
+                            $product_gallery = array();
+                            if (!empty($thumb)) {
+                                $product_gallery[] = array('thumb' => $thumb, 'popup' => $popup);
+                            }
+                            if (!empty($images)) {
+                                foreach ($images as $image) {
+                                    $product_gallery[] = array(
+                                        'thumb' => !empty($image['thumb']) ? $image['thumb'] : $image['popup'],
+                                        'popup' => $image['popup']
+                                    );
+                                }
+                            }
+                        ?>
+                        <?php if ($product_gallery) { ?>
+                        <div class="product-gallery-slider carousel_image_thumb">
+                            <?php foreach ($product_gallery as $gi => $gimg) { ?>
+                            <div class="product-gallery-slide">
+                                <div class="product-gallery-slide-inner"<?php if ($gi === 0) { ?> itemscope itemtype="http://schema.org/ImageObject"<?php } ?>>
+                                    <a href="<?php echo $gimg['popup']; ?>" class="MagicZoom" data-gallery="product-gallery-mz" data-options="zoomMode: off; hint: off; expand: window; expandZoomMode: off">
+                                        <img src="<?php echo $gimg['thumb']; ?>" title="<?php echo htmlspecialchars($heading_title, ENT_QUOTES, 'UTF-8'); ?>" alt="<?php echo htmlspecialchars($heading_title, ENT_QUOTES, 'UTF-8'); ?>"<?php if ($gi === 0) { ?> itemprop="contentUrl"<?php } ?> />
+                                    </a>
+                                </div>
                             </div>
                             <?php } ?>
                         </div>
-                        <div class="thumb_j">
-                            <div class = "carousel_image_thumb">
-                                <?php if ($thumb || $images) {  ?>
-                                <?php if ($thumb) { ?>
-                                <div class = "wrap_thumb_img">
-                                    <a data-zoom-id = "gallery_zoom" href = "<?php echo $popup; ?>"><img src="<?php echo $popup; ?>" title="<?php echo $heading_title; ?>" alt="<?php echo $heading_title; ?>"  class="wrap_thumb_img_pars"/></a>
-                                </div>
-                                <?php } ?>
-                                <?php if ($images) { ?>
-                                <?php foreach ($images as $image) { ?>
-                                <div class = "wrap_thumb_img">
-                                    <a data-zoom-id = "gallery_zoom" href = "<?php echo $image['popup']; ?>"><img src="<?php echo $image['popup']; ?>" title="<?php echo $heading_title; ?>" alt="<?php echo $heading_title; ?>"  class="wrap_thumb_img_pars"/></a>
-                                </div>
-                                <?php } ?>
-                                <?php } ?>
-                                <?php } ?>
-                            </div>
-                        </div>
+                        <?php } ?>
                     </div>
                     <div class="product_info_y">
 
@@ -575,6 +581,51 @@
             }
         });
     });*/
+
+function productGalleryMagicZoomRefresh() {
+    if (typeof MagicZoom === 'undefined' || !MagicZoom.refresh) {
+        return;
+    }
+    try {
+        MagicZoom.refresh();
+    } catch (e) {
+    }
+}
+
+$(document).ready(function() {
+    var $pg = $('.product-modern .product-gallery-slider');
+    if ($pg.length && $pg.children('.product-gallery-slide').length) {
+        if ($pg.hasClass('slick-initialized')) {
+            $pg.slick('unslick');
+        }
+        var slideCount = $pg.children('.product-gallery-slide').length;
+        $pg.slick({
+            slidesToShow: 1,
+            slidesToScroll: 1,
+            arrows: true,
+            dots: slideCount > 1,
+            infinite: slideCount > 1,
+            adaptiveHeight: true,
+            swipe: true,
+            touchMove: true,
+            draggable: true,
+            swipeToSlide: true,
+            touchThreshold: 8,
+            prevArrow: '<button type="button" class="product-gallery-arrow product-gallery-prev" aria-label="Предыдущее фото"></button>',
+            nextArrow: '<button type="button" class="product-gallery-arrow product-gallery-next" aria-label="Следующее фото"></button>'
+        });
+        $pg.on('afterChange', function() {
+            setTimeout(productGalleryMagicZoomRefresh, 80);
+        });
+        if (document.readyState === 'complete') {
+            setTimeout(productGalleryMagicZoomRefresh, 100);
+        } else {
+            $(window).on('load', function() {
+                setTimeout(productGalleryMagicZoomRefresh, 100);
+            });
+        }
+    }
+});
 
     $(document).ready(function() {
         var hash = window.location.hash;

@@ -376,6 +376,23 @@
     }
 }
 
+.wrapper_product_page.product-modern .product_this__time {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #fff;
+    border-radius: 10px;
+    border: 1px solid #e6ecf1;
+    padding: 10px 14px;
+    font-size: 14px;
+    color: #5c6b7a;
+    margin: 8px 0 0;
+}
+
+.wrapper_product_page.product-modern .product_this__time img {
+    flex-shrink: 0;
+}
+
 .wrapper_product_page.product-modern .product_this_desc {
     background: #fff;
     border-radius: 12px;

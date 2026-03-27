@@ -19,6 +19,7 @@ class ControllerProductShinyForm extends Controller {
         $this->document->addStyle('/catalog/view/theme/d4/css/slick.css');
         $this->document->addStyle('/catalog/view/theme/d4/css/slick-theme.css');
         $this->document->addScript('/catalog/view/theme/d4/js/slick.min.js');
+        $this->document->addStyle('/catalog/view/theme/d4/css/modern-product.css');
 
 
         $this->load->model('catalog/category');
@@ -259,7 +260,7 @@ class ControllerProductShinyForm extends Controller {
 
             $this->document->setDescription($product_info['meta_description']);
             $this->document->setKeywords($product_info['meta_keyword']);
-            $this->document->addLink($this->url->link('product/product', 'product_id=' . $this->request->get['product_id']), 'canonical');
+            $this->document->addLink($this->url->link('product/shiny_form', 'product_id=' . $this->request->get['product_id']), 'canonical');
 
             if ($product_info['meta_h1']) {
                 $data['heading_title'] = $product_info['meta_h1'];
@@ -335,6 +336,7 @@ class ControllerProductShinyForm extends Controller {
             $data['model_s']	 = $product_info['upc'];
             $data['sostojan']	 = $product_info['location'];
             $data['season']	 = $product_info['sku'];
+            $data['quantity'] = $product_info['quantity'];
 
             if ($product_info['quantity'] <= 0) {
                 $data['stock'] = $product_info['stock_status'];
@@ -365,8 +367,8 @@ class ControllerProductShinyForm extends Controller {
 
             foreach ($results as $result) {
                 $data['images'][] = array(
-                    'popup' => $this->model_tool_image->resize($result['image'], $this->config->get($this->config->get('config_theme') . '_image_popup_width'), $this->config->get($this->config->get('config_theme') . '_image_popup_height'), 'product_popup')/*,
-					'thumb' => $this->model_tool_image->resize($result['image'], $this->config->get($this->config->get('config_theme') . '_image_additional_width'), $this->config->get($this->config->get('config_theme') . '_image_additional_height'))*/
+                    'popup' => $this->model_tool_image->resize($result['image'], $this->config->get($this->config->get('config_theme') . '_image_popup_width'), $this->config->get($this->config->get('config_theme') . '_image_popup_height'), 'product_popup'),
+                    'thumb' => $this->model_tool_image->resize($result['image'], $this->config->get($this->config->get('config_theme') . '_image_thumb_width'), $this->config->get($this->config->get('config_theme') . '_image_thumb_height'))
                 );
             }
 
@@ -379,11 +381,28 @@ class ControllerProductShinyForm extends Controller {
             $data['catprod'] = array();
             $data['catprod2'] = array();
 
-            $category_info2 = $this->model_catalog_category->getCategory($category_info['parent_id']);
-            if ($category_info2) {
-                $data['catprod2'][] = array(
-                    'name'     => $category_info2['name']
-                );
+            $this->load->model('catalog/product');
+            $product_category = $this->model_catalog_product->getCategories($product_info['product_id']);
+
+            $category_info_for_product = null;
+
+            foreach ($product_category as $prodcat) {
+                $category_info_for_product = $this->model_catalog_category->getCategory($prodcat['category_id']);
+                if ($category_info_for_product) {
+                    $data['catprod'][] = array(
+                        'name'      => $category_info_for_product['name'],
+                        'parent_id' => $category_info_for_product['parent_id']
+                    );
+                }
+            }
+
+            if (!empty($category_info_for_product['parent_id'])) {
+                $category_info2 = $this->model_catalog_category->getCategory($category_info_for_product['parent_id']);
+                if ($category_info2) {
+                    $data['catprod2'][] = array(
+                        'name'     => $category_info2['name']
+                    );
+                }
             }
 
 
@@ -469,8 +488,12 @@ class ControllerProductShinyForm extends Controller {
             //$data['recurrings'] = $this->model_catalog_product->getProfiles($this->request->get['product_id']);
 
             $data['breadcrumbs'][] = array(
-                'text' => $product_info['manufacturer']. " к ".$category_info2['name']." ".$category_info['name']." ,".$product_info['length']."г.",
-                'href' => $this->url->link('product/product', $url . '&product_id=' . $this->request->get['product_id'])
+                'text' => 'Шины',
+                'href' => $this->url->link('product/shiny_list', '')
+            );
+            $data['breadcrumbs'][] = array(
+                'text' => $product_info['ean'] . ' ' . $product_info['upc'] . ' ' . $product_info['jan'] . '/' . $product_info['isbn'] . ' ' . $product_info['mpn'] . ', ' . $product_info['quantity'] . ' шт., ' . $product_info['sku'] . ', ' . $product_info['location'],
+                'href' => $this->url->link('product/shiny_form', 'product_id=' . (int)$this->request->get['product_id'])
             );
 
             $data['column_left'] = $this->load->controller('common/column_left');
