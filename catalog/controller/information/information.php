@@ -46,6 +46,8 @@ class ControllerInformationInformation extends Controller {
 
 			$data['description'] = html_entity_decode($information_info['description'], ENT_QUOTES, 'UTF-8');
 
+			$data['information_id'] = $information_id;
+
 			$data['continue'] = $this->url->link('common/home');
 
 			$data['column_left'] = $this->load->controller('common/column_left');
