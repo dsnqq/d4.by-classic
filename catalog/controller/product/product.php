@@ -17,7 +17,6 @@ class ControllerProductProduct extends Controller {
         $this->document->addStyle('/catalog/view/theme/d4/css/magiczoom.css');
 
         $this->document->addStyle('/catalog/view/theme/d4/css/slick.css');
-        $this->document->addStyle('/catalog/view/theme/d4/css/slick-theme.css');
         $this->document->addScript('/catalog/view/theme/d4/js/slick.min.js');
         $this->document->addStyle('/catalog/view/theme/d4/css/modern-product.css');
 
@@ -230,11 +229,7 @@ class ControllerProductProduct extends Controller {
             $this->document->setKeywords($product_info['meta_keyword']);
             $this->document->addLink($this->url->link('product/product', 'product_id=' . $this->request->get['product_id']), 'canonical');
 
-            if ($product_info['meta_h1']) {
-                $data['heading_title'] = $product_info['meta_h1'];
-            } else {
-                $data['heading_title'] = $product_info['name'];
-            }
+            /* heading_title задаётся ниже, после catprod/catprod2 — как в common/product.tpl */
 
             $data['text_select'] = $this->language->get('text_select');
             $data['text_manufacturer'] = $this->language->get('text_manufacturer');
@@ -342,6 +337,8 @@ class ControllerProductProduct extends Controller {
 
             $product_category = $this->model_catalog_product->getCategories($product_info['product_id']);
 
+            $category_info = null;
+
             foreach ($product_category as $prodcat) {
                 $category_info = $this->model_catalog_category->getCategory($prodcat['category_id']);
                 if ($category_info) {
@@ -352,13 +349,35 @@ class ControllerProductProduct extends Controller {
                 }
             }
 
-            $category_info2 = $this->model_catalog_category->getCategory($category_info['parent_id']);
-            if ($category_info2) {
-                $data['catprod2'][] = array(
-                    'name'     => $category_info2['name']
-                );
+            if (!empty($category_info['parent_id'])) {
+                $category_info2 = $this->model_catalog_category->getCategory($category_info['parent_id']);
+                if ($category_info2) {
+                    $data['catprod2'][] = array(
+                        'name'     => $category_info2['name']
+                    );
+                }
             }
 
+            $pt_manufacturer = trim((string)$product_info['manufacturer']);
+            $pt_parent = !empty($data['catprod2'][0]['name']) ? trim($data['catprod2'][0]['name']) : '';
+            $pt_child = !empty($data['catprod'][0]['name']) ? trim($data['catprod'][0]['name']) : '';
+            $pt_year = (isset($product_info['length']) && $product_info['length'] !== '' && $product_info['length'] !== null)
+                ? trim((string)$product_info['length']) : '';
+            $pt_mid = trim($pt_parent . ' ' . $pt_child);
+
+            if ($pt_manufacturer !== '' && $pt_mid !== '') {
+                $data['heading_title'] = $pt_manufacturer . ' к ' . $pt_mid;
+            } elseif ($pt_manufacturer !== '') {
+                $data['heading_title'] = $pt_manufacturer;
+            } elseif ($pt_mid !== '') {
+                $data['heading_title'] = $pt_mid;
+            } else {
+                $data['heading_title'] = $product_info['name'];
+            }
+
+            if ($pt_year !== '') {
+                $data['heading_title'] .= ', ' . $pt_year . 'г.';
+            }
 
             $data['datetime1'] = date_create($product_info['date_added']);
 
@@ -533,7 +552,7 @@ class ControllerProductProduct extends Controller {
             $data['recurrings'] = $this->model_catalog_product->getProfiles($this->request->get['product_id']);
 
             $data['breadcrumbs'][] = array(
-                'text' => $product_info['manufacturer']. " к ".$category_info2['name']." ".$category_info['name']." ,".$product_info['length']."г.",
+                'text' => $data['heading_title'],
                 'href' => $this->url->link('product/product', $url . '&product_id=' . $this->request->get['product_id'])
             );
 
