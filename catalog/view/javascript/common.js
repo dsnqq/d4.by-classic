@@ -129,7 +129,7 @@ $(document).ready(function() {
 	});
 
 
-	if(window.location.pathname !== "/cars/"){
+	if(window.location.pathname !== "/cars/" && window.location.pathname !== "/shiny/"){
 		if (localStorage.getItem('display') == 'list') {
 			$('#list-view').trigger('click');
 			$('#list-view').addClass('active');

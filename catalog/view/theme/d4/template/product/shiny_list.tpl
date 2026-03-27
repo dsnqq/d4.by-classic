@@ -1,13 +1,17 @@
 <?php echo $header; ?>
+<?php
+$cl_text_shiny = isset($column_left) ? trim(preg_replace('/\s+/u', ' ', strip_tags(str_replace("\xc2\xa0", ' ', html_entity_decode($column_left, ENT_QUOTES, 'UTF-8'))))) : '';
+$shiny_no_left = ($cl_text_shiny === '');
+$shiny_col = $shiny_no_left ? '4' : '3';
+?>
 <div class="container">
     <ul class="breadcrumb">
         <li><a href="/">Главная</a></li>
         <li style="font-size: 14px;line-height: 20px;color: #8D9293;text-decoration: none;">Шины</li>
     </ul>
-
     <div id="content">
         <div class="container">
-            <div class="wrapper">
+            <div class="wrapper<?php echo $shiny_no_left ? ' wrapper--shiny-full' : ''; ?>">
                 <div class="left_wrapper"><?php echo $column_left; ?></div>
                 <div class="right_wrapper"><?php echo $content_top; ?>
                     <h1 class="title_h1">Шины</h1>
@@ -54,7 +58,7 @@
                                         <rect x="5.99988" y="12" width="12" height="3" fill="#2C3D51"/>
                                     </svg>
                                 </button>
-                                <button type="button" id="list-view" class="btn btn-default" data-toggle="tooltip">
+                                <button type="button" id="list-view" class="btn btn-default active" data-toggle="tooltip">
                                     <svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
                                         <rect width="3" height="3" fill="#2C3D51"/>
                                         <rect x="5.99988" width="3" height="3" fill="#2C3D51"/>
@@ -71,7 +75,7 @@
                         </div>
                     </div>
                     <br />
-                    <div class="row row_s">
+                    <div class="row shiny-list-grid">
                         <?php foreach ($products as $product) { ?>
                         <div class="product-layout product-list col-xs-12" style="cursor:pointer;" onclick="location.href='<?php echo $product['href']; ?>';">
                             <div class="product_this">
@@ -92,34 +96,7 @@
                                     </div>
                                     <div class="product_this__flex">
                                         <div class="product_this__info">
-                                            <!-- <?php //if($product['location'] != ""){ ?>
-                                            <div class="product_this_info__item"><span></span> <span>Состояние: <?php echo $product['location']; ?></span></div>
-                                            <?php //} ?>
-                                            <?php //if($product['year'] != ""){ ?>
-                                            <div class="product_this_info__item"><span></span> <span>Год: <?php echo $product['year']; ?></span></div>
-                                            <?php //} ?>
-                                            <?php //if($product['objem'] != ""){ ?>
-                                            <div class="product_this_info__item"><span></span> <span>Параметры: <?php echo $product['objem']; ?> л., <?php echo $product['type_fuel']; ?>, <?php echo $product['injection']; ?></span></div>
-                                            <?php //} ?> -->
                                             <div class="product_this_info__item"><span>Артикул:</span> <span><?php echo $product['model']; ?></span></div>
-                                            <!-- <?php// if($product['sku'] != ""){ ?>
-                                            <div class="product_this_info__item"><span>Сезон:</span> <span><?php echo $product['sku']; ?></span></div>
-                                            <?php //} ?>
-                                            <?php //if($product['ean'] != ""){ ?>
-                                            <div class="product_this_info__item"><span>Марка:</span> <span><?php echo $product['ean']; ?></span></div>
-                                            <?php //} ?>
-                                            <?php //if($product['upc'] != ""){ ?>
-                                            <div class="product_this_info__item"><span>Модель:</span> <span><?php echo $product['upc']; ?></span></div>
-                                            <?php //} ?> -->
-
-
-
-
-                                            <?php /*
-                        <div class="product_this_info__item"><span>Запчасть:</span> <span><?php echo $product['manufacturer']; ?></span></div>
-                                        <div class="product_this_info__item"><span>Марка:</span> <span><?php echo $product['auto_name'][0]['name']; ?></span></div>
-                                        <div class="product_this_info__item"><span>Модель:</span> <span><?php echo $product['auto'][0]['name']; ?></span></div>
-                                        <div class="product_this_info__item"><span>Год:</span> <span><?php echo $product['year']; ?></span></div>*/ ?>
                                         </div>
                                     </div>
                                     <div class="product_this__grid">
@@ -130,10 +107,6 @@
 	  <?php }else{ ?>
             <div class="product_this_price__main"><?php echo $product['price']; ?></div>
 	  <?php } ?>
-            <!----<div class="this_price__flex">
-              <div class="this_price_flex_item">~<?php echo $product['price_2']; ?></div>
-              <div class="this_price_flex_item">~<?php echo $product['price_3']; ?></div>
-            </div>--->
           </div>
           <a href="<?php echo $product['href']; ?>" class="product_this__btn">Добавить в корзину</a>
         </div>

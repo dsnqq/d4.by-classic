@@ -225,6 +225,44 @@ html, body{
 .wrapper--cars-full .row_s.view{
     grid-template-columns: repeat(4, minmax(0, 1fr));
 }
+/* shiny list grid */
+.shiny-list-grid{
+    display:grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap:20px;
+}
+.shiny-list-grid .product_this__title{
+    flex-grow:1;
+}
+.shiny-list-grid .product_this{
+    height:100%;
+    width:100%;
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
+    align-items:stretch;
+    gap:10px;
+}
+.shiny-list-grid .product_this__right{
+    height:100%;
+    width:100%;
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
+    align-items:stretch;
+    gap:10px;
+}
+.wrapper--shiny-full .left_wrapper{
+    display:none;
+}
+.wrapper--shiny-full .right_wrapper{
+    width:100%;
+    max-width:1290px;
+    margin-left:0;
+}
+.wrapper--shiny-full .shiny-list-grid{
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+}
 .breadcrumb{
     display: flex;
     list-style: none;
