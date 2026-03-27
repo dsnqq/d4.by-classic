@@ -155,14 +155,63 @@
                         </th>
                         <?php break;
 									case 'manufacturer': ?>
-                        <th class="<?php echo $column_info[$col]['align']; ?>" style="position:relative;">
+                        <?php
+							$mf_disk = isset($filters['manufacturer']) ? (int)$filters['manufacturer'] : 0;
+							$show_disk_filters_mf = ($mf_disk === 257 || $mf_disk === 262);
+							if (!$show_disk_filters_mf && $mf_disk && isset($manufacturers)) {
+								foreach ($manufacturers as $_m) {
+									if ((int)$_m['manufacturer_id'] === $mf_disk) {
+										$_mn = mb_strtolower($_m['name']);
+										if (mb_strpos($_mn, 'литой') !== false || mb_strpos($_mn, 'штамп') !== false) {
+											$show_disk_filters_mf = true;
+										}
+										break;
+									}
+								}
+							}
+						?>
+                        <th class="<?php echo $column_info[$col]['align']; ?>" style="position:relative;min-width:160px;">
                             <span class="select2-selection__clear"><span>Очистить </span>×</span>
-                            <select name="filter_<?php echo $col; ?>" class="same_pick form-control input-sm search_init fltr <?php echo $col; ?>" data-column="<?php echo $col; ?>" data-live-search="true">
+                            <select name="filter_<?php echo $col; ?>" id="filter-manufacturer-select" class="same_pick form-control input-sm search_init fltr <?php echo $col; ?>" data-column="<?php echo $col; ?>" data-live-search="true">
                                 <option value=""<?php echo (!is_null($filters[$col]) && $filters[$col] == '*') ? ' selected' : ''; ?>><?php echo $text_none; ?></option>
                                 <?php foreach ($manufacturers as $m) { ?>
                                 <option value="<?php echo $m['manufacturer_id']; ?>"<?php echo (!is_null($filters[$col]) && $m['manufacturer_id'] == $filters[$col]) ? ' selected' : ''; ?>><?php echo $m['name']; ?></option>
                                 <?php } ?>
                             </select>
+                            <div id="disk-filter-extras" class="disk-filter-extras" style="margin-top:6px;<?php echo $show_disk_filters_mf ? '' : 'display:none;'; ?>">
+                                <div style="font-size:10px;color:#6b7280;margin-bottom:4px;">Параметры диска</div>
+                                <select name="filter_disk_r" class="form-control input-sm fltr disk-fltr" title="R">
+                                    <option value="">R</option>
+                                    <?php foreach ($location_array as $location_array_item) { ?>
+                                    <option value="<?php echo htmlspecialchars($location_array_item); ?>"<?php echo ($filter_disk_r === $location_array_item) ? ' selected' : ''; ?>><?php echo htmlspecialchars($location_array_item); ?></option>
+                                    <?php } ?>
+                                </select>
+                                <select name="filter_disk_j" class="form-control input-sm fltr disk-fltr" style="margin-top:3px;" title="J">
+                                    <option value="">J</option>
+                                    <?php foreach ($width_array as $width_array_item) { ?>
+                                    <option value="<?php echo htmlspecialchars($width_array_item); ?>"<?php echo ($filter_disk_j === $width_array_item) ? ' selected' : ''; ?>><?php echo htmlspecialchars($width_array_item); ?></option>
+                                    <?php } ?>
+                                </select>
+                                <select name="filter_disk_holes" class="form-control input-sm fltr disk-fltr" style="margin-top:3px;" title="Отв.">
+                                    <option value="">Отв.</option>
+                                    <?php foreach ($height_array as $height_array_item) { ?>
+                                    <option value="<?php echo htmlspecialchars($height_array_item); ?>"<?php echo ($filter_disk_holes === $height_array_item) ? ' selected' : ''; ?>><?php echo htmlspecialchars($height_array_item); ?></option>
+                                    <?php } ?>
+                                </select>
+                                <select name="filter_disk_pcd" class="form-control input-sm fltr disk-fltr" style="margin-top:3px;" title="PCD">
+                                    <option value="">PCD</option>
+                                    <?php foreach ($weight_array as $weight_array_item) { ?>
+                                    <option value="<?php echo htmlspecialchars($weight_array_item); ?>"<?php echo ($filter_disk_pcd === $weight_array_item) ? ' selected' : ''; ?>><?php echo htmlspecialchars($weight_array_item); ?></option>
+                                    <?php } ?>
+                                </select>
+                                <input type="text" name="filter_disk_et" class="form-control input-sm fltr disk-fltr" style="margin-top:3px;" placeholder="ET" value="<?php echo htmlspecialchars($filter_disk_et); ?>" title="Вылет ET">
+                                <select name="filter_disk_dia" class="form-control input-sm fltr disk-fltr" style="margin-top:3px;" title="DIA">
+                                    <option value="">DIA</option>
+                                    <?php foreach ($diadiametr_array as $diadiametr_array_item) { ?>
+                                    <option value="<?php echo htmlspecialchars($diadiametr_array_item); ?>"<?php echo ($filter_disk_dia === $diadiametr_array_item) ? ' selected' : ''; ?>><?php echo htmlspecialchars($diadiametr_array_item); ?></option>
+                                    <?php } ?>
+                                </select>
+                            </div>
                         </th>
                         <?php break;
 									case 'category': ?>
@@ -287,7 +336,9 @@
                         </th>
                         <?php
 									break;
-									case 'name':
+									case 'name': ?>
+                        <th class="<?php echo $column_info[$col]['align']; ?>"><input type="text" name="filter_<?php echo $col; ?>" class="form-control input-sm search_init fltr <?php echo $col; ?> typeahead" placeholder="<?php echo $text_autocomplete; ?>" value="<?php echo !is_null($filters[$col]) ? $filters[$col] : ''; ?>" data-column="<?php echo $col; ?>"></th>
+                        <?php break;
 									case 'sku':
 									case 'upc':
 									case 'ean':
@@ -778,6 +829,22 @@
 <script src="/admin/view/javascript/product_list_add.js" type="text/javascript"></script>
 <link href="/admin/view/stylesheet/product_list_add.css" rel="stylesheet" type="text/css" />
 
+<script type="text/javascript">
+$(function () {
+    function aqeToggleDiskFiltersByManufacturer() {
+        var $m = $('#filter-manufacturer-select');
+        if (!$m.length) return;
+        var v = String($m.val() || '');
+        var txt = ($m.find('option:selected').text() || '').toLowerCase();
+        var show = (v === '257' || v === '262') || (txt.indexOf('литой') !== -1) || (txt.indexOf('штамп') !== -1);
+        $('#disk-filter-extras').toggle(!!show);
+    }
+    $(document).on('changed.bs.select', '#filter-manufacturer-select', aqeToggleDiskFiltersByManufacturer);
+    $('#filter-manufacturer-select').on('change', aqeToggleDiskFiltersByManufacturer);
+    aqeToggleDiskFiltersByManufacturer();
+});
+</script>
+
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         // Находим все элементы с классом viewsDataAndTime
@@ -852,7 +919,7 @@
     <?php } else if ($val['filter']['type'] == 1) { ?>
         var filter_<?php echo $column; ?>=$('select[name=\'filter_<?php echo $column; ?>\']').val();
         <?php if (in_array($column, array('manufacturer', 'category', 'tax_class', 'store', 'filter', 'download'))) { ?>if(filter_<?php echo $column; ?>){<?php } else { ?>if(filter_<?php echo $column; ?>&&filter_<?php echo $column; ?>!='*'){<?php } ?>url+='&filter_<?php echo $column; ?>='+encodeURIComponent(filter_<?php echo $column; ?>)<?php echo ($column == "category") ? "+'&filter_sub_category=" . ((isset($filters['sub_category'])) ? $filters['sub_category'] : '0') . "'" : ""; ?>;}
-            <?php } } } ?>location=url;}
+            <?php } } } ?>var _dfr=$('select[name=\'filter_disk_r\']').val();if(_dfr){url+='&filter_disk_r='+encodeURIComponent(_dfr);}var _dfj=$('select[name=\'filter_disk_j\']').val();if(_dfj){url+='&filter_disk_j='+encodeURIComponent(_dfj);}var _dfh=$('select[name=\'filter_disk_holes\']').val();if(_dfh){url+='&filter_disk_holes='+encodeURIComponent(_dfh);}var _dfp=$('select[name=\'filter_disk_pcd\']').val();if(_dfp){url+='&filter_disk_pcd='+encodeURIComponent(_dfp);}var _dfe=$('input[name=\'filter_disk_et\']').val();if(_dfe){url+='&filter_disk_et='+encodeURIComponent(_dfe);}var _dfd=$('select[name=\'filter_disk_dia\']').val();if(_dfd){url+='&filter_disk_dia='+encodeURIComponent(_dfd);}location=url;}
     <?php foreach($column_info as $column => $val) { if ($val['filter']['autocomplete']) {?>
             $('input[name=\'filter_<?php echo $column; ?>\']').autocomplete({source:function(request,response){$.ajax({url:'index.php?route=catalog/product/autocomplete&token=<?php echo $token; ?>&filter_<?php echo $column; ?>='+encodeURIComponent(request),dataType:'json',success:function(json){var dupes={},unique=[];$.each($.map(json,function(item){return {
     <?php foreach($val['filter']['autocomplete']['return'] as $k => $v) { ?><?php echo $k; ?>: item['<?php echo $v; ?>'],<?php } ?>}}),function(i,el){idx=el.value!==undefined?el.value:el;if(idx&&!dupes[idx]){dupes[idx]=true,unique.push(el)}}),response(unique)}});

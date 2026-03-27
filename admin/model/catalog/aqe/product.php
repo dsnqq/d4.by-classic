@@ -200,6 +200,37 @@ class ModelCatalogAqeProduct extends Model {
 			}
 		}
 
+		// Доп. фильтры по параметрам диска (литой/штамп — manufacturer_id 257, 262), те же поля что в карточке товара
+		$disk_filter_keys = array('filter_disk_r', 'filter_disk_j', 'filter_disk_holes', 'filter_disk_pcd', 'filter_disk_et', 'filter_disk_dia');
+		$disk_filters_on = false;
+		foreach ($disk_filter_keys as $fk) {
+			if (!empty($data[$fk])) {
+				$disk_filters_on = true;
+				break;
+			}
+		}
+		if ($disk_filters_on) {
+			$where[] = "(p.manufacturer_id IN ('257','262') OR EXISTS (SELECT 1 FROM " . DB_PREFIX . "manufacturer mm WHERE mm.manufacturer_id = p.manufacturer_id AND (LOWER(mm.name) LIKE '%литой%' OR LOWER(mm.name) LIKE '%штамп%')))";
+			if (!empty($data['filter_disk_r'])) {
+				$where[] = "p.location = '" . $this->db->escape($data['filter_disk_r']) . "'";
+			}
+			if (!empty($data['filter_disk_j'])) {
+				$where[] = "ROUND(p.width, 4) = ROUND('" . $this->db->escape($data['filter_disk_j']) . "', 4)";
+			}
+			if (!empty($data['filter_disk_holes'])) {
+				$where[] = "ROUND(p.height, 4) = ROUND('" . $this->db->escape($data['filter_disk_holes']) . "', 4)";
+			}
+			if (!empty($data['filter_disk_pcd'])) {
+				$where[] = "ROUND(p.weight, 4) = ROUND('" . $this->db->escape($data['filter_disk_pcd']) . "', 4)";
+			}
+			if (!empty($data['filter_disk_et'])) {
+				$where[] = "p.etvylet LIKE '%" . $this->db->escape($data['filter_disk_et']) . "%'";
+			}
+			if (!empty($data['filter_disk_dia'])) {
+				$where[] = "p.diadiametr = '" . $this->db->escape($data['filter_disk_dia']) . "'";
+			}
+		}
+
 		if (isset($data['filter_image']) && !is_null($data['filter_image'])) {
 			if ($data['filter_image'] == 1) {
 				$where[] = "(p.image IS NOT NULL AND p.image <> '' AND p.image <> 'no_image.png')";

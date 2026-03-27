@@ -1,5 +1,8 @@
 <?php
 class ControllerCatalogAqeProduct extends Controller {
+	/** Производители «Диск литой» / «Диск штампованный» — см. admin/view/template/catalog/product_form.tpl */
+	protected static $disk_manufacturer_ids = array(257, 262);
+
 	protected $error = array();
 	protected $alert = array(
 		'error'     => array(),
@@ -67,6 +70,8 @@ class ControllerCatalogAqeProduct extends Controller {
 				$url .= '&page=' . $this->request->get['page'];
 			}
 
+			$url .= $this->diskFilterQueryString();
+
 			$this->response->redirect($this->url->link('catalog/product', 'token=' . $this->session->data['token'] . $url, true));
 		}
 
@@ -110,6 +115,8 @@ class ControllerCatalogAqeProduct extends Controller {
 			if (isset($this->request->get['page'])) {
 				$url .= '&page=' . $this->request->get['page'];
 			}
+
+			$url .= $this->diskFilterQueryString();
 
 			$this->response->redirect($this->url->link('catalog/product', 'token=' . $this->session->data['token'] . $url, true));
 		}
@@ -277,6 +284,8 @@ class ControllerCatalogAqeProduct extends Controller {
 			$url .= '&filter_special_price=' . urlencode(html_entity_decode($this->request->get['filter_special_price'], ENT_QUOTES, 'UTF-8'));
 		}
 
+		$url .= $this->diskFilterQueryString();
+
 		if (isset($this->request->get['sort'])) {
 			$url .= '&sort=' . $this->request->get['sort'];
 		}
@@ -425,6 +434,12 @@ class ControllerCatalogAqeProduct extends Controller {
 
 		foreach ($filters as $filter => $value) {
 			$filter_data['filter_' . $filter] = $value;
+		}
+
+		foreach (array('filter_disk_r', 'filter_disk_j', 'filter_disk_holes', 'filter_disk_pcd', 'filter_disk_et', 'filter_disk_dia') as $disk_param) {
+			if (isset($this->request->get[$disk_param]) && $this->request->get[$disk_param] !== '') {
+				$filter_data[$disk_param] = $this->request->get[$disk_param];
+			}
 		}
 
 		$this->load->model('tool/image');
@@ -771,6 +786,7 @@ class ControllerCatalogAqeProduct extends Controller {
 						if (isset($this->request->get['filter_status'])) {
 							$url .= '&filter_status=' . $this->request->get['filter_status'];
 						}
+						$url .= $this->diskFilterQueryString();
 						$row['url_deleted'] = $url;
 						$row[$column] = $_buttons;
 					} else if ($column == 'selector') {
@@ -790,6 +806,35 @@ class ControllerCatalogAqeProduct extends Controller {
 						}
 					} else {
 						$row[$column] = $result[$column];
+						if ($column == 'name' && in_array((int)$result['manufacturer_id'], self::$disk_manufacturer_ids, true)) {
+							$spec_parts = array();
+							if ($result['location'] !== '' && $result['location'] !== null) {
+								$spec_parts[] = 'R ' . $result['location'];
+							}
+							if (isset($result['width']) && $result['width'] !== '' && (float)$result['width'] != 0) {
+								$spec_parts[] = 'J ' . $result['width'];
+							}
+							if (isset($result['height']) && $result['height'] !== '' && (float)$result['height'] != 0) {
+								$h = (float)$result['height'];
+								$spec_parts[] = 'отв. ' . ((floor($h) == $h) ? (string)(int)$h : (string)$h);
+							}
+							if (isset($result['weight']) && $result['weight'] !== '' && (float)$result['weight'] != 0) {
+								$spec_parts[] = 'PCD ' . $result['weight'];
+							}
+							if (!empty($result['etvylet'])) {
+								$spec_parts[] = 'ET ' . $result['etvylet'];
+							}
+							if (!empty($result['diadiametr'])) {
+								$spec_parts[] = 'DIA ' . $result['diadiametr'];
+							}
+							if ($spec_parts) {
+								$escaped = array();
+								foreach ($spec_parts as $sp) {
+									$escaped[] = htmlspecialchars($sp, ENT_QUOTES, 'UTF-8');
+								}
+								$row[$column] .= '<br><span class="disk-spec-inline" style="font-size:11px;color:#555;line-height:1.35;">' . implode(' · ', $escaped) . '</span>';
+							}
+						}
 						if ($column == 'price' && $special) {
 							$row['special'] = $special;
 							$row[$column] = '<span style="text-decoration:line-through;">' . $result['price'] . '</span><br/><span style="color: #b00;">$' . round($special) . '</span>';
@@ -879,6 +924,11 @@ class ControllerCatalogAqeProduct extends Controller {
 			$data['manufacturer_select'] = addslashes(json_encode(array()));
 		}
 
+		if (!isset($data['manufacturers'])) {
+			$this->load->model('catalog/manufacturer');
+			$data['manufacturers'] = $this->model_catalog_manufacturer->getManufacturers();
+		}
+
 		if (in_array("tax_class", $displayed_columns)) {
 			$this->load->model('localisation/tax_class');
 			$data['tax_classes'] = $this->model_localisation_tax_class->getTaxClasses();
@@ -950,6 +1000,8 @@ class ControllerCatalogAqeProduct extends Controller {
 			$url .= '&filter_sub_category=' . urlencode(html_entity_decode($this->request->get['filter_sub_category'], ENT_QUOTES, 'UTF-8'));
 		}
 
+		$url .= $this->diskFilterQueryString();
+
 		if ($order == 'ASC') {
 			$url .= '&order=DESC';
 		} else {
@@ -979,6 +1031,8 @@ class ControllerCatalogAqeProduct extends Controller {
 		if (isset($this->request->get['filter_special_price'])) {
 			$url .= '&filter_special_price=' . urlencode(html_entity_decode($this->request->get['filter_special_price'], ENT_QUOTES, 'UTF-8'));
 		}
+
+		$url .= $this->diskFilterQueryString();
 
 		if (isset($this->request->get['sort'])) {
 			$url .= '&sort=' . $this->request->get['sort'];
@@ -1023,6 +1077,13 @@ class ControllerCatalogAqeProduct extends Controller {
 
 		$data['filters'] = $filters;
 		$data['alerts'] = $this->alert;
+
+		$data['filter_disk_r'] = isset($this->request->get['filter_disk_r']) ? $this->request->get['filter_disk_r'] : '';
+		$data['filter_disk_j'] = isset($this->request->get['filter_disk_j']) ? $this->request->get['filter_disk_j'] : '';
+		$data['filter_disk_holes'] = isset($this->request->get['filter_disk_holes']) ? $this->request->get['filter_disk_holes'] : '';
+		$data['filter_disk_pcd'] = isset($this->request->get['filter_disk_pcd']) ? $this->request->get['filter_disk_pcd'] : '';
+		$data['filter_disk_et'] = isset($this->request->get['filter_disk_et']) ? $this->request->get['filter_disk_et'] : '';
+		$data['filter_disk_dia'] = isset($this->request->get['filter_disk_dia']) ? $this->request->get['filter_disk_dia'] : '';
 
 		$data['sort'] = $sort;
 		$data['order'] = $order;
@@ -1999,6 +2060,17 @@ class ControllerCatalogAqeProduct extends Controller {
 
 		$this->response->addHeader('Content-Type: application/json');
 		$this->response->setOutput(json_encode($response));
+	}
+
+	protected function diskFilterQueryString() {
+		$keys = array('filter_disk_r', 'filter_disk_j', 'filter_disk_holes', 'filter_disk_pcd', 'filter_disk_et', 'filter_disk_dia');
+		$out = '';
+		foreach ($keys as $k) {
+			if (isset($this->request->get[$k]) && $this->request->get[$k] !== '') {
+				$out .= '&' . $k . '=' . urlencode(html_entity_decode($this->request->get[$k], ENT_QUOTES, 'UTF-8'));
+			}
+		}
+		return $out;
 	}
 
 	protected function validateDelete() {
