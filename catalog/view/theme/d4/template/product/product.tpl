@@ -608,6 +608,16 @@ $(document).ready(function() {
 	});
 });*/
 
+function productGalleryMagicZoomRefresh() {
+	if (typeof MagicZoom === 'undefined' || !MagicZoom.refresh) {
+		return;
+	}
+	try {
+		MagicZoom.refresh();
+	} catch (e) {
+	}
+}
+
 $(document).ready(function() {
 	var $pg = $('.product-modern .product-gallery-slider');
 	if ($pg.length && $pg.children('.product-gallery-slide').length) {
@@ -631,12 +641,14 @@ $(document).ready(function() {
 			nextArrow: '<button type="button" class="product-gallery-arrow product-gallery-next" aria-label="Следующее фото"></button>'
 		});
 		$pg.on('afterChange', function() {
-			if (typeof MagicZoom !== 'undefined' && MagicZoom.refresh) {
-				MagicZoom.refresh();
-			}
+			setTimeout(productGalleryMagicZoomRefresh, 80);
 		});
-		if (typeof MagicZoom !== 'undefined' && MagicZoom.refresh) {
-			MagicZoom.refresh();
+		if (document.readyState === 'complete') {
+			setTimeout(productGalleryMagicZoomRefresh, 100);
+		} else {
+			$(window).on('load', function() {
+				setTimeout(productGalleryMagicZoomRefresh, 100);
+			});
 		}
 	}
 });

@@ -13,10 +13,6 @@
 			<td class="text-right"> <span title="-13.84910" class="label label-danger"><?php echo round($currencies['RUB']['value'], 2); ?></span></td>
 		  </tr>
 		  <tr>
-			<td style="white-space: nowrap; text-overflow:ellipsis; overflow: hidden; max-width:160px;"><img src="//static.currencyrate.today/f/i/flags/eu.png" width="16" height="11" alt="EUR" loading="lazy"> <span>Евро</span></td>
-			<td class="text-right"><span title="0.17060" class="label label-success"><?php echo round($currencies['EUR']['value'], 2); ?></span></td>
-		  </tr>
-		  <tr>
 		</tbody>
 	  </table>
 	  <div class="panel-footer">
