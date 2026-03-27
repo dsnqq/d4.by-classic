@@ -391,13 +391,6 @@
   "review":{"@type":"Review","author":{"@type":"Person", "name": "D4.by"}}
 }
  </script>
-<script>
-    $('.carousel_image_thumb').slick({
-        infinite: true,
-        slidesToShow: 5,
-        slidesToScroll: 1
-    });
-</script>
 
 <script type="text/javascript"><!--
     $('select[name=\'recurring_id\'], input[name="quantity"]').change(function(){
