@@ -7,10 +7,14 @@
  * Для остальных страниц выводит $description из БД как обычно.
  *
  * Маппинг information_id → slug:
+ *   4  → about_us   (/about_us)
+ *   6  → delivery   (/delivery)
  *   7  → kontakty   (/kontakty)
  *   10 → garantyja  (/garantyja)
  */
 $page_map = [
+    4  => 'about_us',
+    6  => 'delivery',
     7  => 'kontakty',
     8  => 'otvety-na-voprosy',
     10 => 'garantyja',
