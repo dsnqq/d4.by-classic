@@ -110,9 +110,37 @@
     border-radius: 10px;
 }
 
+/* Миниатюры: без Slick — все фото в несколько рядов; превью обрезается ровно */
+.wrapper_product_page.product-modern .carousel_image_thumb {
+    display: flex;
+    flex-wrap: wrap;
+    align-content: flex-start;
+    margin-top: 16px;
+    max-width: 100%;
+}
+
+.wrapper_product_page.product-modern .carousel_image_thumb .wrap_thumb_img {
+    float: none;
+    flex: 0 0 auto;
+    /* явные поля: раньше margin:0 снимало зазоры; gap у flex иногда не виден из-за внешних стилей */
+    margin: 6px;
+}
+
+.wrapper_product_page.product-modern .carousel_image_thumb .wrap_thumb_img a {
+    display: block;
+}
+
+.wrapper_product_page.product-modern .carousel_image_thumb .slick-slide img,
+.wrapper_product_page.product-modern .carousel_image_thumb .wrap_thumb_img img,
 .wrapper_product_page.product-modern .carousel_image_thumb .wrap_thumb_img_pars {
+    width: 129px;
+    height: 90px;
+    object-fit: cover;
+    object-position: center;
+    display: block;
     border-radius: 8px;
     border: 1px solid #e5ebef;
+    box-sizing: border-box;
 }
 
 .wrapper_product_page.product-modern .product_info_y ul {
