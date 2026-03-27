@@ -217,4 +217,9 @@ $(document).ready(function() { //
 
 			});
 		</script>
+
+<button type="button" id="scroll-to-top" class="scroll-to-top" aria-label="Наверх страницы" title="Наверх">
+	<span class="scroll-to-top__icon" aria-hidden="true">↑</span>
+</button>
+
 </body></html>

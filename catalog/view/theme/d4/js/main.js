@@ -59,3 +59,23 @@ $(document).ready(function(){
     });*/
     $("#list-view").trigger( "click" );
 });
+
+$(function() {
+    var $btn = $('#scroll-to-top');
+    if (!$btn.length) {
+        return;
+    }
+    var threshold = 280;
+    function updateScrollTopBtn() {
+        if ($(window).scrollTop() > threshold) {
+            $btn.addClass('is-visible');
+        } else {
+            $btn.removeClass('is-visible');
+        }
+    }
+    $(window).on('scroll', updateScrollTopBtn);
+    updateScrollTopBtn();
+    $btn.on('click', function() {
+        $('html, body').stop().animate({ scrollTop: 0 }, 480);
+    });
+});

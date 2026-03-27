@@ -63,6 +63,7 @@
     <script src="/catalog/view/theme/d4/js/main.js" type="text/javascript"></script>
     <script src="catalog/view/javascript/common.js" type="text/javascript"></script>
     <link href="/catalog/view/theme/d4/css/style.css" rel="stylesheet" type="text/css">
+    <link href="/catalog/view/theme/d4/css/scroll-to-top.css" rel="stylesheet" type="text/css">
 
     <?php foreach ($styles as $style) { ?>
     <link href="<?php echo $style['href']; ?>" type="text/css" rel="<?php echo $style['rel']; ?>" media="<?php echo $style['media']; ?>" />
