@@ -1978,9 +1978,6 @@ li[data-id="ean"],li[data-id="upc"],li[data-id="jan"],li[data-id="isbn"],li[data
     .pagination li:nth-child(3), .pagination li:nth-child(7) {
         display: none;
     }
-    .grid_template_auto{
-        grid-template-columns: 1fr;
-    }
     .adishional_icons {
         grid-template-columns: 1fr;
     }
