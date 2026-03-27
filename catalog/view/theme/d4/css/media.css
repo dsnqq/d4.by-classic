@@ -135,6 +135,9 @@
         grid-template-columns: 1fr !important;
         grid-gap: 20px;
     }
+    .wrapper--cars-full .row_s.view {
+        grid-template-columns: 1fr !important;
+    }
     .title_d{
         font-size: 23px;
         line-height: 25px;

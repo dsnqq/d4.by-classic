@@ -1,4 +1,9 @@
 <?php echo $header; ?>
+<?php
+$cl_text = isset($column_left) ? trim(preg_replace('/\s+/u', ' ', strip_tags(str_replace("\xc2\xa0", ' ', html_entity_decode($column_left, ENT_QUOTES, 'UTF-8'))))) : '';
+$cars_no_left = ($cl_text === '');
+$product_col = $cars_no_left ? '3' : '4';
+?>
 <div class="container">
     <ul class="breadcrumb">
         <li><a href="/">Главная</a></li>
@@ -9,7 +14,7 @@
 
     <div id="content">
         <div class="container">
-            <div class="wrapper">
+            <div class="wrapper<?php echo $cars_no_left ? ' wrapper--cars-full' : ''; ?>">
                 <div class="left_wrapper"><?php echo $column_left; ?></div>
                 <div class="right_wrapper"><?php echo $content_top; ?>
                     <h1 class="title_h1">
@@ -78,7 +83,7 @@
                     <br />
                     <div class="row row_s view">
                         <?php foreach ($products as $product) { ?>
-                        <div class="product-layout product-list col-lg-4 col-md-4 col-sm-6 col-xs-12" style="cursor:pointer;" onclick="location.href='<?php echo $product['href']; ?>';">
+                        <div class="product-layout product-list col-lg-<?php echo $product_col; ?> col-md-<?php echo $product_col; ?> col-sm-6 col-xs-12" style="cursor:pointer;" onclick="location.href='<?php echo $product['href']; ?>';">
                             <div class="product_this">
                                 <div class="product_this__left">
                                     <a href="<?php echo $product['href']; ?>">

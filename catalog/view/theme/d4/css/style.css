@@ -214,6 +214,17 @@ html, body{
 .right_wrapper{
     width:960px;
 }
+.wrapper--cars-full .left_wrapper{
+    display:none;
+}
+.wrapper--cars-full .right_wrapper{
+    width:100%;
+    max-width:1290px;
+    margin-left:0;
+}
+.wrapper--cars-full .row_s.view{
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+}
 .breadcrumb{
     display: flex;
     list-style: none;
