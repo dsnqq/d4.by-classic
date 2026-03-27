@@ -20,7 +20,7 @@
 		<?php } ?>
     <?php } ?>
   </ul>
-  <div class="wrapper_product_page" id="product">
+  <div class="wrapper_product_page product-modern" id="product">
       <div class="left_product_page">
         <h1 class="left_product_page_t"><?php echo $manufacturer; ?> к <?php echo $catprod2[0]['name']; ?> <?php echo $catprod[0]['name']; ?>, <?php echo $year; ?>г.</h1>
         <div class="product_info_page_g">
@@ -116,12 +116,6 @@
 		  <?php } else{ ?>
                   	<div class="price_product_add1">Цена: <?php echo $price; ?></div>
 		  <?php } ?>
-                  <!----<div class="price_product_add_flex">
-                    <div class="price_product_add2">~<?php echo $price_2; ?></div>
-                    <div class="price_product_add2">~<?php echo $price_3; ?></div>
-                  </div>--->
-                  <?php /*<div class="btn_add_carte">Купить</div>*/ ?>
-				  
 				  <div class="form-group">
 					<input type="text" name="quantity" value="<?php echo $minimum; ?>" size="2" id="input-quantity" class="form-control" style="display:none;"/>
 					<input type="hidden" name="product_id" value="<?php echo $product_id; ?>" />
@@ -641,35 +635,4 @@ $(document).ready(function() {
 })
 //--></script>
 </div>
-<style>
-	.btn.btn-danger{
-		background-color: #E74C3C;
-		color: #FFFFFF;
-		display: block;
-		width: 100%;
-		text-align: center;
-		text-decoration: none;
-		border-radius: 3px;
-		padding: 10px 0;
-	}
-	.button-messangers {
-		width: 30%;
-		background: #94280d;
-		color: white;
-		padding: 4px;
-		display: block;
-		float: left;
-		border: 1px solid white;
-		text-align: center;
-		text-decoration: none;
-	}
-	.mobiles{display:none;}
-	@media screen and (max-width: 1024px) {
-		.desktoper{display:none;}
-		.mobiles{display:inline-block;}
-		.user-detail-action{
-			margin-top: 30px;
-		}
-	}
-</style>
 <?php echo $footer; ?>

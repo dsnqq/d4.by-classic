@@ -15,5 +15,34 @@ class ModelExtensionModuleProductsInCategory extends Model {
 
 		return ($query->num_rows ? $query->row['keyword'] : 0);
 	}
+
+	/**
+	 * Одним запросом: category_id => name, parent_id (для блока «похожие» без N+1).
+	 *
+	 * @param array $category_ids
+	 * @return array<int, array{name:string,parent_id:int}>
+	 */
+	public function getCategoriesInfoByIds(array $category_ids) {
+		$category_ids = array_values(array_unique(array_filter(array_map('intval', $category_ids))));
+		if (!$category_ids) {
+			return array();
+		}
+
+		$query = $this->db->query(
+			"SELECT c.category_id, c.parent_id, cd.name FROM " . DB_PREFIX . "category c
+			LEFT JOIN " . DB_PREFIX . "category_description cd ON (c.category_id = cd.category_id AND cd.language_id = '" . (int)$this->config->get('config_language_id') . "')
+			WHERE c.category_id IN (" . implode(',', $category_ids) . ")"
+		);
+
+		$map = array();
+		foreach ($query->rows as $row) {
+			$map[(int)$row['category_id']] = array(
+				'name'      => isset($row['name']) ? $row['name'] : '',
+				'parent_id' => (int)$row['parent_id'],
+			);
+		}
+
+		return $map;
+	}
 }
 ?>

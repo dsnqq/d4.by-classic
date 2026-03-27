@@ -19,6 +19,7 @@ class ControllerProductProduct extends Controller {
         $this->document->addStyle('/catalog/view/theme/d4/css/slick.css');
         $this->document->addStyle('/catalog/view/theme/d4/css/slick-theme.css');
         $this->document->addScript('/catalog/view/theme/d4/js/slick.min.js');
+        $this->document->addStyle('/catalog/view/theme/d4/css/modern-product.css');
 
 
         $this->load->model('catalog/category');

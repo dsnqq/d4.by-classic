@@ -1,0 +1,260 @@
+/* ===== Modern product card styles ===== */
+
+/* --- base (was inline in product.tpl) --- */
+.btn.btn-danger {
+    background-color: #E74C3C;
+    color: #fff;
+    display: block;
+    width: 100%;
+    text-align: center;
+    text-decoration: none;
+    border-radius: 3px;
+    padding: 10px 0;
+}
+.button-messangers {
+    width: 30%;
+    background: #94280d;
+    color: #fff;
+    padding: 4px;
+    display: block;
+    float: left;
+    border: 1px solid #fff;
+    text-align: center;
+    text-decoration: none;
+}
+.mobiles { display: none; }
+@media screen and (max-width: 1024px) {
+    .desktoper { display: none; }
+    .mobiles { display: inline-block; }
+    .user-detail-action { margin-top: 30px; }
+}
+
+.wrapper_product_page.product-modern {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 320px;
+    gap: 24px;
+    align-items: start;
+}
+
+.wrapper_product_page.product-modern .left_product_page,
+.wrapper_product_page.product-modern .right_product_page {
+    width: 100%;
+    min-width: 0;
+}
+
+/* Правая колонка: без float от .col-sm-3, иначе узкий грид + колонка Bootstrap дают съезжание блоков */
+.wrapper_product_page.product-modern .right_product_page {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+}
+
+.wrapper_product_page.product-modern .right_product_page #column-right {
+    float: none !important;
+    width: 100% !important;
+    max-width: 100%;
+    padding-left: 0;
+    padding-right: 0;
+    margin-left: 0;
+}
+
+.wrapper_product_page.product-modern .left_product_page_t {
+    margin: 0 0 16px;
+    font-family: HelveticaNeueCyrBlack;
+    font-size: 28px;
+    line-height: 1.25;
+    color: #2C3D51;
+    text-transform: none;
+}
+
+.wrapper_product_page.product-modern .product_info_page_g {
+    background: #fff;
+    border-radius: 14px;
+    box-shadow: 0 2px 16px rgba(44, 61, 81, 0.10);
+    padding: 20px;
+    gap: 20px;
+}
+
+.wrapper_product_page.product-modern .thamb_images_product {
+    max-width: 100%;
+}
+
+.wrapper_product_page.product-modern .wrap_thumbnails img {
+    border-radius: 10px;
+}
+
+.wrapper_product_page.product-modern .carousel_image_thumb .wrap_thumb_img_pars {
+    border-radius: 8px;
+    border: 1px solid #e5ebef;
+}
+
+.wrapper_product_page.product-modern .product_info_y ul {
+    background: #f8fafc;
+    border-radius: 10px;
+    padding: 12px 14px;
+}
+
+.wrapper_product_page.product-modern .product_info_y ul li {
+    border-bottom: 1px solid #e8edf2;
+    padding: 7px 0;
+}
+
+.wrapper_product_page.product-modern .product_info_y ul li:last-child {
+    border-bottom: 0;
+}
+
+.wrapper_product_page.product-modern .product_info_y ul li span:first-child {
+    color: #7d8791;
+}
+
+.wrapper_product_page.product-modern .product_info_y ul li span:last-child {
+    color: #2C3D51;
+    font-family: HelveticaNeueCyrBold;
+}
+
+.wrapper_product_page.product-modern .price_product_add {
+    margin-top: 14px;
+    background: #fff;
+    border: 1px solid #e6ecf1;
+    border-radius: 10px;
+    padding: 14px;
+}
+
+.wrapper_product_page.product-modern .price_product_add1 {
+    font-size: 26px;
+    line-height: 1.2;
+    color: #2C3D51;
+    font-family: HelveticaNeueCyrBlack;
+}
+
+.wrapper_product_page.product-modern .btn_add_carte {
+    border-radius: 8px;
+    border: 0;
+    background: #fbb005;
+    color: #2C3D51;
+    font-family: HelveticaNeueCyrBold;
+    font-size: 15px;
+    padding: 12px 16px;
+    transition: background .2s;
+}
+
+.wrapper_product_page.product-modern .btn_add_carte:hover {
+    background: #e0a000;
+}
+
+.wrapper_product_page.product-modern .product_this_desc {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(44,61,81,0.08);
+    padding: 18px 20px;
+}
+
+.wrapper_product_page.product-modern .product_share {
+    background: #fff;
+    border-radius: 10px;
+    border: 1px solid #e6ecf1;
+    padding: 14px 16px;
+}
+
+.wrapper_product_page.product-modern .user-detail-action,
+.wrapper_product_page.product-modern .right_product_page .block_white,
+.wrapper_product_page.product-modern .right_product_page #column-right .block_white {
+    width: 100%;
+    box-sizing: border-box;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(44,61,81,0.08);
+    padding: 14px;
+    margin-bottom: 16px;
+    max-width: 100%;
+}
+
+.wrapper_product_page.product-modern .right_product_page .block_white_t {
+    margin-bottom: 10px;
+    color: #2C3D51;
+}
+
+.wrapper_product_page.product-modern .user-detail-action .ytrewqq {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+.wrapper_product_page.product-modern .btn.btn-danger.btn-phone {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    margin-left: 0;
+    margin-right: 0;
+    text-align: center;
+    background: #2C3D51;
+    border: 0;
+    border-radius: 8px;
+    padding: 11px 10px;
+    font-family: HelveticaNeueCyrBold;
+}
+
+.wrapper_product_page.product-modern .btn.btn-danger.btn-phone:hover {
+    background: #1f2d3e;
+}
+
+/* Мессенджеры: WhatsApp/Telegram — одна ссылка; Viber — две (mobiles / desktoper), видимость только через media */
+.wrapper_product_page.product-modern .button-messangers {
+    float: none;
+    width: auto;
+    border-radius: 14px;
+    background: #edf3f7;
+    border: 1px solid #d9e3ea;
+    color: #2C3D51;
+    padding: 4px 10px;
+    margin: 4px 2px 0;
+    font-size: 12px;
+    display: inline-block;
+}
+
+.wrapper_product_page.product-modern .button-messangers.mobiles {
+    display: none;
+}
+
+@media screen and (max-width: 1024px) {
+    .wrapper_product_page.product-modern .button-messangers.desktoper {
+        display: none;
+    }
+
+    .wrapper_product_page.product-modern .button-messangers.mobiles {
+        display: inline-block;
+    }
+}
+
+.wrapper_product_page.product-modern .button-messangers:hover {
+    background: #e2ebf2;
+    text-decoration: none;
+}
+
+.wrapper_product_page.product-modern .seller-info p {
+    margin: 8px 0 0;
+    color: #2C3D51;
+}
+
+.wrapper_product_page.product-modern .right_product_page .block_white_text {
+    color: #2C3D51;
+    line-height: 1.6;
+}
+
+.wrapper_product_page.product-modern .right_product_page .block_white_text a {
+    color: #1c7ed6;
+    font-family: HelveticaNeueCyrBold;
+}
+
+@media (max-width: 1200px) {
+    .wrapper_product_page.product-modern {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .wrapper_product_page.product-modern .left_product_page_t {
+        font-size: 22px;
+    }
+}
