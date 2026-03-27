@@ -22,16 +22,16 @@
   </ul>
   <div class="wrapper_product_page product-modern" id="product">
       <div class="left_product_page">
-        <h1 class="left_product_page_t"><?php echo $manufacturer; ?> к <?php echo $catprod2[0]['name']; ?> <?php echo $catprod[0]['name']; ?>, <?php echo $year; ?>г.</h1>
+        <h1 class="left_product_page_t"><?php echo $heading_title; ?></h1>
         <div class="product_info_page_g">
           <div class="thamb_images_product">
             <div class="main_img_j"itemscope itemtype="http://schema.org/ImageObject">
             <?php if ($thumb || $images) { ?>
               <div class = "wrap_thumbnails">
                 <?php if ($thumb) { ?>
-                  <a id = "gallery_zoom" href="<?php echo $popup; ?>" class="MagicZoom" data-options="zoomPosition: inner"><img src="<?php echo $thumb; ?>" title="<?php echo $manufacturer; ?> к <?php echo $catprod2[0]['name']; ?> <?php echo $catprod[0]['name']; ?>" alt="<?php echo $manufacturer; ?> к <?php echo $catprod2[0]['name']; ?> <?php echo $catprod[0]['name']; ?>" itemprop="contentUrl" /></a>
+                  <a id = "gallery_zoom" href="<?php echo $popup; ?>" class="MagicZoom" data-options="zoomPosition: inner"><img src="<?php echo $thumb; ?>" title="<?php echo htmlspecialchars($heading_title, ENT_QUOTES, 'UTF-8'); ?>" alt="<?php echo htmlspecialchars($heading_title, ENT_QUOTES, 'UTF-8'); ?>" itemprop="contentUrl" /></a>
                 <?php } else{ ?>
-					<a id = "gallery_zoom" href="<?php echo $popup; ?>" class="MagicZoom" data-options="zoomPosition: inner"><img src="<?php echo $thumb; ?>" title="<?php echo $manufacturer; ?> к <?php echo $catprod2[0]['name']; ?> <?php echo $catprod[0]['name']; ?>" alt="<?php echo $manufacturer; ?> к <?php echo $catprod2[0]['name']; ?> <?php echo $catprod[0]['name']; ?>" itemprop="contentUrl" /></a>
+					<a id = "gallery_zoom" href="<?php echo $popup; ?>" class="MagicZoom" data-options="zoomPosition: inner"><img src="<?php echo $thumb; ?>" title="<?php echo htmlspecialchars($heading_title, ENT_QUOTES, 'UTF-8'); ?>" alt="<?php echo htmlspecialchars($heading_title, ENT_QUOTES, 'UTF-8'); ?>" itemprop="contentUrl" /></a>
 				<?php } ?>
                 </ul>
               </div>
@@ -394,7 +394,7 @@
         "@type": "Brand",
         "name": "D4.by"
       },
-  "name": "<?php echo $manufacturer; ?> к <?php echo $catprod2[0]['name']; ?> <?php echo $catprod[0]['name']; ?>, <?php echo $year; ?>г.",
+  "name": "<?php echo addslashes($heading_title); ?>",
   "image": "<?php echo $thumb; ?>",
   "description": "<?php echo strip_tags($description); ?>",
   "sku":"<?php echo $sku; ?>",
@@ -427,7 +427,7 @@
     document.addEventListener('DOMContentLoaded', function () {
         setTimeout(function () {
             const formData = new FormData();
-            formData.append('name', "<?php echo addslashes($manufacturer); ?> к <?php echo addslashes($catprod2[0]['name']); ?> <?php echo addslashes($catprod[0]['name']); ?>, <?php echo $year; ?>г.");
+            formData.append('name', "<?php echo addslashes($heading_title); ?>");
 
             fetch('index.php?route=product/product/humanView&id=<?php echo (int)$product_id; ?>', {
                 method: 'POST',

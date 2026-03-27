@@ -29,6 +29,19 @@
     .user-detail-action { margin-top: 30px; }
 }
 
+/* Viber: дубль ссылок — правило по #product, чтобы работало при любом кеше шаблона / без .product-modern */
+#product .right_product_page .button-messangers.mobiles {
+    display: none !important;
+}
+@media screen and (max-width: 1024px) {
+    #product .right_product_page .button-messangers.desktoper {
+        display: none !important;
+    }
+    #product .right_product_page .button-messangers.mobiles {
+        display: inline-block !important;
+    }
+}
+
 .wrapper_product_page.product-modern {
     display: grid;
     grid-template-columns: minmax(0, 1fr) 320px;
@@ -68,6 +81,10 @@
 }
 
 .wrapper_product_page.product-modern .product_info_page_g {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    box-sizing: border-box;
     background: #fff;
     border-radius: 14px;
     box-shadow: 0 2px 16px rgba(44, 61, 81, 0.10);
@@ -76,7 +93,17 @@
 }
 
 .wrapper_product_page.product-modern .thamb_images_product {
+    flex: 1 1 260px;
+    min-width: 0;
     max-width: 100%;
+}
+
+.wrapper_product_page.product-modern .product_info_y {
+    flex: 1 1 280px;
+    min-width: 0;
+    max-width: 100%;
+    margin-left: 0;
+    box-sizing: border-box;
 }
 
 .wrapper_product_page.product-modern .wrap_thumbnails img {
@@ -250,6 +277,22 @@
 @media (max-width: 1200px) {
     .wrapper_product_page.product-modern {
         grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 991px) {
+    .wrapper_product_page.product-modern .product_info_page_g {
+        flex-direction: column;
+    }
+
+    .wrapper_product_page.product-modern .product_info_y {
+        width: 100%;
+        margin-top: 8px;
+    }
+
+    .wrapper_product_page.product-modern .thamb_images_product {
+        flex: 1 1 auto;
+        width: 100%;
     }
 }
 
