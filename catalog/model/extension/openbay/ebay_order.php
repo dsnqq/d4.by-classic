@@ -135,7 +135,7 @@ class ModelExtensionOpenBayEbayOrder extends Model{
 	}
 
 	public function updatePaymentDetails($order_id, $order) {
-		$this->db->query("UPDATE `" . DB_PREFIX . "order` SET `payment_method` = '" . $this->db->escape($order->payment->method) . "', `total` = '" . (double)$order->order->total . "', `date_modified` = NOW() WHERE `order_id` = '" . (int)$order_id . "'");
+		$this->db->query("UPDATE `" . DB_PREFIX . "order` SET `payment_method` = '" . $this->db->escape($order->payment->method) . "', `total` = '" . (float)$order->order->total . "', `date_modified` = NOW() WHERE `order_id` = '" . (int)$order_id . "'");
 	}
 
 	public function getHistory($order_id) {

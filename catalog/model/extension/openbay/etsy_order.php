@@ -186,7 +186,7 @@ class ModelExtensionOpenBayEtsyOrder extends Model {
 		   `shipping_method`  		  = '',
 		   `shipping_code`  		  = '',
 		   `comment`                  = '" . $this->db->escape((string)$order->buyer_note) . "',
-		   `total`                    = '" . (double)$order->amount_total . "',
+		   `total`                    = '" . (float)$order->amount_total . "',
 		   `order_status_id`          = '',
 		   `affiliate_id`          	  = '',
 		   `commission`          	  = '',
@@ -282,7 +282,7 @@ class ModelExtensionOpenBayEtsyOrder extends Model {
 		);
 
 		foreach ($totals as $total) {
-			$this->db->query("INSERT INTO `" . DB_PREFIX . "order_total` SET `order_id` = '" . (int)$order_id . "', `code` = '" . $this->db->escape($total['code']) . "', `title` = '" . $this->db->escape($total['title']) . "', `value` = '" . (double)$total['value'] . "', `sort_order` = '" . (int)$total['sort_order'] . "'");
+			$this->db->query("INSERT INTO `" . DB_PREFIX . "order_total` SET `order_id` = '" . (int)$order_id . "', `code` = '" . $this->db->escape($total['code']) . "', `title` = '" . $this->db->escape($total['title']) . "', `value` = '" . (float)$total['value'] . "', `sort_order` = '" . (int)$total['sort_order'] . "'");
 		}
 
 		$this->openbay->etsy->log("Setting order to new order status ID: " . $this->config->get('etsy_order_status_new'));

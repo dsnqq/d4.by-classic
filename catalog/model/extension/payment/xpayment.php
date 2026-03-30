@@ -378,7 +378,7 @@ class ModelExtensionPaymentXpayment extends Model {
 					     }
 					 }
 				    
-			        if((boolean)$postal_found!==$postal_rule){
+			        if((bool)$postal_found!==$postal_rule){
 				        $status = false;
 				        $debugging_message[]='Zip/Postal -'.$address['postcode'];
 				    } 

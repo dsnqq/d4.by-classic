@@ -64,7 +64,7 @@ abstract class AbstractRequestBuilder
      * @throws InvalidPropertyException Выбрасывается если не удалось установить один из параметров, переданныч в
      * массиве настроек
      */
-    public function build(array $options = null)
+    public function build(?array $options = null)
     {
         if (!empty($options)) {
             $this->setOptions($options);

@@ -297,7 +297,7 @@ class RefundsRequestBuilder extends AbstractRequestBuilder
      * @param array|null $options Массив с настройками запроса
      * @return RefundsRequestInterface Инстанс объекта запроса к API для получения списка возвратов магазина
      */
-    public function build(array $options = null)
+    public function build(?array $options = null)
     {
         return parent::build($options);
     }

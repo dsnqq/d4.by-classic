@@ -602,7 +602,7 @@ class BaseModelMobileassistantConnector extends Model
             $data['currency_code'] = $this->config->get('config_currency');
         }
 
-        $orders_total = $this->getOrdersTotal($query_where_parts, $data['currency_code']);
+        $orders_total = $this->getOrdersTotal($data['currency_code'], $query_where_parts);
 
         return array(
             "orders" => $orders,
@@ -631,7 +631,7 @@ class BaseModelMobileassistantConnector extends Model
         return $orders_status;
     }
 
-    public function getOrdersTotal($query_where_parts = array(), $currency_code)
+    public function getOrdersTotal($currency_code, $query_where_parts = array())
     {
 
         $sql = "SELECT SUM(o.total) AS orders_total, COUNT(o.order_id) AS count_ords

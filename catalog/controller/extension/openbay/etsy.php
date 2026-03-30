@@ -47,7 +47,7 @@ class ControllerExtensionOpenbayEtsy extends Controller {
 				$this->model_extension_openbay_etsy_order->inbound($data);
 
 				break;
-			case 'products';
+			case 'products':
 				$this->load->model('extension/openbay/etsy_product');
 
 				$this->model_extension_openbay_etsy_product->inbound($data);
