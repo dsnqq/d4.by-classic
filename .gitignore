@@ -86,3 +86,9 @@
 
 # Дамп БД — не коммитить, хранить локально в .docker/mysql/
 /.docker/mysql/*.sql
+
+# Верификация поисковиков / вебмастеров (файлы на проде, в репозиторий не кладём)
+/BingSiteAuth.xml
+/google26d5d7b0d924c5d9.html
+/wmail_88b61f5aeccc8c5831a4f2bcb04e62d5.html
+/yandex_5a24a9c9d4d98693.html
