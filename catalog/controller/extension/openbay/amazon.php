@@ -67,11 +67,11 @@ class ControllerExtensionOpenbayAmazon extends Controller {
 
 		foreach ($order_xml->Items->Item as $item) {
 
-			$total_price = $this->currency->convert((double)$item->Totals->Price, $order_currency, $currency_to);
-			$tax_total = (double)$item->Totals->Tax;
+			$total_price = $this->currency->convert((float)$item->Totals->Price, $order_currency, $currency_to);
+			$tax_total = (float)$item->Totals->Tax;
 
 			if ($tax_total == 0 && $this->config->get('openbay_amazon_order_tax') > 0) {
-				$tax_total = (double)$item->Totals->Price * ($this->config->get('openbay_amazon_order_tax') / 100) / (1 + $this->config->get('openbay_amazon_order_tax') / 100);
+				$tax_total = (float)$item->Totals->Price * ($this->config->get('openbay_amazon_order_tax') / 100) / (1 + $this->config->get('openbay_amazon_order_tax') / 100);
 			}
 
 			$tax_total = $this->currency->convert($tax_total, $order_currency, $currency_to);
@@ -79,22 +79,22 @@ class ControllerExtensionOpenbayAmazon extends Controller {
 			$products_total += $total_price;
 			$products_tax += $tax_total;
 
-			$products_shipping += $this->currency->convert((double)$item->Totals->Shipping, $order_currency, $currency_to);
+			$products_shipping += $this->currency->convert((float)$item->Totals->Shipping, $order_currency, $currency_to);
 
-			$shipping_tax = (double)$item->Totals->ShippingTax;
+			$shipping_tax = (float)$item->Totals->ShippingTax;
 
 			if ($shipping_tax == 0 && $this->config->get('openbay_amazon_order_tax') > 0) {
-				$shipping_tax = (double)$item->Totals->Shipping * ($this->config->get('openbay_amazon_order_tax') / 100) / (1 + $this->config->get('openbay_amazon_order_tax') / 100);
+				$shipping_tax = (float)$item->Totals->Shipping * ($this->config->get('openbay_amazon_order_tax') / 100) / (1 + $this->config->get('openbay_amazon_order_tax') / 100);
 			}
 
 			$products_shipping_tax += $this->currency->convert($shipping_tax, $order_currency, $currency_to);
 
-			$gift_wrap += $this->currency->convert((double)$item->Totals->GiftWrap, $order_currency, $currency_to);
+			$gift_wrap += $this->currency->convert((float)$item->Totals->GiftWrap, $order_currency, $currency_to);
 
-			$item_gift_wrap_tax = (double)$item->Totals->GiftWrapTax;
+			$item_gift_wrap_tax = (float)$item->Totals->GiftWrapTax;
 
 			if ($item_gift_wrap_tax == 0 && $this->config->get('openbay_amazon_order_tax') > 0) {
-				$item_gift_wrap_tax = (double)$item->Totals->GiftWrap * ($this->config->get('openbay_amazon_order_tax') / 100) / (1 + $this->config->get('openbay_amazon_order_tax') / 100);
+				$item_gift_wrap_tax = (float)$item->Totals->GiftWrap * ($this->config->get('openbay_amazon_order_tax') / 100) / (1 + $this->config->get('openbay_amazon_order_tax') / 100);
 			}
 
 			$gift_wrap_tax += $this->currency->convert($item_gift_wrap_tax, $order_currency, $currency_to);
@@ -128,7 +128,7 @@ class ControllerExtensionOpenbayAmazon extends Controller {
 			$product_mapping[(string)$item->Sku] = (string)$item->OrderItemId;
 		}
 
-		$total = sprintf('%.4f', $this->currency->convert((double)$order_xml->Payment->Amount, $order_currency, $currency_to));
+		$total = sprintf('%.4f', $this->currency->convert((float)$order_xml->Payment->Amount, $order_currency, $currency_to));
 
 		$address_line_2 = (string)$order_xml->Shipping->AddressLine2;
 		if ((string)$order_xml->Shipping->AddressLine3 != '') {

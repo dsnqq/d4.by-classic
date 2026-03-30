@@ -78,7 +78,7 @@ abstract class AbstractPaymentRequestBuilder extends AbstractRequestBuilder
     /**
      * {@inheritDoc}
      */
-    public function build(array $options = null)
+    public function build(?array $options = null)
     {
         return parent::build($options);
     }

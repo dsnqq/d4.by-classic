@@ -179,8 +179,25 @@ class StreamClient implements ApiClientInterface
     private function fileGetContents($url)
     {
         $fp = fopen($url, 'rb', false, $this->stream);
+        if ($fp === false) {
+            return false;
+        }
         $metadata = stream_get_meta_data($fp);
         $response = stream_get_contents($fp);
+        fclose($fp);
+
+        $headers = array();
+        if (function_exists('http_get_last_response_headers')) {
+            $h = http_get_last_response_headers();
+            if (is_array($h)) {
+                $headers = $h;
+            }
+        }
+        if (empty($headers) && isset($metadata['wrapper_data']) && is_array($metadata['wrapper_data'])) {
+            $headers = $metadata['wrapper_data'];
+        }
+        $this->responseHeaders = $headers;
+
         return $response;
     }
 
@@ -190,7 +207,6 @@ class StreamClient implements ApiClientInterface
     private function setData($response)
     {
         $this->responseBody = $response;
-        $this->responseHeaders = $http_response_header ?: array();
     }
 
     /**

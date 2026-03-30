@@ -119,7 +119,7 @@ class PaymentOptionsRequestBuilder extends AbstractRequestBuilder
      * @param array|null $options Массив для устанавливаемых значений
      * @return PaymentOptionsRequestInterface Инстанс объекта запроса
      */
-    public function build(array $options = null)
+    public function build(?array $options = null)
     {
         return parent::build($options);
     }

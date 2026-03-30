@@ -183,7 +183,7 @@ class PaymentsRequestBuilder extends AbstractRequestBuilder
      * @param array|null $options Массив с настройками запроса
      * @return PaymentsRequestInterface Инстанс объекта запроса к API для получения списка плаитежей магазина
      */
-    public function build(array $options = null)
+    public function build(?array $options = null)
     {
         return parent::build($options);
     }

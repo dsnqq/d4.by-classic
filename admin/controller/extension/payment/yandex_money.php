@@ -1643,7 +1643,7 @@ class ControllerExtensionPaymentYandexMoney extends Controller
                 'SSL'
             );
             switch ($this->request->post['action']) {
-                case 'restore';
+                case 'restore':
                     if (!empty($this->request->post['file_name'])) {
                         if ($this->getModel()->restoreBackup($this->request->post['file_name'])) {
                             $this->session->data['flash_message'] = sprintf($this->language->get('updater_restore_backup_message'),

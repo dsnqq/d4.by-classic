@@ -105,7 +105,7 @@ class ModelExtensionOpenBayAmazonProduct extends Model {
 		$sql_values = array();
 
 		foreach ($data as $product) {
-			$sql_values[] = " ('" . $this->db->escape($product['marketplace']) . "', '" . $this->db->escape($product['sku']) . "', " . (int)$product['quantity'] . ", '" . $this->db->escape($product['asin']) . "', " . (double)$product['price'] . ") ";
+			$sql_values[] = " ('" . $this->db->escape($product['marketplace']) . "', '" . $this->db->escape($product['sku']) . "', " . (int)$product['quantity'] . ", '" . $this->db->escape($product['asin']) . "', " . (float)$product['price'] . ") ";
 		}
 
 		$sql .= implode(',', $sql_values);

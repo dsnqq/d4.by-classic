@@ -121,7 +121,7 @@ class BaseClient
      * @param ApiClientInterface|null $apiClient
      * @param ConfigurationLoaderInterface|null $configLoader
      */
-    public function __construct(ApiClientInterface $apiClient = null, ConfigurationLoaderInterface $configLoader = null)
+    public function __construct(?ApiClientInterface $apiClient = null, ?ConfigurationLoaderInterface $configLoader = null)
     {
         if ($apiClient === null) {
             $apiClient = new CurlClient();

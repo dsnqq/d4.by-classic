@@ -640,7 +640,7 @@ class ModelExtensionOpenBayOpenbay extends Model {
 		return $error;
 	}
 
-	private function call($call, array $post = null, array $options = array(), $content_type = 'json') {
+	private function call($call, ?array $post = null, array $options = array(), $content_type = 'json') {
 		if (defined("HTTP_CATALOG")) {
 			$domain = HTTP_CATALOG;
 		} else {
@@ -789,11 +789,11 @@ class ModelExtensionOpenBayOpenbay extends Model {
 		}
 
 		if (!empty($data['filter_price'])) {
-			$sql .= " AND p.price >= '" . (double)$data['filter_price'] . "'";
+			$sql .= " AND p.price >= '" . (float)$data['filter_price'] . "'";
 		}
 
 		if (!empty($data['filter_price_to'])) {
-			$sql .= " AND p.price <= '" . (double)$data['filter_price_to'] . "'";
+			$sql .= " AND p.price <= '" . (float)$data['filter_price_to'] . "'";
 		}
 
 		if (isset($data['filter_quantity']) && !is_null($data['filter_quantity'])) {
@@ -921,11 +921,11 @@ class ModelExtensionOpenBayOpenbay extends Model {
 		}
 
 		if (!empty($data['filter_price'])) {
-			$sql .= " AND p.price >= '" . (double)$data['filter_price'] . "'";
+			$sql .= " AND p.price >= '" . (float)$data['filter_price'] . "'";
 		}
 
 		if (!empty($data['filter_price_to'])) {
-			$sql .= " AND p.price <= '" . (double)$data['filter_price_to'] . "'";
+			$sql .= " AND p.price <= '" . (float)$data['filter_price_to'] . "'";
 		}
 
 		if (isset($data['filter_quantity']) && !is_null($data['filter_quantity'])) {

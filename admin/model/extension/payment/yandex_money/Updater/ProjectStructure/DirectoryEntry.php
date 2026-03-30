@@ -58,7 +58,7 @@ class DirectoryEntry extends AbstractEntry implements DirectoryEntryInterface
      * @param string $relativePath Относительный путь до директории
      * @param DirectoryEntry|null $parentDirectory Родительская директория в которой происходит парсин списка файлов
      */
-    private function walk($directory, $relativePath = '', DirectoryEntry $parentDirectory = null)
+    private function walk($directory, $relativePath = '', ?DirectoryEntry $parentDirectory = null)
     {
         if (!file_exists($directory)) {
             throw new RuntimeException('Directory not exists: ' . $directory);
