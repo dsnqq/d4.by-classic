@@ -1,34 +1,56 @@
 <?php
-    require_once('config.php');
+declare(strict_types=1);
 
-    // Устанавливаем подключение к базе данных с использованием подготовленных выражений
-    $link = mysqli_connect(DB_HOSTNAME, DB_USERNAME, DB_PASSWORD, DB_DATABASE);
-    if (!$link) {
-        die("Ошибка подключения: " . mysqli_connect_error());
-    }
+require_once __DIR__ . '/config.php';
 
-    // Получаем ID категории
-    $category_id = (int)$_POST['category_id'];
+header('Content-Type: text/html; charset=UTF-8');
 
-    // Подготовленный запрос для получения всех названий фильтров для данной категории
-    $query = "
-        SELECT fd.name
-        FROM oc_category_filter cf
-        JOIN oc_filter_description fd ON cf.filter_id = fd.filter_id
-        WHERE cf.category_id = ?
-    ";
-    $stmt = mysqli_prepare($link, $query);
-    mysqli_stmt_bind_param($stmt, 'i', $category_id);
-    mysqli_stmt_execute($stmt);
-    $result = mysqli_stmt_get_result($stmt);
+if (($_SERVER['REQUEST_METHOD'] ?? '') !== 'POST') {
+    http_response_code(405);
+    exit;
+}
 
-    // Выводим результаты
-    while ($filter_name = mysqli_fetch_assoc($result)) {
-        echo "<div class='link_modification'> - " . htmlspecialchars($filter_name['name']) . "</div>";
-    }
+$categoryId = isset($_POST['category_id']) ? (int) $_POST['category_id'] : 0;
+if ($categoryId < 1) {
+    exit;
+}
 
-    // Закрытие соединения
-    mysqli_free_result($result);
-    mysqli_stmt_close($stmt);
+$pfx = DB_PREFIX;
+$port = defined('DB_PORT') ? (int) DB_PORT : 3306;
+
+$link = mysqli_connect(DB_HOSTNAME, DB_USERNAME, DB_PASSWORD, DB_DATABASE, $port);
+if (!$link) {
+    http_response_code(500);
+    exit;
+}
+
+mysqli_set_charset($link, 'utf8mb4');
+
+$sql = "
+    SELECT fd.name
+    FROM `{$pfx}category_filter` cf
+    INNER JOIN `{$pfx}filter_description` fd ON cf.filter_id = fd.filter_id
+    WHERE cf.category_id = ?
+";
+
+$stmt = mysqli_prepare($link, $sql);
+if (!$stmt) {
     mysqli_close($link);
-?>
+    http_response_code(500);
+    exit;
+}
+
+mysqli_stmt_bind_param($stmt, 'i', $categoryId);
+mysqli_stmt_execute($stmt);
+$result = mysqli_stmt_get_result($stmt);
+
+if ($result instanceof mysqli_result) {
+    while ($row = mysqli_fetch_assoc($result)) {
+        $name = htmlspecialchars((string) ($row['name'] ?? ''), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+        echo "<div class='link_modification'> - {$name}</div>\n";
+    }
+    mysqli_free_result($result);
+}
+
+mysqli_stmt_close($stmt);
+mysqli_close($link);
