@@ -1,27 +1,53 @@
 <?php
-// PARAMS
+/**
+ * Загрузка фото для админки (Dropzone). Файлы должны попадать в DIR_IMAGE (см. config.php),
+ * иначе витрина не найдёт их: catalog/model/tool/image.php проверяет is_file(DIR_IMAGE . $filename).
+ * Раньше использовались относительные пути — при CWD не корне сайта файлы не сохранялись в image/.
+ */
 set_time_limit(0);
-$date_now = date("d.m.Y");
-$time = strtotime($date_now);
-$path = 'image/catalog/d4_img';
-$path_time = $path."/".$time."/";
-$mask_name = 'catalog/d4_img/' . $time;
-$output = '';
 
-// FUNCTIONS
-if(!is_dir($path)){
-    mkdir($path, 0777);
-}
-if(!is_dir($path_time)){
-    mkdir($path_time, 0777);
-}
-$folder_name = $path_time;
+header('Content-Type: text/plain; charset=utf-8');
 
-if(!empty($_FILES))
-{
- $temp_file = $_FILES['file']['tmp_name'];
- $location = $folder_name . $_FILES['file']['name'];
- move_uploaded_file($temp_file, $location);
+$base = __DIR__;
+$date_now = date('d.m.Y');
+$time = (int) strtotime($date_now);
+$subdir = 'image/catalog/d4_img/' . $time;
+$dir = $base . '/' . $subdir;
+
+if (!is_dir($dir)) {
+	if (!@mkdir($dir, 0777, true)) {
+		http_response_code(500);
+		echo 'mkdir_failed';
+		exit;
+	}
 }
 
-?>
+if ($_SERVER['REQUEST_METHOD'] !== 'POST' || empty($_FILES['file']) || !isset($_FILES['file']['tmp_name'])) {
+	http_response_code(400);
+	echo 'no_file';
+	exit;
+}
+
+if (!is_uploaded_file($_FILES['file']['tmp_name'])) {
+	http_response_code(400);
+	echo 'invalid_upload';
+	exit;
+}
+
+$name = basename($_FILES['file']['name']);
+if ($name === '' || $name === '.' || $name === '..') {
+	http_response_code(400);
+	echo 'bad_name';
+	exit;
+}
+
+$dest = $dir . '/' . $name;
+if (!move_uploaded_file($_FILES['file']['tmp_name'], $dest)) {
+	http_response_code(500);
+	echo 'move_failed';
+	exit;
+}
+
+@chmod($dest, 0664);
+http_response_code(200);
+echo 'OK';

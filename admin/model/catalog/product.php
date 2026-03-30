@@ -1,5 +1,22 @@
 <?php
 class ModelCatalogProduct extends Model {
+	/**
+	 * Главное фото: из поля image или, если оно пустое, первое непустое из product_image (Dropzone пишет только в галерею).
+	 */
+	private function resolveMainImagePath($data) {
+		if (!empty($data['image']) && trim($data['image']) !== '') {
+			return $data['image'];
+		}
+		if (!empty($data['product_image']) && is_array($data['product_image'])) {
+			foreach ($data['product_image'] as $product_image) {
+				if (!empty($product_image['image']) && trim($product_image['image']) !== '') {
+					return $product_image['image'];
+				}
+			}
+		}
+		return '';
+	}
+
 	public function addProduct($data) {
 		if($data['main_category_id'] <= 0){
 			return false;
@@ -8,8 +25,9 @@ class ModelCatalogProduct extends Model {
 
 		$product_id = $this->db->getLastId();
 
-		if (isset($data['image'])) {
-			$this->db->query("UPDATE " . DB_PREFIX . "product SET image = '" . $this->db->escape($data['image']) . "' WHERE product_id = '" . (int)$product_id . "'");
+		$main_image_path = $this->resolveMainImagePath($data);
+		if ($main_image_path !== '') {
+			$this->db->query("UPDATE " . DB_PREFIX . "product SET image = '" . $this->db->escape($main_image_path) . "' WHERE product_id = '" . (int)$product_id . "'");
 		}
 
 		foreach ($data['product_description'] as $language_id => $value) {
@@ -208,7 +226,8 @@ class ModelCatalogProduct extends Model {
 		$this->db->query("UPDATE " . DB_PREFIX . "product SET model = '" . $this->db->escape($data['model']) . "', sku = '" . $this->db->escape($data['sku']) . "', upc = '" . $this->db->escape($data['upc']) . "', ean = '" . $this->db->escape($data['ean']) . "', jan = '" . $this->db->escape($data['jan']) . "', diadiametr = '" . $this->db->escape($data['diadiametr']) . "', youtube = '" . $this->db->escape($data['youtube']) . "', version = '" . $this->db->escape($data['version']) . "', etvylet = '" . $this->db->escape($data['etvylet']) . "', isbn = '" . $this->db->escape($data['isbn']) . "', mpn = '" . $this->db->escape($data['mpn']) . "', location = '" . $this->db->escape($data['location']) . "', quantity = '" . (int)$data['quantity'] . "', minimum = '" . (int)$data['minimum'] . "', subtract = '" . (int)$data['subtract'] . "', stock_status_id = '" . (int)$data['stock_status_id'] . "', date_available = '" . $this->db->escape($data['date_available']) . "', manufacturer_id = '" . (int)$data['manufacturer_id'] . "', shipping = '" . (int)$data['shipping'] . "', price = '" . (float)$data['price'] . "', points = '" . (int)$data['points'] . "', weight = '" . (float)$data['weight'] . "', weight_class_id = '" . (int)$data['weight_class_id'] . "', length = '" . (float)$data['length'] . "', width = '" . (float)$data['width'] . "', height = '" . (float)$data['height'] . "', length_class_id = '" . (int)$data['length_class_id'] . "', status = '" . (int)$data['status'] . "', tax_class_id = '" . (int)$data['tax_class_id'] . "', sort_order = '" . (int)$data['sort_order'] . "', date_modified = NOW() WHERE product_id = '" . (int)$product_id . "'");
 
 		if (isset($data['image'])) {
-			$this->db->query("UPDATE " . DB_PREFIX . "product SET image = '" . $this->db->escape($data['image']) . "' WHERE product_id = '" . (int)$product_id . "'");
+			$main_image_path = $this->resolveMainImagePath($data);
+			$this->db->query("UPDATE " . DB_PREFIX . "product SET image = '" . $this->db->escape($main_image_path) . "' WHERE product_id = '" . (int)$product_id . "'");
 		}
 
 		$this->db->query("DELETE FROM " . DB_PREFIX . "product_description WHERE product_id = '" . (int)$product_id . "'");

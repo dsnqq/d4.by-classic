@@ -147,7 +147,11 @@ class ControllerCatalogProduct extends Controller {
 				if (isset($this->request->post['go_list_product']) && $this->request->post['go_list_product'] == "1") {
 					$this->response->redirect($this->url->link('catalog/product', 'token=' . $this->session->data['token'] . $url, true));
 				}
-				
+
+				// Очистка формы только после успешного сохранения (см. getForm — нельзя чистить POST при ошибке валидации)
+				$this->request->post['model'] = '';
+				$this->request->post['image'] = '';
+				$this->request->post['product_image'] = array();
 			}
 
 			$this->getForm();
@@ -225,7 +229,10 @@ class ControllerCatalogProduct extends Controller {
 					$this->response->redirect($this->url->link('catalog/product', 'token=' . $this->session->data['token'] . $url, true));
 				}
 				$this->request->post['main_category_id'] = $main_category_id_bek;
-				
+
+				$this->request->post['model'] = '';
+				$this->request->post['image'] = '';
+				$this->request->post['product_image'] = array();
 			}
 			$this->getForm();
 			// конец то что происходит при добавлении более 1 З/Ч
@@ -945,11 +952,8 @@ class ControllerCatalogProduct extends Controller {
 	protected function getForm() {
 		
 	    set_time_limit(0);
-	if($this->request->post['go_list_product'] == "0"){
-		$this->request->post['model'] = '';
-		$this->request->post['image'] = '';
-		$this->request->post['product_image'] = '';
-	}
+		// Не обнулять image/product_image здесь: при go_list_product==0 это срабатывало на каждый getForm() с POST
+		// (в т.ч. после ошибки validateForm), и повторное «Сохранить» уходило без путей к фото — в БД пустой image (см. product_id после смены даты).
 
     //CKEditor
     if ($this->config->get('config_editor_default')) {

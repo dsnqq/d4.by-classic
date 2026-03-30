@@ -1162,7 +1162,7 @@
     <div id="preview">
       <div class="row itemsBlockFlex">
         <?php $photo_num = 0; ?>
-        <?php echo ($image) ? '<input type="hidden" name="image" value="' . $image . '" id="input-image-main" class="input-image-main-dop">' : '<input type="hidden" name="image" value="" id="input-image-main" class="input-image-main-dop">'; ?>
+        <?php /* Главное фото: только #input-image (выше). Второй name="image" давал в PHP пустое значение из-за дублей в длинной форме. */ ?>
 
         <?php foreach ($product_images as $product_photo) { ?>
         <div class="itemsBlock">
@@ -1486,7 +1486,7 @@
               var _main_photo = $(this).parent('.itemsBlock').find('.image_for_main').val();
               $('button').removeClass('activeMain');
               $(this).addClass('activeMain');
-              $('.input-image-main-dop').attr("value",_main_photo);
+              $('#input-image').val(_main_photo);
           });
           $('.modalOpenAddPhotoMe').on('click', function(){
               $("#myModalBox").modal('show');
@@ -1527,16 +1527,24 @@
                           ?>
                       var imgUpload = "";
                       var path = 'image/catalog/d4_img';
-                      var folder_name = path + "/<?=$time?>/";
-                      var mask_name = 'catalog/d4_img/' + "<?=$time?>/";
+                      var folder_name = path + "/<?php echo (int)$time; ?>/";
+                      var mask_name = 'catalog/d4_img/<?php echo (int)$time; ?>/';
                       if($('.itemsBlock').length > 0){
                           var sameFile = $('.itemsBlock').length;
                       } else{
                           var sameFile = 0;
                       }
 
-                      for(var cheker = 0;cheker <= myDropzone.files.length; cheker++){
-                          if(myDropzone.files[cheker]){
+                      if ($('#preview').html().trim() === '' || $('#preview .row').length === 0) {
+                          $('#preview').html('<div class="row itemsBlockFlex"></div>');
+                      }
+                      var mainImageUnset = !$('#input-image').val() || String($('#input-image').val()).trim() === '';
+                      var mainFromDropzoneSet = false;
+
+                      for (var cheker = 0; cheker < myDropzone.files.length; cheker++) {
+                          if (!myDropzone.files[cheker]) {
+                              continue;
+                          }
                               if(sameFile == 0) {classActive = "activeMain";}else{classActive = "";}
                               imgUpload = '<div class="itemsBlock">' +
                                   '<img src="' + myDropzone.files[cheker].dataURL + '" class="img-thumbnail" width="175" height="175" style="height:175px;" />' +
@@ -1545,12 +1553,11 @@
                                   '<button type="button" class="btn btn-link remove_image" id="'+folder_name+myDropzone.files[cheker].upload.filename + '">Удалить</button>' +
                                   '<button type="button" class="btn btn-link main_image '+classActive+'">Главное фото</button>' +
                                   '</div>';
-                              if( $('#preview').html().trim() === '' || $('.input-image-main-dop').val() == "") {
-                                  $('#preview').html('<div class="row itemsBlockFlex"><input type="hidden" name="image" value="'+mask_name+myDropzone.files[cheker].upload.filename+'" id="input-image-main" class="input-image-main-dop">'+imgUpload+'</div>');
-                              } else{
-                                  $('#preview').find('.row').append(imgUpload);
+                              $('#preview .row').append(imgUpload);
+                              if (mainImageUnset && !mainFromDropzoneSet) {
+                                  $('#input-image').val(mask_name + myDropzone.files[cheker].upload.filename);
+                                  mainFromDropzoneSet = true;
                               }
-                          }
                           sameFile++;
                       }
                       this.removeAllFiles();
@@ -1562,7 +1569,7 @@
 
           function list_image() {
               $.ajax({
-                  url: "<?=$site_url_photo?>",
+                  url: <?php echo json_encode($site_url_photo); ?>,
                   success: function(data) {
                       if( $('#preview').html().trim() === '') {
                           $('#preview').html('<div class="row">'+data+'</div>');
