@@ -55,7 +55,7 @@
     }
     //require_once "catalog/model/extension/module/watermark/image.watermark.php";
     require_once "config.php";
-    include('simple_html_dom.php');
+    //include('simple_html_dom.php');
 
     $hostname = DB_HOSTNAME;
     $username = DB_USERNAME;
