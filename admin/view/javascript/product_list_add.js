@@ -104,8 +104,8 @@ $(function() {
             $('#submit-all').on('click', () => myDropzone.processQueue());
 
             this.on("queuecomplete", function() {
-                const folder = "catalog/d4_img/<?=$time?>/";
-                const path = `image/${folder}`;
+                const ts = typeof window.PRODUCT_LIST_D4_IMG_TIME === 'number' ? window.PRODUCT_LIST_D4_IMG_TIME : 0;
+                const folder = 'catalog/d4_img/' + ts + '/';
                 const productId = $('#submit-all').data('productid');
 
                 myDropzone.files.forEach(file => {

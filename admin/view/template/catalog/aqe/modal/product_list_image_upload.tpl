@@ -1,4 +1,9 @@
-<?php $site_url_photo = "https://d4.by/upload.php"; ?>
+<?php
+// Должно совпадать с upload.php: подпапка image/catalog/d4_img/{timestamp}/
+$product_list_d4_img_time = (int)strtotime(date('d.m.Y'));
+$site_url_photo = '/upload.php';
+?>
+<script type="text/javascript">window.PRODUCT_LIST_D4_IMG_TIME = <?php echo (int)$product_list_d4_img_time; ?>;</script>
 <div id="myModalBox" class="modal fade">
     <div class="modal-dialog">
         <div class="modal-content">
