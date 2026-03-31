@@ -10,10 +10,6 @@
 
 <?php echo $column_left; ?>
 <div id="content">
-    <?php
-        $columns = array_values(array_filter((array)$columns, function ($c) { return $c !== 'selector'; }));
-        $colspan_total = count($columns) + (in_array('status', $columns, true) ? 1 : 0);
-    ?>
     <div class="page-header">
         <div class="container-fluid">
             <ul class="breadcrumb bull5i-breadcrumb">
@@ -541,7 +537,7 @@
             <?php } ?>
             <?php } else { ?>
             <tr>
-                <td class="text-center" colspan="<?php echo (int)$colspan_total; ?>"><?php echo $text_no_results; ?></td>
+                <td class="text-center" colspan="<?php echo count($columns) + 1; ?>"><?php echo $text_no_results; ?></td>
             </tr>
             <?php } ?>
             </tbody>
