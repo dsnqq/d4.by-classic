@@ -83,7 +83,7 @@
             </div>
           </div>
           <br />
-          <div class="row row_s">
+          <div class="row row_s view">
             <?php foreach ($products as $product) { ?>
             <div class="product-layout product-list col-xs-12" style="cursor:pointer;" onclick="location.href='<?php echo $product['href']; ?>';">
               <div class="product_this">

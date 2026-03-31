@@ -3785,13 +3785,29 @@ MegaFilter.prototype = {
 			self.init( self._box, self._options );
 		}*/
 			
-		if( typeof jQuery.totalStorage == 'function' && jQuery.totalStorage('display') ) {
-			display_MFP( jQuery.totalStorage('display') );
-		} else if( typeof jQuery.cookie == 'function' && jQuery.cookie('display') ) {
-			display_MFP( jQuery.cookie('display') );
-		} else {
-			display_MFP( 'list' );
-		}
+		(function(){
+			var d = null;
+			if( typeof jQuery.totalStorage == 'function' && jQuery.totalStorage('display') ) {
+				d = jQuery.totalStorage('display');
+			} else if( typeof jQuery.cookie == 'function' && jQuery.cookie('display') ) {
+				d = jQuery.cookie('display');
+			} else {
+				try {
+					if( typeof localStorage === 'object' && localStorage.getItem('display') ) {
+						d = localStorage.getItem('display');
+					}
+				} catch( e ) {}
+			}
+			display_MFP( d || 'list' );
+			/* d4: .row_s.view — сетка в style.css/media.css; footer.tpl вешает view только при load, после Ajax разметка без класса */
+			try {
+				var $box = jQuery('#mfilter-content-container');
+				if( ! $box.length ) {
+					$box = jQuery('#content');
+				}
+				$box.find('.row_s').addClass('view');
+			} catch( e2 ) {}
+		})();
 			
 		for( var i in self ) {
 			if( i.indexOf( '_initAlways' ) === 0 && typeof self[i] == 'function' ) {
@@ -4950,48 +4966,70 @@ jQuery().ready(function(){
 });
 
 function display_MFP(view) {
-	// Product List
-	$('#list-view').click(function() {
-		$('#content .product-grid > .clearfix').remove();
+	var ns = '.mfpDisplayLayout';
 
-		$('#content .row > .product-grid').attr('class', 'product-layout product-list col-xs-12');
+	function mfpProductRoot() {
+		var $c = jQuery('#mfilter-content-container');
+		return $c.length ? $c : jQuery('#content');
+	}
 
+	function rowSAddView( $root ) {
+		$root.find('.row_s').addClass('view');
+	}
+
+	jQuery('#list-view').off('click' + ns).on('click' + ns, function() {
+		var $root = mfpProductRoot();
+		$root.find('.product-grid > .clearfix').remove();
+		$root.find('.row > .product-grid').attr('class', 'product-layout product-list col-xs-12');
+		rowSAddView( $root );
 		if( typeof localStorage === 'object' ) {
 			try {
 				localStorage.setItem('display', 'list');
-			} catch( e ){}
+			} catch( e ) {}
 		}
 	});
 
-	// Product Grid
-	$('#grid-view').click(function() {
-		$('#content .product-layout > .clearfix').remove();
-		
-		// What a shame bootstrap does not take into account dynamically loaded columns
-		var cols = $('#column-right, #column-left').length;
-
-		if (cols == 2) {
-			$('#content .product-list').attr('class', 'product-layout product-grid col-lg-6 col-md-6 col-sm-12 col-xs-12');
-		} else if (cols == 1) {
-			$('#content .product-list').attr('class', 'product-layout product-grid col-lg-4 col-md-4 col-sm-6 col-xs-12');
+	jQuery('#grid-view').off('click' + ns).on('click' + ns, function() {
+		var $root = mfpProductRoot();
+		$root.find('.product-layout > .clearfix').remove();
+		var cols = jQuery('#column-right, #column-left').length;
+		var gridClass;
+		if( cols == 2 ) {
+			gridClass = 'product-layout product-grid col-lg-6 col-md-6 col-sm-12 col-xs-12';
+		} else if( cols == 1 ) {
+			gridClass = 'product-layout product-grid col-lg-4 col-md-4 col-sm-6 col-xs-12';
 		} else {
-			$('#content .product-list').attr('class', 'product-layout product-grid col-lg-3 col-md-3 col-sm-6 col-xs-12');
+			gridClass = 'product-layout product-grid col-lg-3 col-md-3 col-sm-6 col-xs-12';
 		}
-
+		$root.find('.product-list').attr('class', gridClass);
+		rowSAddView( $root );
 		if( typeof localStorage === 'object' ) {
 			try {
 				localStorage.setItem('display', 'grid');
-			} catch( e ){}
+			} catch( e ) {}
 		}
 	});
 
+	var mode = view;
+	if( mode === undefined || mode === null || mode === '' ) {
+		try {
+			if( typeof localStorage === 'object' ) {
+				mode = localStorage.getItem('display');
+			}
+		} catch( e ) {}
+	}
+	if( mode !== 'list' && mode !== 'grid' ) {
+		mode = 'list';
+	}
 	try {
-		if (typeof localStorage === 'object' && localStorage.getItem('display') == 'list') {
-			$('#list-view').trigger('click');
-		} else {
-			$('#grid-view').trigger('click');
+		if( mode === 'list' && jQuery('#list-view').length ) {
+			jQuery('#list-view').trigger('click');
+		} else if( jQuery('#grid-view').length ) {
+			jQuery('#grid-view').trigger('click');
 		}
 	} catch( e ) {
-		$('#grid-view').trigger('click');
+		if( jQuery('#grid-view').length ) {
+			jQuery('#grid-view').trigger('click');
+		}
 	}
 }

@@ -57,7 +57,24 @@ $(document).ready(function(){
             alert('Заполните поле телефон!');
         }
     });*/
-    $("#list-view").trigger( "click" );
+    if (typeof display_MFP === 'function' && $('#list-view').length) {
+        try {
+            var initialDisplay = null;
+            try {
+                initialDisplay = localStorage.getItem('display');
+            } catch (e2) {}
+            display_MFP(initialDisplay || 'list');
+        } catch (e) {
+            display_MFP('list');
+        }
+        try {
+            var $box = $('#mfilter-content-container');
+            if (!$box.length) {
+                $box = $('#content');
+            }
+            $box.find('.row_s').addClass('view');
+        } catch (e3) {}
+    }
 });
 
 $(function() {

@@ -185,12 +185,12 @@ $(document).ready(function() { //
 });
 
       if ($(window).width() <= '991'){
-          $('#content .product-grid > .clearfix').remove();
-
-          $('#content .row > .product-grid').attr('class', 'product-layout product-list col-xs-12');
+          var $listingRoot = $('#mfilter-content-container').length ? $('#mfilter-content-container') : $('#content');
+          $listingRoot.find('.product-grid > .clearfix').remove();
+          $listingRoot.find('.row > .product-grid').attr('class', 'product-layout product-list col-xs-12');
           $('#grid-view').removeClass('active');
           $('#list-view').addClass('active');
-          $('.row_s').addClass('view');
+          $listingRoot.find('.row_s').addClass('view');
 
           localStorage.setItem('display', 'list');
       }
