@@ -91,6 +91,51 @@ $(function() {
             });
     }
 
+    /**
+     * Обновляет превью в ячейке #image-{id} после загрузки (без перезагрузки страницы).
+     * Логика как в ModelCatalogProduct::addImageForProduct: первое фото при пустом main — большое, остальные — миниатюры 50px.
+     */
+    function refreshProductListImageCell(productId, files, folder) {
+        const $td = $('#image-' + productId);
+        if (!$td.length || !files.length) {
+            return;
+        }
+        const baseImage = window.location.origin + '/image/';
+        const $mainImg = $td.children('div').first().find('img.img-thumbnail');
+        const hadNoMain = !$mainImg.length || /no_image/i.test($mainImg.attr('src') || '');
+
+        files.forEach(function(file, index) {
+            if (!file || !file.upload) {
+                return;
+            }
+            const rel = folder + file.upload.filename;
+            const href = baseImage + rel;
+            const src = href + '?_=' + Date.now();
+
+            if (index === 0 && hadNoMain) {
+                const $wrap = $td.children('div').first();
+                let $a = $wrap.find('a').first();
+                let $img = $wrap.find('img.img-thumbnail').first();
+                if ($img.length) {
+                    $img.attr('src', src);
+                    if ($a.length) {
+                        $a.attr('href', href);
+                    }
+                } else {
+                    $wrap.html(
+                        '<a data-lightbox="image' + productId + '" href="' + href + '">' +
+                        '<img src="' + src + '" width="150" class="img-thumbnail" data-id="' + productId + '" /></a>'
+                    );
+                }
+            } else {
+                $td.append(
+                    '<a data-lightbox="image' + productId + '" href="' + href + '">' +
+                    '<img src="' + src + '" width="50" class="img-thumbnail" data-id="' + productId + '" /></a>'
+                );
+            }
+        });
+    }
+
     // Dropzone
     Dropzone.options.dropzoneFrom = {
         autoProcessQueue: false,
@@ -107,17 +152,31 @@ $(function() {
                 const ts = typeof window.PRODUCT_LIST_D4_IMG_TIME === 'number' ? window.PRODUCT_LIST_D4_IMG_TIME : 0;
                 const folder = 'catalog/d4_img/' + ts + '/';
                 const productId = $('#submit-all').data('productid');
+                const files = myDropzone.files.filter(function(f) {
+                    return f && f.upload;
+                });
 
-                myDropzone.files.forEach(file => {
-                    if (!file || !file.upload) return;
-                    $.post(`index.php?route=catalog/product/addImageListPage&token=${token}`, {
+                if (!files.length) {
+                    myDropzone.removeAllFiles();
+                    $('#myModalBox').modal('hide');
+                    return;
+                }
+
+                const requests = files.map(function(file) {
+                    return $.post('index.php?route=catalog/product/addImageListPage&token=' + token, {
                         product_id: productId,
                         image: folder + file.upload.filename
                     });
                 });
 
-                myDropzone.removeAllFiles();
-                $("#myModalBox").modal('hide');
+                $.when.apply($, requests).done(function() {
+                    refreshProductListImageCell(productId, files, folder);
+                    myDropzone.removeAllFiles();
+                    $('#myModalBox').modal('hide');
+                }).fail(function() {
+                    alert('Не удалось сохранить изображения на сервере.');
+                    myDropzone.removeAllFiles();
+                });
             });
         }
     };
