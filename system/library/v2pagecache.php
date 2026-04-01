@@ -49,6 +49,20 @@ class V2PageCache {
         '#/admin#'
     );
 
+    // Cache ONLY these fixed pages.
+    // Matching uses SEO path (/_route_) when present; otherwise URL path.
+    // Query string is ignored.
+    private $cache_only_paths = array(
+        '/',
+        '/delivery',
+        '/garantyja',
+        '/otvety-na-voprosy',
+        '/about_us',
+        '/kontakty',
+        '/cars',
+        '/privacy'
+    );
+
     private $cachefile=null;   // null specifically meaning "not known yet"
     private $cacheable=null;   // null specifically meaning "not known yet"
 
@@ -90,8 +104,45 @@ class V2PageCache {
             'end_flush' => $this->end_flush,
             'cachefolder' => $this->cachefolder,
             'cachebydevice' => $this->cachebydevice,
-            'skip_urls'  => $this->skip_urls
+            'skip_urls'  => $this->skip_urls,
+            'cache_only_paths' => $this->cache_only_paths
         );
+    }
+
+    private function NormalizePath($path) {
+        if (!is_string($path) || $path === '') {
+            return '/';
+        }
+        if ($path[0] !== '/') {
+            $path = '/' . $path;
+        }
+        $path = preg_replace('#/+#', '/', $path);
+        if ($path !== '/') {
+            $path = rtrim($path, '/');
+        }
+        return $path;
+    }
+
+    private function RequestPathForWhitelist() {
+        // If rewrite is used, OpenCart often passes the SEO path in _route_
+        // even when REQUEST_URI is /index.php?... .
+        if (!empty($_GET['_route_'])) {
+            return $this->NormalizePath('/' . ltrim($_GET['_route_'], '/'));
+        }
+
+        $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+        return $this->NormalizePath($path);
+    }
+
+    private function IsWhitelistedRequest() {
+        $path = $this->RequestPathForWhitelist();
+
+        foreach ($this->cache_only_paths as $allowed) {
+            if ($path === $this->NormalizePath($allowed)) {
+                return true;
+            }
+        }
+        return false;
     }
   
     // null error handler to trap specific errors
@@ -269,6 +320,13 @@ class V2PageCache {
                 return $this->cacheable;
             }
         }
+
+        // cache ONLY specific fixed pages
+        if (!$this->IsWhitelistedRequest()) {
+            $this->cacheable=false;
+            return $this->cacheable;
+        }
+
         // got here, so it must be okay to cache
         // note that while the page is "ok to cache"...
         // other problems may cause this page not to be cached. 
