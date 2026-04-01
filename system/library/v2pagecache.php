@@ -49,6 +49,19 @@ class V2PageCache {
         '#/admin#'
     );
 
+    // Cache ONLY these fixed pages (path part of URL, without query string).
+    // Any other URL will be treated as non-cacheable.
+    private $cache_only_paths = array(
+        '/',
+        '/delivery',
+        '/garantyja',
+        '/otvety-na-voprosy',
+        '/about_us',
+        '/kontakty',
+        '/cars',
+        '/privacy'
+    );
+
     private $cachefile=null;   // null specifically meaning "not known yet"
     private $cacheable=null;   // null specifically meaning "not known yet"
 
@@ -90,8 +103,36 @@ class V2PageCache {
             'end_flush' => $this->end_flush,
             'cachefolder' => $this->cachefolder,
             'cachebydevice' => $this->cachebydevice,
-            'skip_urls'  => $this->skip_urls
+            'skip_urls'  => $this->skip_urls,
+            'cache_only_paths' => $this->cache_only_paths
         );
+    }
+
+    private function NormalizePath($path) {
+        if (!is_string($path) || $path === '') {
+            return '/';
+        }
+        if ($path[0] !== '/') {
+            $path = '/' . $path;
+        }
+        $path = preg_replace('#/+#', '/', $path);
+        if ($path !== '/') {
+            $path = rtrim($path, '/');
+        }
+        return $path;
+    }
+
+    private function IsWhitelistedPath($requestUri) {
+        $path = parse_url($requestUri, PHP_URL_PATH);
+        $path = $this->NormalizePath($path);
+
+        foreach ($this->cache_only_paths as $allowed) {
+            $allowed = $this->NormalizePath($allowed);
+            if ($path === $allowed) {
+                return true;
+            }
+        }
+        return false;
     }
   
     // null error handler to trap specific errors
@@ -269,6 +310,13 @@ class V2PageCache {
                 return $this->cacheable;
             }
         }
+
+        // cache ONLY specific fixed pages
+        if (!$this->IsWhitelistedPath($_SERVER['REQUEST_URI'])) {
+            $this->cacheable=false;
+            return $this->cacheable;
+        }
+
         // got here, so it must be okay to cache
         // note that while the page is "ok to cache"...
         // other problems may cause this page not to be cached. 
