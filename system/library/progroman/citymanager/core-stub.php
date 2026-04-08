@@ -49,6 +49,10 @@ abstract class Core {
         static::$drivers[] = $driver;
     }
 
+    public static function validLicense($secret_key) {
+        return false;
+    }
+
     public function defineLocation() {}
     public function setCurrency() {}
     public function setFias($fias_id) { return false; }
