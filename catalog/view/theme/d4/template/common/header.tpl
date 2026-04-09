@@ -59,6 +59,13 @@
     <meta name="twitter:image:src" content="<?php echo $logo; ?>" />
     <?php } ?>
     <script src="/catalog/view/theme/d4/js/jquery.min.js"></script>
+    <?php
+        $is_simplecheckout_route = !empty($_GET['route']) && $_GET['route'] === 'checkout/simplecheckout';
+        $is_simplecheckout_uri = !empty($_SERVER['REQUEST_URI']) && (strpos($_SERVER['REQUEST_URI'], '/simplecheckout') !== false);
+    ?>
+    <?php if ($is_simplecheckout_route || $is_simplecheckout_uri) { ?>
+        <link href="catalog/view/javascript/bootstrap/css/bootstrap.css" rel="stylesheet" media="screen" />
+    <?php } ?>
     <script src="catalog/view/javascript/bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
     <script src="/catalog/view/theme/d4/js/main.js" type="text/javascript"></script>
     <script src="catalog/view/javascript/common.js" type="text/javascript"></script>
