@@ -64,8 +64,7 @@
         $is_simplecheckout_uri = !empty($_SERVER['REQUEST_URI']) && (strpos($_SERVER['REQUEST_URI'], '/simplecheckout') !== false);
     ?>
     <?php if ($is_simplecheckout_route || $is_simplecheckout_uri) { ?>
-        <link href="catalog/view/javascript/bootstrap/css/bootstrap.css" rel="stylesheet" media="screen" />
-        <link href="catalog/view/javascript/font-awesome/css/font-awesome.css" rel="stylesheet" type="text/css" />
+        <link href="/catalog/view/theme/d4/css/simplecheckout.d4.css" rel="stylesheet" type="text/css" />
     <?php } ?>
     <script src="catalog/view/javascript/bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
     <script src="/catalog/view/theme/d4/js/main.js" type="text/javascript"></script>

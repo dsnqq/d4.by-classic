@@ -65,16 +65,16 @@
                         <div class="input-group btn-block" style="max-width: 200px;">
                             <span class="input-group-btn">
                                 <button class="btn btn-primary" data-onclick="decreaseProductQuantity" data-toggle="tooltip" type="submit">
-                                    <i class="fa fa-minus"></i>
+                                    <span aria-hidden="true">−</span>
                                 </button>
                             </span>
                             <input class="form-control" type="text" data-onchange="changeProductQuantity" <?php echo $quantity_step_as_minimum ? 'data-minimum="' . $product['minimum'] . '"' : '' ?> name="quantity[<?php echo !empty($product['cart_id']) ? $product['cart_id'] : $product['key']; ?>]" value="<?php echo $product['quantity']; ?>" size="1" />
                             <span class="input-group-btn">
                                 <button class="btn btn-primary" data-onclick="increaseProductQuantity" data-toggle="tooltip" type="submit">
-                                    <i class="fa fa-plus"></i>
+                                    <span aria-hidden="true">+</span>
                                 </button>
                                 <button class="btn btn-danger" data-onclick="removeProduct" data-product-key="<?php echo !empty($product['cart_id']) ? $product['cart_id'] : $product['key'] ?>" data-toggle="tooltip" type="button">
-                                    <i class="fa fa-times-circle"></i>
+                                    <span aria-hidden="true">×</span>
                                 </button>
                             </span>
                         </div>
@@ -97,7 +97,7 @@
                                 <input class="form-control" type="text" value="1" disabled size="1" />
                                 <span class="input-group-btn">
                                     <button class="btn btn-danger" data-onclick="removeGift" data-gift-key="<?php echo $voucher_info['key']; ?>" type="button">
-                                        <i class="fa fa-times-circle"></i>
+                                        <span aria-hidden="true">×</span>
                                     </button>
                                 </span>
                             </div>
@@ -117,13 +117,13 @@
         <span class="simplecheckout-cart-total-value"><?php echo $total['text']; ?></span>
         <span class="simplecheckout-cart-total-remove">
             <?php if ($total['code'] == 'coupon') { ?>
-                <i data-onclick="removeCoupon" title="<?php echo $button_remove; ?>" class="fa fa-times-circle"></i>
+                <a href="javascript:void(0)" data-onclick="removeCoupon" title="<?php echo $button_remove; ?>">×</a>
             <?php } ?>
             <?php if ($total['code'] == 'voucher') { ?>
-                <i data-onclick="removeVoucher" title="<?php echo $button_remove; ?>" class="fa fa-times-circle"></i>
+                <a href="javascript:void(0)" data-onclick="removeVoucher" title="<?php echo $button_remove; ?>">×</a>
             <?php } ?>
             <?php if ($total['code'] == 'reward') { ?>
-                <i data-onclick="removeReward" title="<?php echo $button_remove; ?>" class="fa fa-times-circle"></i>
+                <a href="javascript:void(0)" data-onclick="removeReward" title="<?php echo $button_remove; ?>">×</a>
             <?php } ?>
         </span>
     </div>

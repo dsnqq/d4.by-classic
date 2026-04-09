@@ -1,0 +1,149 @@
+.simple-content{
+  margin: 0;
+}
+
+/* make simplecheckout look like site cards/sections */
+.simplecheckout {
+  width: 100%;
+  font-family: RobotoRegular, Arial, sans-serif;
+  color: #071225;
+}
+
+/* headings */
+.checkout-heading{
+  font-family: RobotoBold, Arial, sans-serif;
+  font-size: 18px;
+  line-height: 1.2;
+  margin: 0 0 12px 0;
+}
+
+/* block containers */
+.simplecheckout-block{
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0px 5px 20px rgba(44, 61, 81, 0.1);
+  padding: 18px 18px 10px;
+  margin-bottom: 18px;
+}
+
+/* alerts (bootstrap-free) */
+.alert{
+  border-radius: 10px;
+  padding: 12px 14px;
+  margin: 0 0 12px 0;
+  font-size: 14px;
+}
+.alert-danger{
+  background: #fff2f2;
+  border: 1px solid #ffcccc;
+  color: #b30000;
+}
+.text-danger{ color: #b30000; }
+
+/* form fields */
+.form-control{
+  box-sizing: border-box;
+  width: 100%;
+  height: 42px;
+  padding: 0 12px;
+  border: 1px solid rgba(7, 18, 37, 0.18);
+  border-radius: 10px;
+  background: #fff;
+  outline: none;
+  font-size: 14px;
+}
+.form-control:focus{
+  border-color: rgba(7, 18, 37, 0.35);
+}
+
+/* buttons */
+.btn{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 36px;
+  padding: 0 12px;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  user-select: none;
+  font-size: 14px;
+  line-height: 1;
+}
+.btn-primary{
+  background: #071225;
+  border-color: #071225;
+  color: #fff;
+}
+.btn-danger{
+  background: #b30000;
+  border-color: #b30000;
+  color: #fff;
+}
+
+/* quantity control */
+.input-group{
+  display: flex;
+  align-items: stretch;
+  gap: 8px;
+}
+.input-group .form-control{
+  width: 64px;
+  text-align: center;
+  padding: 0;
+}
+.input-group-btn{
+  display: inline-flex;
+  gap: 8px;
+}
+
+/* hide font-awesome icons if templates still contain them */
+.fa{ display:none !important; }
+
+/* cart table */
+.table-responsive{
+  width: 100%;
+  overflow-x: auto;
+}
+table.simplecheckout-cart{
+  width: 100%;
+  border-collapse: collapse;
+}
+table.simplecheckout-cart th,
+table.simplecheckout-cart td{
+  padding: 10px 8px;
+  vertical-align: top;
+  border-bottom: 1px solid rgba(7, 18, 37, 0.08);
+}
+table.simplecheckout-cart thead th{
+  font-family: RobotoBold, Arial, sans-serif;
+  font-size: 13px;
+  color: rgba(7, 18, 37, 0.7);
+}
+table.simplecheckout-cart td.image img{
+  max-width: 80px;
+  height: auto;
+  border-radius: 10px;
+}
+
+/* totals */
+.simplecheckout-cart-total{
+  display:flex;
+  align-items:center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 8px 0;
+}
+.simplecheckout-cart-total b{ font-family: RobotoBold, Arial, sans-serif; }
+
+/* responsive columns used by simple.css */
+.simplecheckout-left-column,
+.simplecheckout-right-column,
+.simplecheckout-three-column{
+  float: none;
+  width: 100%;
+  max-width: none;
+  min-width: 0;
+  margin: 0;
+}
+
