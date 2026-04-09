@@ -22,6 +22,11 @@ body .big-contact p,body .big-contact span,body .big-contact b{
     line-height:26px !important;
 }
 
+/* Disable nested megamenu blocks (information dropdown) */
+.dropdown-menu.megamenu-type-information{
+    display: none !important;
+}
+
 /* product time work */
 .seller-info {
     padding: 5px;
