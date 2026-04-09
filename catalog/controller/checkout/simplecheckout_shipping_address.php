@@ -2,14 +2,12 @@
 /*
 @author	Dmitriy Kubarev
 @link	http://www.simpleopencart.com
-@link	http://www.opencart.com/index.php?route=extension/extension/info&extension_id=4811
 */
 
 include_once(DIR_SYSTEM . 'library/simple/simple_controller.php');
 
 class ControllerCheckoutSimpleCheckoutShippingAddress extends SimpleController {
-    private $_templateData = array();
-
+    
     private function init() {
         $this->loadLibrary('simple/simplecheckout');
 
@@ -25,7 +23,7 @@ class ControllerCheckoutSimpleCheckoutShippingAddress extends SimpleController {
     }
 
     public function index() {
-        if (!$this->cart->hasShipping()) {
+        if (!$this->simplecheckout->hasShipping()) {
             return;
         }
 
@@ -56,7 +54,7 @@ class ControllerCheckoutSimpleCheckoutShippingAddress extends SimpleController {
     }
 
     public function update_session() {
-        if (!$this->cart->hasShipping()) {
+        if (!$this->simplecheckout->hasShipping()) {
             return;
         }
 

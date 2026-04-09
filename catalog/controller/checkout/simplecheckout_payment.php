@@ -2,18 +2,20 @@
 /*
 @author	Dmitriy Kubarev
 @link	http://www.simpleopencart.com
-@link	http://www.opencart.com/index.php?route=extension/extension/info&extension_id=4811
 */
 
 include_once(DIR_SYSTEM . 'library/simple/simple_controller.php');
 
 class ControllerCheckoutSimpleCheckoutPayment extends SimpleController {
-    private $_templateData = array();
-
+    
     public function index() {
         $this->loadLibrary('simple/simplecheckout');
 
         $this->simplecheckout = SimpleCheckout::getInstance($this->registry);
+
+        if ($this->simplecheckout->getSettingValue('ignorePayment')) {
+            return;
+        }
 
         $this->language->load('checkout/simplecheckout');
 
@@ -139,16 +141,6 @@ class ControllerCheckoutSimpleCheckoutPayment extends SimpleController {
 
                 $method = $this->{'model_payment_' . $result['code']}->getMethod($address, $total);
 
-                if ($result['code'] == 'xpayment') {
-                    if ($method && !empty($method['methods'])) {
-                        foreach ($method['methods'] as $single) {
-                            $method_data[$single['code']] = $single;
-                        }
-                    }
-
-                    continue;
-                }
-
                 if ($method) {
                     if (!$cartHasReccuringProducts || ($cartHasReccuringProducts > 0 && (method_exists($this->{'model_payment_' . $result['code']}, 'recurringPayments') || property_exists($this->{'model_payment_' . $result['code']}, 'recurringPayments') || (method_exists($this->{'model_payment_' . $result['code']}, 'isExistForSimple') && $this->{'model_payment_' . $result['code']}->isExistForSimple('recurringPayments'))) && $this->{'model_payment_' . $result['code']}->recurringPayments() == true)) {
                         if (!empty($method['quote']) && is_array($method['quote'])) {
@@ -223,10 +215,6 @@ class ControllerCheckoutSimpleCheckoutPayment extends SimpleController {
 
         $this->_templateData['display_type'] = $this->simplecheckout->getPaymentDisplayType();
 
-        if ($this->_templateData['display_type'] == '2') {
-            $selectFirst = true;
-        }
-
         if (!empty($this->_templateData['payment_methods']) && ($hide || ($selectFirst && $this->_templateData['checked_code'] == ''))) {
             foreach ($this->_templateData['payment_methods'] as $method) {
                 if (empty($method['dummy'])) {
@@ -251,6 +239,8 @@ class ControllerCheckoutSimpleCheckoutPayment extends SimpleController {
             unset($this->session->data['payment_method']);
         }
 
+        $this->checkSessionData();
+
         $this->_templateData['rows'] = $this->simplecheckout->getRows('payment');
 
         if (!$this->simplecheckout->validateFields('payment')) {
@@ -268,6 +258,28 @@ class ControllerCheckoutSimpleCheckoutPayment extends SimpleController {
         $this->_templateData['text_payment_address']         = $this->language->get('text_payment_address');
         $this->_templateData['error_no_payment']             = sprintf($this->language->get('error_no_payment'), $this->url->link('information/contact'));
         
+        $this->_templateData['text_select'] = $this->language->get('text_select');
+
         $this->setOutputContent($this->renderPage('checkout/simplecheckout_payment', $this->_templateData));
+    }
+
+    private function checkSessionData() {
+        if (isset($this->session->data['payment_method'])) {
+            if (isset($this->session->data['payment_method']['image'])) {
+                unset($this->session->data['payment_method']['image']);
+            }
+        }
+
+        if (isset($this->session->data['payment_methods'])) {
+            foreach ($this->session->data['payment_methods'] as $method_code => $method_info) {
+                if (isset($this->session->data['payment_methods'][$method_code]['image'])) {
+                    unset($this->session->data['payment_methods'][$method_code]['image']);
+                }
+
+                if (isset($this->session->data['payment_methods'][$method_code]['image_style'])) {
+                    unset($this->session->data['payment_methods'][$method_code]['image_style']);
+                }
+            }
+        }
     }
 }

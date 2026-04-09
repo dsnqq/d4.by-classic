@@ -6,22 +6,16 @@ include $simple_header;
 ?>
 <style>
     <?php if ($left_column_width) { ?>
-        .simplecheckout-left-column {
-            width: <?php echo $left_column_width ?>%;
-        }
-        @media only screen and (max-width:1024px) {
+        @media only screen and (min-width:1024px) {
             .simplecheckout-left-column {
-                width: 100%;
+                width: <?php echo $left_column_width ?>% !important;
             }
         }
     <?php } ?>
     <?php if ($right_column_width) { ?>
-        .simplecheckout-right-column {
-            width: <?php echo $right_column_width ?>%;
-        }
-        @media only screen and (max-width:1024px) {
+        @media only screen and (min-width:1024px) {
             .simplecheckout-right-column {
-                width: 100%;
+                width: <?php echo $right_column_width ?>%  !important;
             }
         }
     <?php } ?>
@@ -100,7 +94,6 @@ include $simple_header;
                     notificationCheckForm: <?php echo $notification_check_form ? 1 : 0 ?>,
                     notificationCheckFormText: "<?php echo $notification_check_form_text ?>",
                     useAutocomplete: <?php echo $use_autocomplete ? 1 : 0 ?>,
-                    useGoogleApi: <?php echo $use_google_api ? 1 : 0 ?>,
                     useStorage: <?php echo $use_storage ? 1 : 0 ?>,
                     popup: <?php echo ($popup || $as_module) ? 1 : 0 ?>,
                     agreementCheckboxStep: <?php echo $agreement_checkbox_step ? $agreement_checkbox_step : '0' ?>,
@@ -115,6 +108,7 @@ include $simple_header;
                     toastr.options.positionClass = "<?php echo $notification_position ? $notification_position : 'toast-top-right' ?>";
                     toastr.options.timeOut = "<?php echo $notification_timeout ? $notification_timeout : '5000' ?>";
                     toastr.options.progressBar = true;
+                    toastr.options.preventDuplicates = true;
                 }
 
                 jQuery(document).ajaxComplete(function(e, xhr, settings) {
@@ -157,7 +151,7 @@ include $simple_header;
                     <div class="simplecheckout-steps-wrapper">
                 <?php } ?>
 
-                <?php if (!empty($errors) && $display_error) { ?>
+                <?php if (!empty($errors)) { ?>
                     <?php foreach ($errors as $error) { ?>
                         <div class="alert alert-danger simplecheckout-warning-block" data-error="true">
                             <?php echo $error ?>

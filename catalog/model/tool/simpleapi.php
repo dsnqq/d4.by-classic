@@ -196,7 +196,9 @@ class ModelToolSimpleApi extends Model {
         $this->db->query("DELETE FROM `" . DB_PREFIX . "simple_cart` WHERE simple_cart_id = '" . (int)$simple_cart_id . "'");
     }
 
-    public function getAbandonedCarts($after) {
+    public function getAbandonedCarts($after, $gap = 1) {
+        // $gap - интервал в часах, после которого которого корзина считается брошенной
+
         $query = $this->db->query("SHOW TABLES LIKE '" . DB_PREFIX . "simple_cart'");
 
         if (!$query->rows) {
@@ -216,7 +218,7 @@ class ModelToolSimpleApi extends Model {
             WHERE 
                 sc.date_added > FROM_UNIXTIME('.(int)$after.')
             AND
-                sc.date_added < DATE_SUB(NOW(), INTERVAL 1 HOUR)
+                sc.date_added < DATE_SUB(NOW(), INTERVAL ' . (int)$gap . ' HOUR)
             ORDER BY 
                 sc.date_added DESC');
 

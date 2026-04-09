@@ -7,8 +7,7 @@
 include_once(DIR_SYSTEM . 'library/simple/simple_controller.php');
 
 class ControllerModuleSimple extends SimpleController {
-    private $_templateData = array();
-
+    
     public function index($setting) {
         if (empty($setting)) {
             return;
@@ -17,13 +16,16 @@ class ControllerModuleSimple extends SimpleController {
         $opencartVersion = explode('.', VERSION);
         $opencartVersion = floatval($opencartVersion[0].$opencartVersion[1].$opencartVersion[2].'.'.(isset($opencartVersion[3]) ? $opencartVersion[3] : 0));
 
-
         $route = '';
 
         if (!empty($setting['page'])) {
             if ($setting['page'] == 'checkout') {
                 $route = 'checkout/simplecheckout';
             } elseif ($setting['page'] == 'register') {
+                if ($this->customer->isLogged()) {
+                    return;
+                }
+                
                 $route = 'account/simpleregister';
             }
         }

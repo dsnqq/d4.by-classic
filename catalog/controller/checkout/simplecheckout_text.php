@@ -2,14 +2,12 @@
 /*
 @author	Dmitriy Kubarev
 @link	http://www.simpleopencart.com
-@link	http://www.opencart.com/index.php?route=extension/extension/info&extension_id=4811
 */
 
 include_once(DIR_SYSTEM . 'library/simple/simple_controller.php');
 
 class ControllerCheckoutSimpleCheckoutText extends SimpleController {
-    private $_templateData = array();
-
+    
     public function index($block) {
         $this->loadLibrary('simple/simplecheckout');
 

@@ -7,13 +7,8 @@
 include_once(DIR_SYSTEM . 'library/simple/simple_controller.php');
 
 class ControllerCheckoutSimpleCheckout extends SimpleController {
-    private $_templateData = array();
-
+    
     public function index($args = null) {
-
-        
-        $this->document->addStyle('catalog/view/javascript/bootstrap/css/bootstrap.min.css');
-        $this->document->addStyle('catalog/view/javascript/font-awesome/css/font-awesome.min.css');
 
         $this->loadLibrary('simple/simplecheckout');
 
@@ -167,20 +162,24 @@ class ControllerCheckoutSimpleCheckout extends SimpleController {
 
                     $this->_templateData['simple_blocks'][$m] = $this->getChildController('module/'.$m, $defaultSettings);
                 } elseif ($m == 'payment_simple') {
-                    $payment_method = $this->session->data['payment_method'];
-
-                    $additonal_path = '';
-                    
-                    if ($this->simplecheckout->getOpencartVersion() >= 230) {
-                        $additonal_path = 'extension/';
-                    }
-
-                    if (!empty($payment_method['code']) && file_exists(DIR_APPLICATION . 'controller/' . $additonal_path . 'module/' . $payment_method['code'] . '.php')) {
-                        $this->_templateData['simple_blocks'][$m] = $this->getChildController($additonal_path . 'module/'.$payment_method['code']);
-                    } elseif (!empty($payment_method['code']) && file_exists(DIR_APPLICATION . 'controller/' . $additonal_path . 'module/' . $payment_method['code'] . '_simple.php')) {
-                        $this->_templateData['simple_blocks'][$m] = $this->getChildController($additonal_path . 'module/'.$payment_method['code'].'_simple');
-                    } else {
+                    if ($this->simplecheckout->getSettingValue('ignorePayment')) {
                         $this->_templateData['simple_blocks'][$m] = '';
+                    } else {
+                        $payment_method = $this->session->data['payment_method'];
+
+                        $additonal_path = '';
+                        
+                        if ($this->simplecheckout->getOpencartVersion() >= 230) {
+                            $additonal_path = 'extension/';
+                        }
+
+                        if (!empty($payment_method['code']) && file_exists(DIR_APPLICATION . 'controller/' . $additonal_path . 'module/' . $payment_method['code'] . '.php')) {
+                            $this->_templateData['simple_blocks'][$m] = $this->getChildController($additonal_path . 'module/'.$payment_method['code']);
+                        } elseif (!empty($payment_method['code']) && file_exists(DIR_APPLICATION . 'controller/' . $additonal_path . 'module/' . $payment_method['code'] . '_simple.php')) {
+                            $this->_templateData['simple_blocks'][$m] = $this->getChildController($additonal_path . 'module/'.$payment_method['code'].'_simple');
+                        } else {
+                            $this->_templateData['simple_blocks'][$m] = '';
+                        }
                     }
                 }
             }
@@ -225,20 +224,24 @@ class ControllerCheckoutSimpleCheckout extends SimpleController {
                 $stateChanged = $this->saveCustomerInfo();
                 $order_id = $this->order();
 
-                $payment_method = $this->session->data['payment_method'];
+                if ($this->simplecheckout->getSettingValue('ignorePayment')) {
+                    $redirect_url = $this->url->link('checkout/success');
 
-                $requestMethod = $this->request->server['REQUEST_METHOD'];
-                $this->request->server['REQUEST_METHOD'] = 'GET';
+                    $this->_templateData['simple_blocks']['payment_form'] = '<input type="hidden" id="simple_redirect_url" value="' . $redirect_url . '">';
 
-                $paymentCode = explode('.', $payment_method['code']);
+                    $this->confirm();
+                } else {
+                    $payment_method = $this->session->data['payment_method'];
 
-                if(strstr($paymentCode[0],'xpayment')){
-                    $this->_templateData['simple_blocks']['payment_form'] = $this->getChildController('extension/payment/xpayment');
-                }else{
+                    $requestMethod = $this->request->server['REQUEST_METHOD'];
+                    $this->request->server['REQUEST_METHOD'] = 'GET';
+
+                    $paymentCode = explode('.', $payment_method['code']);
+
                     $this->_templateData['simple_blocks']['payment_form'] = $this->getChildController('payment/' . $paymentCode[0]);
-                }
 
-                $this->request->server['REQUEST_METHOD'] = $requestMethod;
+                    $this->request->server['REQUEST_METHOD'] = $requestMethod;
+                }
             }
 
             if ($stateChanged) {
@@ -248,8 +251,8 @@ class ControllerCheckoutSimpleCheckout extends SimpleController {
                 $this->getChildController('checkout/simplecheckout_payment_address/update_session');
                 $this->getChildController('checkout/simplecheckout_shipping_address/update_session');
 
-                $this->_templateData['simple_blocks']['customer']         = $this->getChildController('checkout/simplecheckout_customer');
-                $this->_templateData['simple_blocks']['payment_address']  = $this->getChildController('checkout/simplecheckout_payment_address');
+                $this->_templateData['simple_blocks']['customer'] = $this->getChildController('checkout/simplecheckout_customer');
+                $this->_templateData['simple_blocks']['payment_address'] = $this->getChildController('checkout/simplecheckout_payment_address');
                 $this->_templateData['simple_blocks']['shipping_address'] = $this->getChildController('checkout/simplecheckout_shipping_address');
             }
         }
@@ -281,7 +284,6 @@ class ControllerCheckoutSimpleCheckout extends SimpleController {
         $this->_templateData['left_column_width']                = $this->simplecheckout->getSettingValue('leftColumnWidth');
         $this->_templateData['right_column_width']               = $this->simplecheckout->getSettingValue('rightColumnWidth');
         $this->_templateData['use_autocomplete']                 = $this->simplecheckout->getCommonSetting('useAutocomplete');
-        $this->_templateData['use_google_api']                   = $this->simplecheckout->getCommonSetting('useGoogleApi');
         $this->_templateData['enable_reloading_of_payment_form'] = $this->simplecheckout->getSettingValue('enableAutoReloaingOfPaymentFrom');
         $this->_templateData['menu_type']                        = $this->simplecheckout->getSettingValue('menuType');
         $this->_templateData['language_code']                    = isset($this->session->data['language']) && strlen($this->session->data['language']) > 0 && strlen($this->session->data['language']) < 6 ? $this->session->data['language'] : $this->config->get('config_language'); 
@@ -291,15 +293,19 @@ class ControllerCheckoutSimpleCheckout extends SimpleController {
         $errors = $this->simplecheckout->getErrors();
 
         if (!empty($errors) && is_array($errors)) {
-            foreach ($errors as $error_block) {
-                if (!$this->simplecheckout->hasBlock($error_block)) {
-                    $this->_templateData['errors'][] = $this->language->get('error_'.$error_block);
+            foreach ($errors as $error) {
+                if ($error['block'] == 'agreement') {
+                    continue;
+                }
+                
+                if (!$this->simplecheckout->hasBlock($error['block'])) {
+                    $this->_templateData['errors'][] = $error['text'] ? $error['text'] : $this->language->get('error_' . $error['block']);
                 }
             }
         }
 
-        $this->_templateData['popup']                   = !empty($args['popup']) ? true : (isset($this->request->get['popup']) ? true : false);
-        $this->_templateData['as_module']               = !empty($args['module']) ? true : (isset($this->request->get['module']) ? true : false);
+        $this->_templateData['popup']     = !empty($args['popup']) ? true : (isset($this->request->get['popup']) ? true : false);
+        $this->_templateData['as_module'] = !empty($args['module']) ? true : (isset($this->request->get['module']) ? true : false);
 
         if ($this->_templateData['popup']) {
             $links = $this->simplecheckout->getScriptsAndStyles();
@@ -324,15 +330,15 @@ class ControllerCheckoutSimpleCheckout extends SimpleController {
         $this->_templateData['text_error']              = $this->language->get('text_empty');
         $this->_templateData['button_continue']         = $this->language->get('button_continue');
         $this->_templateData['continue']                = $this->url->link('common/home');
-        $this->_templateData['use_storage']             = !$this->customer->isLogged() && !$this->simplecheckout->getSettingValue('useCookies') && $this->simplecheckout->getSettingValue('useStorage');
-        
-        $this->_templateData['scroll_to_error']            = $this->simplecheckout->getCommonSetting('scrollingChanged') ? $this->simplecheckout->getCommonSetting('scrollToError') : $this->simplecheckout->getSettingValue('scrollToError');
+        $this->_templateData['use_storage']             = false;
 
-        $this->_templateData['notification_default']       = $this->simplecheckout->getCommonSetting('notificationChanged') ? $this->simplecheckout->getCommonSetting('notificationDefault') : true;
-        $this->_templateData['notification_toasts']        = $this->simplecheckout->getCommonSetting('notificationToasts');
-        $this->_templateData['notification_position']      = $this->simplecheckout->getCommonSetting('notificationPosition');
-        $this->_templateData['notification_timeout']       = $this->simplecheckout->getCommonSetting('notificationTimeout');
-        $this->_templateData['notification_check_form']    = $this->simplecheckout->getCommonSetting('notificationCheckForm');
+        $this->_templateData['scroll_to_error']         = $this->simplecheckout->getCommonSetting('scrollingChanged') ? $this->simplecheckout->getCommonSetting('scrollToError') : $this->simplecheckout->getSettingValue('scrollToError');
+
+        $this->_templateData['notification_default']    = $this->simplecheckout->getCommonSetting('notificationChanged') ? $this->simplecheckout->getCommonSetting('notificationDefault') : true;
+        $this->_templateData['notification_toasts']     = $this->simplecheckout->getCommonSetting('notificationToasts');
+        $this->_templateData['notification_position']   = $this->simplecheckout->getCommonSetting('notificationPosition');
+        $this->_templateData['notification_timeout']    = $this->simplecheckout->getCommonSetting('notificationTimeout');
+        $this->_templateData['notification_check_form'] = $this->simplecheckout->getCommonSetting('notificationCheckForm');
 
         $this->_templateData['notification_check_form_text'] = '';
 
@@ -469,8 +475,15 @@ class ControllerCheckoutSimpleCheckout extends SimpleController {
                 'common/header',
             );
 
-            $this->_templateData['simple_header'] = $this->simplecheckout->getLinkToHeaderTpl();
-            $this->_templateData['simple_footer'] = $this->simplecheckout->getLinkToFooterTpl();
+            if ($this->simplecheckout->getOpencartVersion() < 300) {
+                $this->_templateData['simple_header'] = $this->simplecheckout->getLinkToHeaderTpl();
+                $this->_templateData['simple_footer'] = $this->simplecheckout->getLinkToFooterTpl();
+            } else {
+                $this->_templateData['simple_page'] = 'simplecheckout';
+
+                $this->_templateData['simple_header'] = $this->getSimpleHeader($childrens);
+                $this->_templateData['simple_footer'] = $this->getSimpleFooter($childrens);
+            }
         }
 
         $this->setOutputContent(trim($this->renderPage('checkout/simplecheckout', $this->_templateData, $childrens)));
@@ -782,10 +795,12 @@ class ControllerCheckoutSimpleCheckout extends SimpleController {
             if (!$this->simplecheckout->isBlockHidden('customer')) {
                 unset($this->session->data['simple']['customer']['password']);
 
+                $customer_info = $this->session->data['simple']['customer'];
+
                 if ($this->simplecheckout->getOpencartVersion() < 300) {
-                    $this->model_account_customer->editCustomer($this->session->data['simple']['customer']);
+                    $this->model_account_customer->editCustomer($customer_info);
                 } else {
-                    $this->model_account_customer->editCustomer($this->customer->getId(), $this->session->data['simple']['customer']);
+                    $this->model_account_customer->editCustomer($this->customer->getId(), $customer_info);
                 }
                 
                 $this->simplecheckout->saveCustomFields(array('customer'), 'customer', $this->customer->getId());
@@ -796,36 +811,40 @@ class ControllerCheckoutSimpleCheckout extends SimpleController {
             }
 
             if ((!$this->simplecheckout->isBlockHidden('payment_address') || !empty($this->session->data['simple']['payment'])) && !isset($this->request->post['payment_address']['ignore_post'])) {
-                if ($this->session->data['simple']['payment_address']['address_id']) {
-                    $this->model_account_address->editAddress($this->session->data['simple']['payment_address']['address_id'], $this->session->data['simple']['payment_address']);
-                    $this->simplecheckout->saveCustomFields(array('payment_address', 'payment'), 'address', $this->session->data['simple']['payment_address']['address_id']);
+                $payment_address = $this->session->data['simple']['payment_address'];
+
+                if ($payment_address['address_id']) {
+                    $this->model_account_address->editAddress($payment_address['address_id'], $payment_address);
+                    $this->simplecheckout->saveCustomFields(array('payment_address', 'payment'), 'address', $payment_address['address_id']);
                 } else {
                     if ($this->simplecheckout->getOpencartVersion() < 300) {
-                        $this->session->data['simple']['payment_address']['address_id'] = $this->model_account_address->addAddress($this->session->data['simple']['payment_address']);
+                        $payment_address['address_id'] = $this->model_account_address->addAddress($payment_address);
                     } else {
-                        $this->session->data['simple']['payment_address']['address_id'] = $this->model_account_address->addAddress($this->customer->getId(), $this->session->data['simple']['payment_address']);
+                        $payment_address['address_id'] = $this->model_account_address->addAddress($this->customer->getId(), $payment_address);
                     }
 
-                    $this->simplecheckout->replaceAddressIdInPostRequest('payment_address', $this->session->data['simple']['payment_address']['address_id']);
-                    $this->simplecheckout->saveCustomFields(array('payment_address', 'payment'), 'address', $this->session->data['simple']['payment_address']['address_id']);
+                    $this->simplecheckout->replaceAddressIdInPostRequest('payment_address', $payment_address['address_id']);
+                    $this->simplecheckout->saveCustomFields(array('payment_address', 'payment'), 'address', $payment_address['address_id']);
                 }
 
                 $stateChanged = true;
             }
 
             if ((!$this->simplecheckout->isBlockHidden('shipping_address') || !empty($this->session->data['simple']['shipping'])) && !isset($this->request->post['shipping_address']['ignore_post']) && ($this->simplecheckout->isBlockHidden('payment_address') || (!$this->simplecheckout->isBlockHidden('payment_address') && !$this->simplecheckout->isAddressSame()))) {
-                if ($this->session->data['simple']['shipping_address']['address_id']) {
-                    $this->model_account_address->editAddress($this->session->data['simple']['shipping_address']['address_id'], $this->session->data['simple']['shipping_address']);
-                    $this->simplecheckout->saveCustomFields(array('shipping_address', 'shipping'), 'address', $this->session->data['simple']['shipping_address']['address_id']);
+                $shipping_address = $this->session->data['simple']['shipping_address'];
+
+                if ($shipping_address['address_id']) {
+                    $this->model_account_address->editAddress($shipping_address['address_id'], $shipping_address);
+                    $this->simplecheckout->saveCustomFields(array('shipping_address', 'shipping'), 'address', $shipping_address['address_id']);
                 } else {
                     if ($this->simplecheckout->getOpencartVersion() < 300) {
-                        $this->session->data['simple']['shipping_address']['address_id'] = $this->model_account_address->addAddress($this->session->data['simple']['shipping_address']);
+                        $shipping_address['address_id'] = $this->model_account_address->addAddress($shipping_address);
                     } else {
-                        $this->session->data['simple']['shipping_address']['address_id'] = $this->model_account_address->addAddress($this->customer->getId(), $this->session->data['simple']['shipping_address']);
+                        $shipping_address['address_id'] = $this->model_account_address->addAddress($this->customer->getId(), $shipping_address);
                     }
 
-                    $this->simplecheckout->replaceAddressIdInPostRequest('shipping_address', $this->session->data['simple']['shipping_address']['address_id']);
-                    $this->simplecheckout->saveCustomFields(array('shipping_address', 'shipping'), 'address', $this->session->data['simple']['shipping_address']['address_id']);
+                    $this->simplecheckout->replaceAddressIdInPostRequest('shipping_address', $shipping_address['address_id']);
+                    $this->simplecheckout->saveCustomFields(array('shipping_address', 'shipping'), 'address', $shipping_address['address_id']);
                 }
 
                 $stateChanged = true;
@@ -838,19 +857,39 @@ class ControllerCheckoutSimpleCheckout extends SimpleController {
     private function order() {
         $this->simplecheckout->clearOrder();
 
-        if ($this->simplecheckout->getSettingValue('clearFields')) {
-            $customer_info    = $this->simplecheckout->clearFields('customer', $this->session->data['simple']['customer']);
-            $shipping_address = $this->simplecheckout->clearFields('shipping_address', $this->session->data['simple']['shipping_address']);
-            $payment_address  = $this->simplecheckout->clearFields($this->simplecheckout->isAddressSame() ? 'shipping_address' : 'payment_address', $this->session->data['simple']['payment_address']);
-        } else {
-            $customer_info    = $this->session->data['simple']['customer'];
-            $payment_address  = $this->session->data['simple']['payment_address'];
-            $shipping_address = $this->session->data['simple']['shipping_address'];
-        }
+        $customer_info    = $this->session->data['simple']['customer'];
+        $payment_address  = $this->session->data['simple']['payment_address'];
+        $shipping_address = $this->session->data['simple']['shipping_address'];
 
-        $payment_method   = $this->session->data['payment_method'];
         $comment          = $this->simplecheckout->getComment();
         $version          = $this->simplecheckout->getOpencartVersion();
+        
+        $payment_method   = array();
+        $shipping_method  = array();
+
+        if ($this->simplecheckout->getSettingValue('clearUnusedFields')) {
+            $shipping_address_fields = $this->simplecheckout->getFieldsInBlock('shipping_address');
+            
+            foreach ($shipping_address as $field => $value) {
+                if (in_array($field, array('custom_field', 'address_id'))) {
+                    continue;
+                }
+                
+                if (!in_array($field, $shipping_address_fields)) {
+                    $shipping_address[$field] = '';
+                }
+            }
+        }
+
+        if (!$this->simplecheckout->getSettingValue('ignorePayment') && isset($this->session->data['payment_method'])) {
+            $payment_method = $this->session->data['payment_method'];
+        }
+
+        $ignore_shipping = $this->simplecheckout->getSettingValue('ignoreShipping');
+
+        if (!$ignore_shipping && isset($this->session->data['shipping_method'])) {
+            $shipping_method = $this->session->data['shipping_method'];
+        }
 
         if (empty($customer_info['email'])) {
             $emptyEmail = $this->simplecheckout->getSettingValue('emptyEmail', 'customer');
@@ -894,11 +933,18 @@ class ControllerCheckoutSimpleCheckout extends SimpleController {
 
         array_multisort($sort_order, SORT_ASC, $results);
 
+        $shipping_cost = isset($shipping_method['cost']) ? $shipping_method['cost'] : 0;
+        $skip_zero_cost_shipping = $this->simplecheckout->getSettingValue('skipZeroCostShipping', 'cart');
+        
         foreach ($results as $result) {
             if ($version < 300) {
                 $status = $this->config->get($result['code'] . '_status');
             } else {
                 $status = $this->config->get('total_' . $result['code'] . '_status');
+            }
+
+            if ($result['code'] == 'shipping' && ((!$shipping_cost && $skip_zero_cost_shipping) || $ignore_shipping)) {
+                $status = false;
             }
 
             if ($status) {
@@ -916,6 +962,14 @@ class ControllerCheckoutSimpleCheckout extends SimpleController {
 
         foreach ($totals as $key => $value) {
             $sort_order[$key] = $value['sort_order'];
+
+            if (!isset($value['text'])) {
+                $totals[$key]['text'] = $this->simplecheckout->formatCurrency($value['value']);
+            }
+
+            if (!empty($value['code']) && $value['code'] == 'shipping' && isset($this->session->data['shipping_method']) && isset($this->session->data['shipping_method']['text'])) {
+                $totals[$key]['text'] = strip_tags($this->session->data['shipping_method']['text']);
+            }
         }
 
         array_multisort($sort_order, SORT_ASC, $totals);
@@ -939,7 +993,7 @@ class ControllerCheckoutSimpleCheckout extends SimpleController {
         $data['email']                  = $customer_info['email'];
         $data['telephone']              = $customer_info['telephone'];
         $data['fax']                    = !empty($customer_info['fax']) ? $customer_info['fax'] : '';
-        $data['custom_field']           = isset($customer_info['custom_field']) ? $customer_info['custom_field'] : array();
+        $data['custom_field']           = isset($customer_info['custom_field']) && isset($customer_info['custom_field']['account']) ? $customer_info['custom_field']['account'] : array();
 
         $data['payment_firstname']      = $payment_address['firstname'];
         $data['payment_lastname']       = $payment_address['lastname'];
@@ -955,7 +1009,7 @@ class ControllerCheckoutSimpleCheckout extends SimpleController {
         $data['payment_address_format'] = $payment_address['address_format'];
         $data['payment_company_id']     = isset($payment_address['company_id']) ? $payment_address['company_id'] : '';
         $data['payment_tax_id']         = isset($payment_address['tax_id']) ? $payment_address['tax_id'] : '';
-        $data['payment_custom_field']   = isset($payment_address['custom_field']) ? $payment_address['custom_field'] : array();
+        $data['payment_custom_field']   = isset($payment_address['custom_field']) && isset($payment_address['custom_field']['address']) ? $payment_address['custom_field']['address'] : array();
 
         if (isset($payment_method['title'])) {
             $data['payment_method'] = $payment_method['title'];
@@ -969,7 +1023,7 @@ class ControllerCheckoutSimpleCheckout extends SimpleController {
             $data['payment_code'] = '';
         }
 
-        if ($this->cart->hasShipping()) {
+        if ($this->simplecheckout->hasShipping()) {
             $data['shipping_firstname']      = $shipping_address['firstname'];
             $data['shipping_lastname']       = $shipping_address['lastname'];
             $data['shipping_company']        = $shipping_address['company'];
@@ -982,16 +1036,16 @@ class ControllerCheckoutSimpleCheckout extends SimpleController {
             $data['shipping_country']        = $shipping_address['country'];
             $data['shipping_country_id']     = $shipping_address['country_id'];
             $data['shipping_address_format'] = $shipping_address['address_format'];
-            $data['shipping_custom_field']   = isset($shipping_address['custom_field']) ? $shipping_address['custom_field'] : array();
+            $data['shipping_custom_field']   = isset($shipping_address['custom_field']) && isset($shipping_address['custom_field']['address']) ? $shipping_address['custom_field']['address'] : array();
 
-            if (isset($this->session->data['shipping_method']['title'])) {
-                $data['shipping_method'] = $this->session->data['shipping_method']['title'];
+            if (isset($shipping_method['title'])) {
+                $data['shipping_method'] = $shipping_method['title'];
             } else {
                 $data['shipping_method'] = '';
             }
 
-            if (isset($this->session->data['shipping_method']['code'])) {
-                $data['shipping_code'] = $this->session->data['shipping_method']['code'];
+            if (isset($shipping_method['code'])) {
+                $data['shipping_code'] = $shipping_method['code'];
             } else {
                 $data['shipping_code'] = '';
             }
@@ -1021,7 +1075,7 @@ class ControllerCheckoutSimpleCheckout extends SimpleController {
         if ($version < 152) {
 
             if (method_exists($this->tax,'setZone')) {
-                if ($this->cart->hasShipping()) {
+                if ($this->simplecheckout->hasShipping()) {
                     $this->tax->setZone($data['shipping_country_id'], $data['shipping_zone_id']);
                 } else {
                     $this->tax->setZone($data['payment_country_id'], $data['payment_zone_id']);
@@ -1278,5 +1332,17 @@ class ControllerCheckoutSimpleCheckout extends SimpleController {
         }        
 
         return $order_id;
+    }
+
+    private function confirm() {
+        $order_id = $this->session->data['order_id'];
+    	
+        $this->load->model('checkout/order');
+        
+        if ($this->simplecheckout->getOpenCartVersion() < 200) { 
+            $this->model_checkout_order->confirm($order_id, $this->simplecheckout->getSettingValue('ignorePaymentOrderStatus'), '', false);
+        } else {
+            $this->model_checkout_order->addOrderHistory($order_id, $this->simplecheckout->getSettingValue('ignorePaymentOrderStatus'), '', false);
+        }
     }
 }

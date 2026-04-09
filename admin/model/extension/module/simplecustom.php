@@ -190,38 +190,42 @@ class ModelModuleSimpleCustom extends Model {
                                 'label'  => !empty($fieldSettings['label'][$langCode]) ? $fieldSettings['label'][$langCode] : $fieldSettings['id'],
                                 'id'     => 'payment_'.$fieldSettings['id'],
                                 'type'   => $fieldSettings['type'],
+                                'filename' => '',
                                 'value'  => '',
                                 'values' => $this->getFieldValues($object, $id, $set, $fieldSettings, $langCode)
                             );
                         }
                         if ($set == 'shipping_address') {
                             $result['shipping_'.$fieldSettings['id']] = array(
-                                'label'  => !empty($fieldSettings['label'][$langCode]) ? $fieldSettings['label'][$langCode] : $fieldSettings['id'],
-                                'id'     => 'shipping_'.$fieldSettings['id'],
-                                'type'   => $fieldSettings['type'],
-                                'value'  => '',
-                                'values' => $this->getFieldValues($object, $id, $set, $fieldSettings, $langCode)
+                                'label'    => !empty($fieldSettings['label'][$langCode]) ? $fieldSettings['label'][$langCode] : $fieldSettings['id'],
+                                'id'       => 'shipping_'.$fieldSettings['id'],
+                                'type'     => $fieldSettings['type'],
+                                'filename' => '',
+                                'value'    => '',
+                                'values'   => $this->getFieldValues($object, $id, $set, $fieldSettings, $langCode)
                             );
                         }
                     } else {
                         if ($set != 'payment_address' && $set != 'shipping_address') {
                             $result[$fieldSettings['id']] = array(
-                                'label'  => !empty($fieldSettings['label'][$langCode]) ? $fieldSettings['label'][$langCode] : $fieldSettings['id'],
-                                'id'     => $fieldSettings['id'],
-                                'type'   => $fieldSettings['type'],
-                                'value'  => '',
-                                'values' => $this->getFieldValues($object, $id, $set, $fieldSettings, $langCode)
+                                'label'    => !empty($fieldSettings['label'][$langCode]) ? $fieldSettings['label'][$langCode] : $fieldSettings['id'],
+                                'id'       => $fieldSettings['id'],
+                                'type'     => $fieldSettings['type'],
+                                'filename' => '',
+                                'value'    => '',
+                                'values'   => $this->getFieldValues($object, $id, $set, $fieldSettings, $langCode)
                             );
                         }
                     }
                 } else {
                     if ($fieldSettings['object'] == $object) {
                         $result[$fieldSettings['id']] = array(
-                            'label'  => !empty($fieldSettings['label'][$langCode]) ? $fieldSettings['label'][$langCode] : $fieldSettings['id'],
-                            'id'     => $fieldSettings['id'],
-                            'type'   => $fieldSettings['type'],
-                            'value'  => '',
-                            'values' => $this->getFieldValues($object, $id, $set, $fieldSettings, $langCode)
+                            'label'    => !empty($fieldSettings['label'][$langCode]) ? $fieldSettings['label'][$langCode] : $fieldSettings['id'],
+                            'id'       => $fieldSettings['id'],
+                            'type'     => $fieldSettings['type'],
+                            'filename' => '',
+                            'value'    => '',
+                            'values'   => $this->getFieldValues($object, $id, $set, $fieldSettings, $langCode)
                         );
                     }
                 }
@@ -262,7 +266,7 @@ class ModelModuleSimpleCustom extends Model {
         $result = $this->getInfo($object, $id, $set, $langCode);
 
         foreach ($result as $key => $info) {
-            if (($info['type'] == 'radio' || $info['type'] == 'select' || $info['type'] == 'checkbox') && !is_array($info['values'])) {
+            if (($info['type'] == 'radio' || $info['type'] == 'select' || $info['type'] == 'select2' || $info['type'] == 'checkbox') && !is_array($info['values'])) {
                 $info['values'] = $this->getConnector($info['values']);
             }
 
@@ -367,7 +371,7 @@ class ModelModuleSimpleCustom extends Model {
                     $set = str_replace($fields[$id]['id'], '', $id) . 'address';
                 }
 
-                if ($fields[$id]['type'] == 'radio' || $fields[$id]['type'] == 'select') {
+                if ($fields[$id]['type'] == 'radio' || $fields[$id]['type'] == 'select' || $fields[$id]['type'] == 'select2') {
                     $values = $loadFieldValues ? $this->getFieldValues($object, $objectId, $set, $fields[$id], $langCode) : array();
                     if (!is_array($values)) {
                         $values = $this->getConnector($values);
@@ -393,7 +397,9 @@ class ModelModuleSimpleCustom extends Model {
                         $value = implode(', ', $value);
                     }
                 } elseif ($fields[$id]['type'] == 'file') {
-                    $value = utf8_substr($value, 0, utf8_strrpos($value, '.'));
+                    $value = $this->createLinkToFile($value);
+                } elseif ($fields[$id]['type'] == 'switcher') {
+                    $value = $value ? $this->language->get('text_yes') : $this->language->get('text_no');
                 }
 
                 $result[$id] = $value;
@@ -403,6 +409,30 @@ class ModelModuleSimpleCustom extends Model {
         }
 
         return array();
+    }
+
+    public function createLinkToFile($filename) {
+        $opencartVersion = explode('.', VERSION);
+        $opencartVersion = floatval($opencartVersion[0].$opencartVersion[1].$opencartVersion[2].'.'.(isset($opencartVersion[3]) ? $opencartVersion[3] : 0));
+
+        $code = '';
+
+        if ($opencartVersion < 200) {
+            $encryption = new Encryption($this->config->get('config_encryption'));
+            $code = $encryption->encrypt($filename);
+        } else {
+            $query = $this->db->query("SELECT * FROM `" . DB_PREFIX . "upload` WHERE filename = '" . $this->db->escape($filename) . "'");
+
+            if ($query->num_rows) {
+                $code = $query->row['code'];
+            }
+        } 
+
+        if (!$code) {
+            return '';
+        }
+
+        return HTTP_CATALOG . 'index.php?route=common/simple_connector/download&code='.$code;
     }
 
     private function getConnector($params) {

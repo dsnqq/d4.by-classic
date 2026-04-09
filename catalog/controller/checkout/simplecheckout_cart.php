@@ -2,7 +2,6 @@
 /*
 @author    Dmitriy Kubarev
 @link    http://www.simpleopencart.com
-@link    http://www.opencart.com/index.php?route=extension/extension/info&extension_id=4811
 */
 
 include_once(DIR_SYSTEM . 'library/simple/simple_controller.php');
@@ -11,8 +10,7 @@ class ControllerCheckoutSimpleCheckoutCart extends SimpleController {
     static $error = array();
     static $updated = false;
 
-    private $_templateData = array();
-
+    
     private function init() {
         $this->loadLibrary('simple/simplecheckout');
 
@@ -38,109 +36,15 @@ class ControllerCheckoutSimpleCheckoutCart extends SimpleController {
         $version = $this->simplecheckout->getOpencartVersion();
 
         $this->_templateData['attention'] = '';
-
-        if ($this->config->get('config_customer_price') && !$this->customer->isLogged()) {
-            $this->_templateData['attention'] = sprintf($this->language->get('text_login'), $this->url->link('account/login'), $this->url->link('account/simpleregister'));
-            $this->simplecheckout->addError('cart');
-            $this->simplecheckout->blockOrder();
-        }
-
         $this->_templateData['error_warning'] = '';
+
+        $this->validateCart();
 
         if (isset(self::$error['warning'])) {
             $this->_templateData['error_warning'] = self::$error['warning'];
         }
-
-        if (!$this->cart->hasStock()) {
-            if ($this->config->get('config_stock_warning')) {
-                $this->_templateData['error_warning'] = $this->language->get('error_stock');
-            }
-            if (!$this->config->get('config_stock_checkout')) {
-                $this->_templateData['error_warning'] = $this->language->get('error_stock');
-                $this->simplecheckout->addError('cart');
-                $this->simplecheckout->blockOrder();
-            }
-        }
-
-        $customerGroupId = isset($this->session->data['simple']) && isset($this->session->data['simple']['customer']) && isset($this->session->data['simple']['customer']['customer_group_id']) ? $this->session->data['simple']['customer']['customer_group_id'] : $this->config->get('config_customer_group_id');
-
-        $useTotal    = $this->simplecheckout->getSettingValue('useTotal', 'cart');
-
-        $tmp = $this->simplecheckout->getSettingValue('minAmount', 'cart');
-        $minAmount = !empty($tmp[$customerGroupId]) ? $tmp[$customerGroupId] : 0;
-
-        $tmp = $this->simplecheckout->getSettingValue('maxAmount', 'cart');
-        $maxAmount = !empty($tmp[$customerGroupId]) ? $tmp[$customerGroupId] : 0;
-
-        $tmp = $this->simplecheckout->getSettingValue('minQuantity', 'cart');
-        $minQuantity = !empty($tmp[$customerGroupId]) ? $tmp[$customerGroupId] : 0;
-
-        $tmp = $this->simplecheckout->getSettingValue('maxQuantity', 'cart');
-        $maxQuantity = !empty($tmp[$customerGroupId]) ? $tmp[$customerGroupId] : 0;
-
-        $tmp = $this->simplecheckout->getSettingValue('minWeight', 'cart');
-        $minWeight = !empty($tmp[$customerGroupId]) ? $tmp[$customerGroupId] : 0;
-
-        $tmp = $this->simplecheckout->getSettingValue('maxWeight', 'cart');
-        $maxWeight = !empty($tmp[$customerGroupId]) ? $tmp[$customerGroupId] : 0;
-
-        $cartSubtotal = 0;
-
-        if (!empty($minAmount) || !empty($maxAmount)) {
-            if ($useTotal) {
-                $cartSubtotal = $this->cart->getTotal();
-            } else {
-                $cartSubtotal = $this->cart->getSubTotal();
-            }
-        }
-
-        if (!empty($this->session->data['vouchers'])) {
-            foreach ($this->session->data['vouchers'] as $key => $voucher) {
-                $cartSubtotal += $voucher['amount'];
-            }
-        }
-
-        $cartQuantity = $this->cart->countProducts();
-        $cartWeight = $this->cart->getWeight();
-
-        $this->_templateData['quantity'] = $cartQuantity;
-
-        if (!empty($minAmount) && $minAmount > $cartSubtotal) {
-            $this->simplecheckout->addError('cart');
-            $this->simplecheckout->blockOrder();
-            $this->_templateData['error_warning'] = sprintf($this->language->get('error_min_amount'),$this->simplecheckout->formatCurrency($minAmount));
-        }
-
-        if (!empty($maxAmount) && $maxAmount < $cartSubtotal) {
-            $this->simplecheckout->blockOrder();
-            $this->simplecheckout->addError('cart');
-            $this->_templateData['error_warning'] = sprintf($this->language->get('error_max_amount'),$this->simplecheckout->formatCurrency($maxAmount));
-        }
-
-        if (!empty($minQuantity) && $minQuantity > $cartQuantity) {
-            $this->simplecheckout->blockOrder();
-            $this->simplecheckout->addError('cart');
-            $this->_templateData['error_warning'] = sprintf($this->language->get('error_min_quantity'), $minQuantity);
-        }
-
-        if (!empty($maxQuantity) && $maxQuantity < $cartQuantity) {
-            $this->simplecheckout->addError('cart');
-            $this->simplecheckout->blockOrder();
-            $this->_templateData['error_warning'] = sprintf($this->language->get('error_max_quantity'), $maxQuantity);
-        }
-
-        if (!empty($minWeight) && !empty($cartWeight) && $minWeight > $cartWeight) {
-            $this->simplecheckout->blockOrder();
-            $this->simplecheckout->addError('cart');
-            $this->_templateData['error_warning'] = sprintf($this->language->get('error_min_weight'), $minWeight);
-        }
-
-        if (!empty($maxWeight) && !empty($cartWeight) && $maxWeight < $cartWeight) {
-            $this->simplecheckout->addError('cart');
-            $this->simplecheckout->blockOrder();
-            $this->_templateData['error_warning'] = sprintf($this->language->get('error_max_weight'), $maxWeight);
-        }
-
+        
+        $this->load->model('catalog/product');
         $this->load->model('tool/image');
 
         if ($version >= 200) {
@@ -169,6 +73,9 @@ class ControllerCheckoutSimpleCheckoutCart extends SimpleController {
         $this->_templateData['text_recurring_item']  = $this->language->get('text_recurring_item');
         $this->_templateData['text_payment_profile'] = $this->language->get('text_payment_profile');
         $this->_templateData['text_cart']            = $this->language->get('text_cart');
+        
+        $this->_templateData['text_clear_cart']               = $this->language->get('text_clear_cart');
+        $this->_templateData['text_clear_cart_question']      = $this->language->get('text_clear_cart_question');
 
         $this->_templateData['button_update'] = $this->language->get('button_update');
         $this->_templateData['button_remove'] = $this->language->get('button_remove');
@@ -190,12 +97,6 @@ class ControllerCheckoutSimpleCheckoutCart extends SimpleController {
                 if ($product_2['product_id'] == $product['product_id']) {
                     $product_total += $product_2['quantity'];
                 }
-            }
-
-            if ($product['minimum'] > $product_total) {
-                $this->_templateData['error_warning'] = sprintf($this->language->get('error_minimum'), $product['name'], $product['minimum']);
-                $this->simplecheckout->addError('cart');
-                $this->simplecheckout->blockOrder();
             }
 
             $option_data = array();
@@ -265,6 +166,14 @@ class ControllerCheckoutSimpleCheckoutCart extends SimpleController {
                 $total = false;
             }
 
+            $old_price = null;
+
+            $product_info = $this->model_catalog_product->getProduct($product['product_id']);
+
+            if ((float)$product_info['special'] && (float)$product_info['special'] < (float)$product_info['price']) {
+                $old_price = $this->simplecheckout->formatCurrency($this->tax->calculate($product_info['price'], $product['tax_class_id'], $this->config->get('config_tax')));
+            }
+
             if ($version >= 200) {
                 $recurring = '';
 
@@ -284,7 +193,7 @@ class ControllerCheckoutSimpleCheckoutCart extends SimpleController {
                     if ($product['recurring']['duration']) {
                         $recurring .= sprintf($this->language->get('text_payment_description'), $this->simplecheckout->formatCurrency($this->tax->calculate($product['recurring']['price'] * $product['quantity'], $product['tax_class_id'], $this->config->get('config_tax'))), $product['recurring']['cycle'], $frequencies[$product['recurring']['frequency']], $product['recurring']['duration']);
                     } else {
-                        $recurring .= sprintf($this->language->get('text_payment_until_canceled_description'), $this->simplecheckout->formatCurrency($this->tax->calculate($product['recurring']['price'] * $product['quantity'], $product['tax_class_id'], $this->config->get('config_tax'))), $product['recurring']['cycle'], $frequencies[$product['recurring']['frequency']], $product['recurring']['duration']);
+                        $recurring .= sprintf($this->language->get('text_payment_cancel'), $this->simplecheckout->formatCurrency($this->tax->calculate($product['recurring']['price'] * $product['quantity'], $product['tax_class_id'], $this->config->get('config_tax'))), $product['recurring']['cycle'], $frequencies[$product['recurring']['frequency']], $product['recurring']['duration']);
                     }
                 }
 
@@ -301,6 +210,7 @@ class ControllerCheckoutSimpleCheckoutCart extends SimpleController {
                     'stock'     => $product['stock'] ? true : !(!$this->config->get('config_stock_checkout') || $this->config->get('config_stock_warning')),
                     'reward'    => ($product['reward'] ? sprintf($this->language->get('text_points'), $product['reward']) : ''),
                     'price'     => $price,
+                    'old_price' => $old_price,
                     'total'     => $total,
                     'href'      => $this->url->link('product/product', 'product_id=' . $product['product_id'])
                 );
@@ -335,11 +245,13 @@ class ControllerCheckoutSimpleCheckoutCart extends SimpleController {
                     'thumb'               => $image,
                     'name'                => $product['name'],
                     'model'               => $product['model'],
+                    'minimum'             => $product['minimum'],
                     'option'              => $option_data,
                     'quantity'            => $product['quantity'],
                     'stock'               => $product['stock'],
                     'reward'              => ($product['reward'] ? sprintf($this->language->get('text_reward'), $product['reward']) : ''),
                     'price'               => $price,
+                    'old_price'           => $old_price,
                     'total'               => $total,
                     'href'                => $this->url->link('product/product', 'product_id=' . $product['product_id']),
                     'recurring'           => $product['recurring'],
@@ -348,17 +260,19 @@ class ControllerCheckoutSimpleCheckoutCart extends SimpleController {
                 );
             } else {
                 $this->_templateData['products'][] = array(
-                    'key'      => $product['key'],
-                    'thumb'    => $image,
-                    'name'     => $product['name'],
-                    'model'    => $product['model'],
-                    'option'   => $option_data,
-                    'quantity' => $product['quantity'],
-                    'stock'    => $product['stock'],
-                    'reward'   => ($product['reward'] ? sprintf($this->language->get('text_reward'), $product['reward']) : ''),
-                    'price'    => $price,
-                    'total'    => $total,
-                    'href'     => $this->url->link('product/product', 'product_id=' . $product['product_id'])
+                    'key'       => $product['key'],
+                    'thumb'     => $image,
+                    'name'      => $product['name'],
+                    'model'     => $product['model'],
+                    'minimum'   => $product['minimum'],
+                    'option'    => $option_data,
+                    'quantity'  => $product['quantity'],
+                    'stock'     => $product['stock'],
+                    'reward'    => ($product['reward'] ? sprintf($this->language->get('text_reward'), $product['reward']) : ''),
+                    'old_price' => $old_price,
+                    'price'     => $price,
+                    'total'     => $total,
+                    'href'      => $this->url->link('product/product', 'product_id=' . $product['product_id'])
                 );
             }
 
@@ -414,12 +328,20 @@ class ControllerCheckoutSimpleCheckoutCart extends SimpleController {
             }
 
             array_multisort($sort_order, SORT_ASC, $results);
+            
+            $shipping_cost = isset($this->session->data['shipping_method']) && isset($this->session->data['shipping_method']['cost']) ? $this->session->data['shipping_method']['cost'] : 0;
+            $skip_zero_cost_shipping = $this->simplecheckout->getSettingValue('skipZeroCostShipping', 'cart');
+            $ignore_shipping = $this->simplecheckout->getSettingValue('ignoreShipping');
 
             foreach ($results as $result) {
                 if ($version < 300) {
                     $status = $this->config->get($result['code'] . '_status');
                 } else {
                     $status = $this->config->get('total_' . $result['code'] . '_status');
+                }
+
+                if ($result['code'] == 'shipping' && ((!$shipping_cost && $skip_zero_cost_shipping) || $ignore_shipping)) {
+                    $status = false;
                 }
 
                 if ($status) {
@@ -442,6 +364,10 @@ class ControllerCheckoutSimpleCheckoutCart extends SimpleController {
 
                 if (!isset($value['text'])) {
                     $totals[$key]['text'] = $this->simplecheckout->formatCurrency($value['value']);
+                }
+
+                if (!empty($value['code']) && $value['code'] == 'shipping' && isset($this->session->data['shipping_method']) && isset($this->session->data['shipping_method']['text'])) {
+                    $totals[$key]['text'] = strip_tags($this->session->data['shipping_method']['text']);
                 }
             }
 
@@ -565,6 +491,141 @@ class ControllerCheckoutSimpleCheckoutCart extends SimpleController {
         // Reward
         if (isset($this->request->post['reward']) && $this->validateReward()) {
             $this->session->data['reward'] = $this->request->post['reward'];
+        }
+    }
+
+    public function clear() {
+        $this->cart->clear();
+    }
+
+    private function validateCart() {
+        if ($this->config->get('config_customer_price') && !$this->customer->isLogged()) {
+            $attention = sprintf($this->language->get('text_login'), $this->url->link('account/login'), $this->url->link('account/simpleregister'));
+            $this->simplecheckout->addError('cart', $attention);
+            $this->simplecheckout->blockOrder();
+            self::$error['warning'] = $attention;
+        }
+
+        if (!$this->cart->hasStock()) {
+            if ($this->config->get('config_stock_warning')) {
+                self::$error['warning'] = $this->language->get('error_stock');
+            }
+            if (!$this->config->get('config_stock_checkout')) {
+                $warning = $this->language->get('error_stock');
+                $this->simplecheckout->addError('cart', $warning);
+                $this->simplecheckout->blockOrder();
+                self::$error['warning'] = $warning;
+            }
+        }
+
+        if ($this->cart->hasDownload() && !$this->customer->isLogged() && empty($this->session->data['simple']['customer']['register'])) {
+            $warning = $this->language->get('error_guest_download');
+            $this->simplecheckout->addError('cart', $warning);
+            $this->simplecheckout->blockOrder();
+            self::$error['warning'] = $warning;
+        }
+
+        $customerGroupId = isset($this->session->data['simple']) && isset($this->session->data['simple']['customer']) && isset($this->session->data['simple']['customer']['customer_group_id']) ? $this->session->data['simple']['customer']['customer_group_id'] : $this->config->get('config_customer_group_id');
+
+        $useTotal = $this->simplecheckout->getSettingValue('useTotal', 'cart');
+
+        $tmp = $this->simplecheckout->getSettingValue('minAmount', 'cart');
+        $minAmount = !empty($tmp[$customerGroupId]) ? $tmp[$customerGroupId] : 0;
+
+        $tmp = $this->simplecheckout->getSettingValue('maxAmount', 'cart');
+        $maxAmount = !empty($tmp[$customerGroupId]) ? $tmp[$customerGroupId] : 0;
+
+        $tmp = $this->simplecheckout->getSettingValue('minQuantity', 'cart');
+        $minQuantity = !empty($tmp[$customerGroupId]) ? $tmp[$customerGroupId] : 0;
+
+        $tmp = $this->simplecheckout->getSettingValue('maxQuantity', 'cart');
+        $maxQuantity = !empty($tmp[$customerGroupId]) ? $tmp[$customerGroupId] : 0;
+
+        $tmp = $this->simplecheckout->getSettingValue('minWeight', 'cart');
+        $minWeight = !empty($tmp[$customerGroupId]) ? $tmp[$customerGroupId] : 0;
+
+        $tmp = $this->simplecheckout->getSettingValue('maxWeight', 'cart');
+        $maxWeight = !empty($tmp[$customerGroupId]) ? $tmp[$customerGroupId] : 0;
+
+        $cartSubtotal = 0;
+
+        if (!empty($minAmount) || !empty($maxAmount)) {
+            if ($useTotal) {
+                $cartSubtotal = $this->cart->getTotal();
+            } else {
+                $cartSubtotal = $this->cart->getSubTotal();
+            }
+        }
+
+        if (!empty($this->session->data['vouchers'])) {
+            foreach ($this->session->data['vouchers'] as $key => $voucher) {
+                $cartSubtotal += $voucher['amount'];
+            }
+        }
+
+        $cartQuantity = $this->cart->countProducts();
+        $cartWeight = $this->cart->getWeight();
+
+        if (!empty($minAmount) && $minAmount > $cartSubtotal) {
+            $warning = sprintf($this->language->get('error_min_amount'),$this->simplecheckout->formatCurrency($minAmount));
+            $this->simplecheckout->addError('cart', $warning);
+            $this->simplecheckout->blockOrder();
+            self::$error['warning'] = $warning;
+        }
+
+        if (!empty($maxAmount) && $maxAmount < $cartSubtotal) {
+            $warning = sprintf($this->language->get('error_max_amount'),$this->simplecheckout->formatCurrency($maxAmount));
+            $this->simplecheckout->addError('cart', $warning);
+            $this->simplecheckout->blockOrder();
+            self::$error['warning'] = $warning;
+        }
+
+        if (!empty($minQuantity) && $minQuantity > $cartQuantity) {
+            $warning = sprintf($this->language->get('error_min_quantity'), $minQuantity);
+            $this->simplecheckout->addError('cart', $warning);
+            $this->simplecheckout->blockOrder();
+            self::$error['warning'] = $warning;
+        }
+
+        if (!empty($maxQuantity) && $maxQuantity < $cartQuantity) {
+            $warning = sprintf($this->language->get('error_max_quantity'), $maxQuantity);
+            $this->simplecheckout->addError('cart', $warning);
+            $this->simplecheckout->blockOrder();
+            self::$error['warning'] = $warning;
+        }
+
+        if (!empty($minWeight) && !empty($cartWeight) && $minWeight > $cartWeight) {
+            $warning = sprintf($this->language->get('error_min_weight'), $minWeight);
+            $this->simplecheckout->addError('cart', $warning);
+            $this->simplecheckout->blockOrder();
+            self::$error['warning'] = $warning;
+        }
+
+        if (!empty($maxWeight) && !empty($cartWeight) && $maxWeight < $cartWeight) {
+            $warning = sprintf($this->language->get('error_max_weight'), $maxWeight);
+            $this->simplecheckout->addError('cart', $warning);
+            $this->simplecheckout->blockOrder();
+            self::$error['warning'] = $warning;
+        }
+
+        $products = $this->cart->getProducts();
+
+        foreach ($products as $product) {
+
+            $product_total = 0;
+
+            foreach ($products as $product_2) {
+                if ($product_2['product_id'] == $product['product_id']) {
+                    $product_total += $product_2['quantity'];
+                }
+            }
+
+            if ($product['minimum'] > $product_total) {
+                $warning = sprintf($this->language->get('error_minimum'), $product['name'], $product['minimum']);
+                $this->simplecheckout->addError('cart', $warning);
+                $this->simplecheckout->blockOrder();
+                self::$error['warning'] = $warning;
+            }
         }
     }
 

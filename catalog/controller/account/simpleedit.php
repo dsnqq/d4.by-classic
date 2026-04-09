@@ -2,14 +2,12 @@
 /*
 @author	Dmitriy Kubarev
 @link	http://www.simpleopencart.com
-@link	http://www.opencart.com/index.php?route=extension/extension/info&extension_id=4811
 */
 
 include_once(DIR_SYSTEM . 'library/simple/simple_controller.php');
 
 class ControllerAccountSimpleEdit extends SimpleController {
-    private $_templateData = array();
-
+    
     public function index($args = null) {
 
         $this->loadLibrary('simple/simpleedit');
@@ -63,8 +61,6 @@ class ControllerAccountSimpleEdit extends SimpleController {
 
         if ($this->request->server['REQUEST_METHOD'] == 'POST' && isset($this->request->post['submitted']) && $this->validate()) {
             $this->load->model('account/customer');
-
-            $this->simpleedit->clearUnusedFields();
 
             if ($this->simpleedit->isFieldUsed('password') && $this->session->data['simple']['edit']['password']) {
                 $this->model_account_customer->editPassword($this->customer->getEmail(), $this->session->data['simple']['edit']['password']);
@@ -152,8 +148,15 @@ class ControllerAccountSimpleEdit extends SimpleController {
                 'common/header',
             );
 
-            $this->_templateData['simple_header'] = $this->simpleedit->getLinkToHeaderTpl();
-            $this->_templateData['simple_footer'] = $this->simpleedit->getLinkToFooterTpl();
+            if ($this->simpleedit->getOpencartVersion() < 300) {
+                $this->_templateData['simple_header'] = $this->simpleedit->getLinkToHeaderTpl();
+                $this->_templateData['simple_footer'] = $this->simpleedit->getLinkToFooterTpl();
+            } else {
+                $this->_templateData['simple_page'] = 'simpleedit';
+
+                $this->_templateData['simple_header'] = $this->getSimpleHeader($childrens);
+                $this->_templateData['simple_footer'] = $this->getSimpleFooter($childrens);
+            }
         }
 
         $this->setOutputContent(trim($this->renderPage('account/simpleedit', $this->_templateData, $childrens)));

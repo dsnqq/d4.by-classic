@@ -7,8 +7,7 @@
 include_once(DIR_SYSTEM . 'library/simple/simple_controller.php');
 
 class ControllerCheckoutSimpleCheckoutSummary extends SimpleController {
-    private $_templateData = array();
-
+    
     public function index() {
 
         $this->loadLibrary('simple/simplecheckout');
@@ -411,7 +410,7 @@ class ControllerCheckoutSimpleCheckoutSummary extends SimpleController {
 
         $this->_templateData['summary_shipping_address'] = '';
 
-        if ($this->cart->hasShipping()) {
+        if ($this->simplecheckout->hasShipping()) {
             $shipping_address = $this->session->data['simple']['shipping_address'];
 
             $shipping_address_format = $this->simplecheckout->getAddressFormat(array(

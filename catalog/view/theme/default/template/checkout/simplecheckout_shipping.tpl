@@ -7,14 +7,15 @@
         <?php if (!empty($shipping_methods)) { ?>
             <?php if ($display_type == 2 ) { ?>
                 <?php $current_method = false; ?>
-                <select data-onchange="reloadAll" name="shipping_method">
+                <select data-onchange="reloadAll" name="shipping_method" class="form-control">
+                    <option value="" disabled="disabled" <?php if (empty($code)) { ?>selected="selected"<?php } ?>><?php echo $text_select; ?></option>
                     <?php foreach ($shipping_methods as $shipping_method) { ?>
                         <?php if (!empty($shipping_method['title'])) { ?>
                         <optgroup label="<?php echo $shipping_method['title']; ?>">
                         <?php } ?>
                         <?php if (empty($shipping_method['error'])) { ?>
                             <?php foreach ($shipping_method['quote'] as $quote) { ?>
-                                <option value="<?php echo $quote['code']; ?>" <?php echo !empty($quote['dummy']) ? 'disabled="disabled"' : '' ?> <?php echo !empty($quote['dummy']) ? 'data-dummy="true"' : '' ?> <?php if ($quote['code'] == $code) { ?>selected="selected"<?php } ?>><?php echo $quote['title']; ?><?php echo !empty($quote['text']) && !$hide_cost ? ' - '.$quote['text'] : ''; ?></option>
+                                <option value="<?php echo $quote['code']; ?>" <?php echo !empty($quote['dummy']) ? 'disabled="disabled"' : '' ?> <?php echo !empty($quote['dummy']) ? 'data-dummy="true"' : '' ?> <?php if ($quote['code'] == $code) { ?>selected="selected"<?php } ?>><?php echo $quote['title']; ?><?php echo !empty($quote['text']) ? ' - '.$quote['text'] : ''; ?></option>
                                 <?php if ($quote['code'] == $code) { $current_method = $quote; } ?>
                             <?php } ?>
                         <?php } else { ?>
@@ -49,10 +50,7 @@
                             <div class="radio">
                                 <label for="<?php echo $quote['code']; ?>">
                                     <input type="radio" data-onchange="reloadAll" name="shipping_method" <?php echo !empty($quote['dummy']) ? 'disabled="disabled"' : '' ?> <?php echo !empty($quote['dummy']) ? 'data-dummy="true"' : '' ?> value="<?php echo $quote['code']; ?>" id="<?php echo $quote['code']; ?>" <?php if ($quote['code'] == $code) { ?>checked="checked"<?php } ?> />
-                                    <?php if (!empty($quote['img'])) { ?>
-                                        <img src="<?php echo $quote['img']; ?>" width="60" height="32" border="0" style="display:block;margin:3px;">
-                                    <?php } ?>
-                                    <?php echo !empty($quote['title']) ? $quote['title'] : ''; ?><?php echo !empty($quote['text']) && !$hide_cost ? ' - ' . $quote['text'] : ''; ?>
+                                    <?php echo !empty($quote['title']) ? $quote['title'] : ''; ?><?php echo !empty($quote['text']) ? ' - ' . $quote['text'] : ''; ?>
                                 </label>
                             </div>
                             <?php if (!empty($quote['description']) && (!$display_for_selected || ($display_for_selected && $quote['code'] == $code))) { ?>

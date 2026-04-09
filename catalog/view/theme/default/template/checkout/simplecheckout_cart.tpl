@@ -1,6 +1,6 @@
 <div class="simplecheckout-block" id="simplecheckout_cart" <?php echo $hide ? 'data-hide="true"' : '' ?> <?php echo $has_error ? 'data-error="true"' : '' ?>>
 <?php if ($display_header) { ?>
-    <div class="checkout-heading panel-heading"><?php echo $text_cart ?></div>
+    <div class="checkout-heading panel-heading"><?php echo $text_cart ?> <span class="checkout-heading-button"><a href="javascript:void(0)" data-onclick="clearCart" class="text-danger" data-confirm-text="<?php echo $text_clear_cart_question ?>"><?php echo $text_clear_cart ?></a></span></div>
 <?php } ?>
 <?php if ($attention) { ?>
     <div class="alert alert-danger simplecheckout-warning-block"><?php echo $attention; ?></div>
@@ -32,16 +32,6 @@
             </thead>
             <tbody>
             <?php foreach ($products as $product) { ?>
-                <?php if (!empty($product['recurring'])) { ?>
-                    <tr>
-                        <td class="simplecheckout-recurring-product" style="border:none;"><img src="<?php echo $additional_path ?>catalog/view/theme/default/image/reorder.png" alt="" title="" style="float:left;" />
-                            <span style="float:left;line-height:18px; margin-left:10px;">
-                            <strong><?php echo $text_recurring_item ?></strong>
-                            <?php echo $product['profile_description'] ?>
-                            </span>
-                        </td>
-                    </tr>
-                <?php } ?>
                 <tr>
                     <td class="image">
                         <?php if ($product['thumb']) { ?>
@@ -63,7 +53,7 @@
                         &nbsp;<small> - <?php echo $option['name']; ?>: <?php echo $option['value']; ?></small><br />
                         <?php } ?>
                         <?php if (!empty($product['recurring'])) { ?>
-                        - <small><?php echo $text_payment_profile ?>: <?php echo $product['profile_name'] ?></small>
+                        - <small><?php echo $text_recurring_item ?>: <?php echo $product['recurring'] ?></small>
                         <?php } ?>
                         </div>
                         <?php if ($product['reward']) { ?>
@@ -78,7 +68,7 @@
                                     <i class="fa fa-minus"></i>
                                 </button>
                             </span>
-                            <input class="form-control" type="text" data-onchange="changeProductQuantity" <?php echo $quantity_step_as_minimum ? 'onfocus="$(this).blur()" data-minimum="' . $product['minimum'] . '"' : '' ?> name="quantity[<?php echo !empty($product['cart_id']) ? $product['cart_id'] : $product['key']; ?>]" value="<?php echo $product['quantity']; ?>" size="1" />
+                            <input class="form-control" type="text" data-onchange="changeProductQuantity" <?php echo $quantity_step_as_minimum ? 'data-minimum="' . $product['minimum'] . '"' : '' ?> name="quantity[<?php echo !empty($product['cart_id']) ? $product['cart_id'] : $product['key']; ?>]" value="<?php echo $product['quantity']; ?>" size="1" />
                             <span class="input-group-btn">
                                 <button class="btn btn-primary" data-onclick="increaseProductQuantity" data-toggle="tooltip" type="submit">
                                     <i class="fa fa-plus"></i>
@@ -89,7 +79,10 @@
                             </span>
                         </div>
                     </td>
-                    <td class="price"><?php echo $product['price']; ?></td>
+                    <td class="price">
+                        <?php if (!empty($product['old_price'])) { ?><div style="text-decoration: line-through;"><?php echo $product['old_price']; ?></div><?php } ?>
+                        <div><?php echo $product['price']; ?></div>
+                    </td>
                     <td class="total"><?php echo $product['total']; ?></td>
                     <td class="remove"></td>
                 </tr>

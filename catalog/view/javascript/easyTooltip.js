@@ -46,6 +46,7 @@
                             .css("left", ($(this).offset().left + options.xOffset) + "px")
                             .css("display", "none")
                             .css("z-index", "10000")
+                            .css("opacity", "1")
                             .fadeIn("fast");
                     }
                 },

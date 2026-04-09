@@ -16,6 +16,22 @@ class ModelModuleSimple extends Model {
         }
     }
 
+    public function alterTableOfSession() {
+        $query = $this->db->query('SHOW COLUMNS FROM `' . DB_PREFIX . 'session`');
+
+        $change = false;
+
+        foreach ($query->rows as $column) {
+            if ($column['Field'] == 'data' && $column['Type'] == 'text') {
+                $change = true;
+            }
+        }
+
+        if ($change) {
+            $this->db->query("ALTER TABLE `" . DB_PREFIX . "session` CHANGE `data` `data` MEDIUMTEXT CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL");
+        }
+    }
+
     public function createTableForCustomerFields() {
         $this->db->query('CREATE TABLE IF NOT EXISTS `'.DB_PREFIX.'customer_simple_fields` (
                           `customer_id` int(11) NOT NULL,
@@ -355,23 +371,24 @@ class ModelModuleSimple extends Model {
         $version = floatval($version[0].$version[1].$version[2].'.'.(isset($version[3]) ? $version[3] : 0));
 
         $data = array(
-            'code' => '1 simple url rewrite',
-            'name' => '1 simple url rewrite',
+            'extension_install_id' => '',
+            'code' => '2 simple url rewrite',
+            'name' => '2 simple url rewrite',
             'author' => 'deeman',
-            'version' => '1.0.0',
+            'version' => '2.0.0',
             'link' => 'http://simpleopencart.com',
             'xml' => '
             <modification>
-                <name>1 simple url rewrite</name>
-                <code>1 simple url rewrite</code>
-                <version>1.0.0</version>
+                <name>2 simple url rewrite</name>
+                <code>2 simple url rewrite</code>
+                <version>2.0.0</version>
                 <author>deeman</author>
                 <link>http://simpleopencart.com</link>
 
                 <file path="catalog/controller/startup/startup.php">
                     <operation error="skip">
                         <search><![CDATA[$this->registry->set(\'url\']]></search>
-                        <add position="after"><![CDATA[$this->url->addRewrite(new Simple\Rewrite($this->config));]]></add>
+                        <add position="after"><![CDATA[$this->url->addRewrite(new Simple\Rewrite($this->config, $this->session));]]></add>
                     </operation>
                 </file>
             </modification>',
@@ -381,19 +398,39 @@ class ModelModuleSimple extends Model {
         if ($version < 300) {
             $this->load->model('extension/modification');
 
-            $mod_old = $this->model_extension_modification->getModificationByCode('simple url rewrite');
-            $mod_new = $this->model_extension_modification->getModificationByCode('1 simple url rewrite');
+            $mod = $this->model_extension_modification->getModificationByCode('simple url rewrite');
 
-            if (empty($mod_old) && empty($mod_new)) {
+            if (empty($mod)) {
+                $mod = $this->model_extension_modification->getModificationByCode('1 simple url rewrite');
+            }
+
+            if (empty($mod)) {
+                $mod = $this->model_extension_modification->getModificationByCode('2 simple url rewrite');
+            }
+
+            if (empty($mod)) {
+                $this->model_extension_modification->addModification($data);
+            } elseif ($mod['code'] != '2 simple url rewrite') {
+                $this->model_extension_modification->deleteModification($mod['modification_id']);
                 $this->model_extension_modification->addModification($data);
             }
         } else {
             $this->load->model('setting/modification');
 
-            $mod_old = $this->model_setting_modification->getModificationByCode('simple url rewrite');
-            $mod_new = $this->model_setting_modification->getModificationByCode('1 simple url rewrite');
+            $mod = $this->model_setting_modification->getModificationByCode('simple url rewrite');
 
-            if (empty($mod_old) && empty($mod_new)) {
+            if (empty($mod)) {
+                $mod = $this->model_setting_modification->getModificationByCode('1 simple url rewrite');
+            }
+
+            if (empty($mod)) {
+                $mod = $this->model_setting_modification->getModificationByCode('2 simple url rewrite');
+            }
+
+            if (empty($mod)) {
+                $this->model_setting_modification->addModification($data);
+            } elseif ($mod['code'] != '2 simple url rewrite') {
+                $this->model_setting_modification->deleteModification($mod['modification_id']);
                 $this->model_setting_modification->addModification($data);
             }
         }        

@@ -26,6 +26,7 @@
                     toastr.options.positionClass = "<?php echo $notification_position ? $notification_position : 'toast-top-right' ?>";
                     toastr.options.timeOut = "<?php echo $notification_timeout ? $notification_timeout : '5000' ?>";
                     toastr.options.progressBar = true;
+                    toastr.options.preventDuplicates = true; 
                 }
 
                 simplepage.init();

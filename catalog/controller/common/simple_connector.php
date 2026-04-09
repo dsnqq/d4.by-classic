@@ -215,7 +215,7 @@ class ControllerCommonSimpleConnector extends Controller {
     private function upload_to_dropbox($path, $filename) {
         $api_url = 'https://content.dropboxapi.com/2/files/upload'; 
        
-        $headers = array('Authorization: '. $this->config->get('simple_file_uploading_dropbox_token'),
+        $headers = array('Authorization: Bearer '. $this->config->get('simple_file_uploading_dropbox_token'),
             'Content-Type: application/octet-stream',
             'Dropbox-API-Arg: '.
             json_encode(
@@ -324,7 +324,7 @@ class ControllerCommonSimpleConnector extends Controller {
 
         $id = utf8_substr($filename, utf8_strrpos($filename, '.') + 1);
       
-        $headers = array('Authorization: '. $this->config->get('simple_file_uploading_dropbox_token'),
+        $headers = array('Authorization: Bearer '. $this->config->get('simple_file_uploading_dropbox_token'),
             'Content-Type: application/octet-stream',
             'Dropbox-API-Arg: '.
             json_encode(
@@ -416,6 +416,128 @@ class ControllerCommonSimpleConnector extends Controller {
             $this->response->setOutput($this->render());
         } else {
             $this->response->setOutput($this->load->controller('common/header'));
+        }
+    }
+
+    public function mail_abandoned() {
+        if (!isset($this->request->get['key']) || (isset($this->request->get['key']) && $this->request->get['key'] != $this->config->get('simple_cron_key'))) {
+            echo 'wrong cron key!'; 
+            exit;
+        }
+
+        $this->load->model('tool/simpleapi');
+        $this->language->load('tool/simpleapi');
+
+        $gap = 1; // интервал в часах, после которого корзина считается брошенной
+
+        $results = $this->model_tool_simpleapi->getAbandonedCarts($this->config->get('simple_cron_time'), $gap);
+
+        if (!empty($results)) {
+            $message = '';
+            $subject = $this->language->get('abandoned_mail_subject');
+
+            $splitter = '';
+
+            for ($i = 0; $i < 30; $i++) {
+                $splitter .= '-';
+            }
+
+            if ($this->getOpencartVersion() < 200) {
+                $datetime_format = $this->language->get('date_format_long');
+            } else {
+                $datetime_format = $this->language->get('datetime_format');
+            }
+
+            foreach ($results as $result) {
+                $message .= $this->language->get('abandoned_mail_time') . ': '. date($datetime_format, strtotime($result['date_added'])) . "\n" . "\n";
+                $message .= $this->language->get('abandoned_mail_name') . ': '. $result['name'] . "\n";
+                $message .= $this->language->get('abandoned_mail_email') . ': '. $result['email'] . "\n";
+                $message .= $this->language->get('abandoned_mail_telephone') . ': '. $result['telephone'] . "\n" . "\n";
+
+                $message .= $this->language->get('abandoned_mail_products') . ': ' . "\n" . "\n";
+
+                $products = json_decode($result['products'], true);
+                
+                foreach ($products as $product) {
+                    $message .= $product['quantity'] . ' x ' . $product['name'] . ' (' . $product['model'] . ')' . ' ' . $product['price'] . ' = ' . $product['total'] . "\n";
+                    
+                    if (!empty($product['option']) && is_array($product['option'])) {
+                        foreach ($product['option'] as $option) {
+                            $message .= '- ' . $option['name'] . ': ' . $option['value'] . "\n";
+                        }   
+                    }
+                }  
+                
+                $message .= "\n" . $splitter . "\n" . "\n";          
+            }
+
+            $this->send_mail($this->config->get('config_email'), $subject, $message);
+
+            $emails = array();
+
+            if ($this->config->get('config_alert_email')) {
+                $emails = explode(',', $this->config->get('config_alert_email'));
+            }
+
+            if ($this->config->get('config_alert_emails')) {
+                $emails = explode(',', $this->config->get('config_alert_emails'));
+            }
+
+            foreach ($emails as $email) {
+                if ($email && preg_match('/^[^\@]+@.*\.[a-z]{2,6}$/i', $email)) {
+                     $this->send_mail($email, $subject, $message);
+                }
+            }            
+        }        
+
+        $this->model_tool_simpleapi->updateLastCronTime($this->getOpencartVersion() <= 200); 
+    }
+
+    private function send_mail($to, $subject, $message) {
+        $opencartVersion = $this->getOpencartVersion();
+
+        if ($opencartVersion < 200) {
+            $mail = new Mail();
+            $mail->protocol = $this->config->get('config_mail_protocol');
+            $mail->parameter = $this->config->get('config_mail_parameter');
+            $mail->hostname = $this->config->get('config_smtp_host');
+            $mail->username = $this->config->get('config_smtp_username');
+            $mail->password = $this->config->get('config_smtp_password');
+            $mail->port = $this->config->get('config_smtp_port');
+            $mail->timeout = $this->config->get('config_smtp_timeout');             
+            $mail->setTo($to);
+            $mail->setFrom($this->config->get('config_email'));
+            $mail->setSender($this->config->get('config_name'));
+            $mail->setSubject(html_entity_decode($subject, ENT_QUOTES, 'UTF-8'));
+            $mail->setText(html_entity_decode($message, ENT_QUOTES, 'UTF-8'));
+            $mail->send();
+        } elseif($opencartVersion < 203) {
+            $mail = new Mail($this->config->get('config_mail'));
+            $mail->setTo($to);
+            $mail->setFrom($this->config->get('config_email'));
+            $mail->setSender($this->config->get('config_name'));
+            $mail->setSubject($subject);
+            $mail->setText(html_entity_decode($message, ENT_QUOTES, 'UTF-8'));
+            $mail->send();
+        } else {
+            if ($opencartVersion < 300) {
+                $mail = new Mail();
+                $mail->protocol = $this->config->get('config_mail_protocol');
+            } else {
+                $mail = new Mail($this->config->get('config_mail_engine'));
+            }          
+            $mail->parameter = $this->config->get('config_mail_parameter');
+            $mail->smtp_hostname = $this->config->get('config_mail_smtp_hostname');
+            $mail->smtp_username = $this->config->get('config_mail_smtp_username');
+            $mail->smtp_password = html_entity_decode($this->config->get('config_mail_smtp_password'), ENT_QUOTES, 'UTF-8');
+            $mail->smtp_port = $this->config->get('config_mail_smtp_port');
+            $mail->smtp_timeout = $this->config->get('config_mail_smtp_timeout');
+            $mail->setTo($to);
+            $mail->setFrom($this->config->get('config_email'));
+            $mail->setSender(html_entity_decode($this->config->get('config_name'), ENT_QUOTES, 'UTF-8'));
+            $mail->setSubject(html_entity_decode($subject, ENT_QUOTES, 'UTF-8'));
+            $mail->setText(html_entity_decode($message, ENT_QUOTES, 'UTF-8'));
+            $mail->send();
         }
     }
 

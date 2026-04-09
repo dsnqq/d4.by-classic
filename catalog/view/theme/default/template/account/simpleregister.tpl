@@ -32,7 +32,6 @@
                     mainUrl: "<?php echo $action; ?>",
                     mainContainer: "#simplepage_form",
                     useAutocomplete: <?php echo $use_autocomplete ? 1 : 0 ?>,
-                    useGoogleApi: <?php echo $use_google_api ? 1 : 0 ?>,
                     loginLink: "<?php echo $login_link ?>",
                     scrollToError: <?php echo $scroll_to_error ? 1 : 0 ?>,
                     notificationDefault: <?php echo $notification_default ? 1 : 0 ?>,
@@ -47,7 +46,8 @@
                 if (typeof toastr !== 'undefined') {
                     toastr.options.positionClass = "<?php echo $notification_position ? $notification_position : 'toast-top-right' ?>";
                     toastr.options.timeOut = "<?php echo $notification_timeout ? $notification_timeout : '5000' ?>";
-                    toastr.options.progressBar = true;                    
+                    toastr.options.progressBar = true;            
+                    toastr.options.preventDuplicates = true;        
                 }
 
                 simplepage.init();

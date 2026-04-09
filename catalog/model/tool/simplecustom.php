@@ -13,6 +13,22 @@ class ModelToolSimpleCustom extends Model {
 
     static $_fields;
 
+    public function saveCustomFields($object, $id, $data, $metadata) {
+        $sql = array();
+
+        $sql[] = '`'.$object.'_id`=\''.(int)$id.'\'';
+
+        foreach ($data as $key => $value) {
+            $sql[] = '`'.$key.'`=\''.$this->db->escape($value).'\'';
+        }
+
+        $sql[] = '`metadata`=\''.$metadata.'\'';
+
+        $text = implode(',', $sql);
+        
+        $this->db->query('INSERT INTO `' . DB_PREFIX . $object . '_simple_fields` SET ' . $text . ' ON DUPLICATE KEY UPDATE ' . $text);
+    }
+
     private function loadFieldsSettings() {
         if (empty(self::$_fields)) {
             $settings = @json_decode($this->config->get('simple_settings'), true);
@@ -95,7 +111,7 @@ class ModelToolSimpleCustom extends Model {
             foreach ($result as $key => $value) {
                 $value = isset($query->row[$key]) ? $query->row[$key] : '';
 
-                if ($fields[$key]['type'] == 'radio' || $fields[$key]['type'] == 'select') {
+                if ($fields[$key]['type'] == 'radio' || $fields[$key]['type'] == 'select' || $fields[$key]['type'] == 'select2') {
                     $values = $loadFieldValues ? $this->getFieldValues($object, $id, $key, $fields[$key], $langCode) : array();
                     if ($loadFieldValues) {
                         $value = $value !== '' && isset($values[$value]) ? $values[$value] : '';
@@ -118,9 +134,11 @@ class ModelToolSimpleCustom extends Model {
                 } 
 
                 if ($fields[$key]['type'] == 'file') {
-                    $result['link:'.$key] = $this->createLinkToFile($value);
+                    $value = $this->createLinkToFile($value);
+                }
 
-                    $value = utf8_substr($value, 0, utf8_strrpos($value, '.'));
+                if ($fields[$key]['type'] == 'switcher') {
+                    $value = $value ? $this->language->get('text_yes') : $this->language->get('text_no');
                 }
 
                 $result[$key] = $value;

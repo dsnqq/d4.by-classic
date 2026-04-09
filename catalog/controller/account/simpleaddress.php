@@ -2,14 +2,12 @@
 /*
 @author	Dmitriy Kubarev
 @link	http://www.simpleopencart.com
-@link	http://www.opencart.com/index.php?route=extension/extension/info&extension_id=4811
 */
 
 include_once(DIR_SYSTEM . 'library/simple/simple_controller.php');
 
 class ControllerAccountSimpleaddress extends SimpleController {
-    private $_templateData = array();
-
+    
     public function insert($args = null) {
 
         $this->loadLibrary('simple/simpleaddress');
@@ -47,14 +45,14 @@ class ControllerAccountSimpleaddress extends SimpleController {
         );
 
         $this->_templateData['breadcrumbs'][] = array(
-            'text'      => $this->language->get($this->simpleaddress->getOpencartVersion() < 300 ? 'text_add_address' : 'text_address_add'),
+            'text'      => $this->language->get($this->simpleaddress->getOpencartVersion() < 300 ? 'text_edit_address' : 'text_address_add'),
             'href'      => $this->url->link('account/simpleaddress/insert', '', 'SSL'),
             'separator' => $this->language->get('text_separator')
         );
 
         $this->_templateData['action'] = 'index.php?'.$this->simpleaddress->getAdditionalParams().'route=account/simpleaddress/insert';
 
-        $this->_templateData['heading_title']   = $this->language->get('heading_title');
+        $this->_templateData['heading_title']   = $this->language->get($this->simpleaddress->getOpencartVersion() < 300 ? 'text_edit_address' : 'text_address_add');
         $this->_templateData['button_continue'] = $this->language->get('button_continue');
 
         $this->_templateData['error_warning'] = '';
@@ -72,8 +70,6 @@ class ControllerAccountSimpleaddress extends SimpleController {
 
         if ($this->request->server['REQUEST_METHOD'] == 'POST' && isset($this->request->post['submitted']) && $this->validate()) {
             $this->load->model('account/address');
-
-            $this->simpleaddress->clearUnusedFields();
 
             $addressInfo = $this->session->data['simple']['address'];
 
@@ -114,7 +110,6 @@ class ControllerAccountSimpleaddress extends SimpleController {
         $this->_templateData['additional_path']     = $this->simpleaddress->getAdditionalPath();
         $this->_templateData['additional_params']   = $this->simpleaddress->getAdditionalParams();
         $this->_templateData['use_autocomplete']    = $this->simpleaddress->getCommonSetting('useAutocomplete');
-        $this->_templateData['use_google_api']      = $this->simpleaddress->getCommonSetting('useGoogleApi');
         
         $this->_templateData['scroll_to_error']            = $this->simpleaddress->getCommonSetting('scrollingChanged') ? $this->simpleaddress->getCommonSetting('scrollToError') : $this->simpleaddress->getSettingValue('scrollToError');
 
@@ -155,8 +150,15 @@ class ControllerAccountSimpleaddress extends SimpleController {
                 'common/header',
             );
 
-            $this->_templateData['simple_header'] = $this->simpleaddress->getLinkToHeaderTpl();
-            $this->_templateData['simple_footer'] = $this->simpleaddress->getLinkToFooterTpl();
+            if ($this->simpleaddress->getOpencartVersion() < 300) {
+                $this->_templateData['simple_header'] = $this->simpleaddress->getLinkToHeaderTpl();
+                $this->_templateData['simple_footer'] = $this->simpleaddress->getLinkToFooterTpl();
+            } else {
+                $this->_templateData['simple_page'] = 'simpleaddress';
+
+                $this->_templateData['simple_header'] = $this->getSimpleHeader($childrens);
+                $this->_templateData['simple_footer'] = $this->getSimpleFooter($childrens);
+            }
         }
 
         $this->setOutputContent(trim($this->renderPage('account/simpleaddress', $this->_templateData, $childrens)));
@@ -208,7 +210,7 @@ class ControllerAccountSimpleaddress extends SimpleController {
 
         $this->_templateData['action'] = 'index.php?'.$this->simpleaddress->getAdditionalParams().'route=account/simpleaddress/update&address_id=' . $addressId;
 
-        $this->_templateData['heading_title']   = $this->language->get('heading_title');
+        $this->_templateData['heading_title']   = $this->language->get($this->simpleaddress->getOpencartVersion() < 300 ? 'text_edit_address' : 'text_address_edit');
         $this->_templateData['button_continue'] = $this->language->get('button_continue');
 
         $this->_templateData['error_warning'] = '';
@@ -224,8 +226,6 @@ class ControllerAccountSimpleaddress extends SimpleController {
 
         if ($this->request->server['REQUEST_METHOD'] == 'POST' && isset($this->request->post['submitted']) && $this->validate()) {
             $this->load->model('account/address');
-
-            $this->simpleaddress->clearUnusedFields();
 
             $addressInfo = $this->session->data['simple']['address'];
 
@@ -280,7 +280,6 @@ class ControllerAccountSimpleaddress extends SimpleController {
         $this->_templateData['additional_path']     = $this->simpleaddress->getAdditionalPath();
         $this->_templateData['additional_params']   = $this->simpleaddress->getAdditionalParams();
         $this->_templateData['use_autocomplete']    = $this->simpleaddress->getCommonSetting('useAutocomplete');
-        $this->_templateData['use_google_api']      = $this->simpleaddress->getSettingValue('useGoogleApi');
         
         $this->_templateData['scroll_to_error']            = $this->simpleaddress->getCommonSetting('scrollingChanged') ? $this->simpleaddress->getCommonSetting('scrollToError') : $this->simpleaddress->getSettingValue('scrollToError');
 
@@ -307,6 +306,8 @@ class ControllerAccountSimpleaddress extends SimpleController {
         $this->_templateData['popup']     = !empty($args['popup']) ? true : (isset($this->request->get['popup']) ? true : false);
         $this->_templateData['as_module'] = !empty($args['module']) ? true : (isset($this->request->get['module']) ? true : false);
 
+        $this->_templateData['language_code'] = isset($this->session->data['language']) && strlen($this->session->data['language']) > 0 && strlen($this->session->data['language']) < 6 ? $this->session->data['language'] : $this->config->get('config_language'); 
+        
         $childrens = array();
 
         if (!$this->simpleaddress->isAjaxRequest() && !$this->_templateData['popup'] && !$this->_templateData['as_module']) {
@@ -319,8 +320,15 @@ class ControllerAccountSimpleaddress extends SimpleController {
                 'common/header',
             );
 
-            $this->_templateData['simple_header'] = $this->simpleaddress->getLinkToHeaderTpl();
-            $this->_templateData['simple_footer'] = $this->simpleaddress->getLinkToFooterTpl();
+            if ($this->simpleaddress->getOpencartVersion() < 300) {
+                $this->_templateData['simple_header'] = $this->simpleaddress->getLinkToHeaderTpl();
+                $this->_templateData['simple_footer'] = $this->simpleaddress->getLinkToFooterTpl();
+            } else {
+                $this->_templateData['simple_page'] = 'simpleaddress';
+
+                $this->_templateData['simple_header'] = $this->getSimpleHeader($childrens);
+                $this->_templateData['simple_footer'] = $this->getSimpleFooter($childrens);
+            }
         }
 
         $this->setOutputContent(trim($this->renderPage('account/simpleaddress', $this->_templateData, $childrens)));

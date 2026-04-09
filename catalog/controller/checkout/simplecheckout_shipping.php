@@ -2,16 +2,14 @@
 /*
 @author	Dmitriy Kubarev
 @link	http://www.simpleopencart.com
-@link	http://www.opencart.com/index.php?route=extension/extension/info&extension_id=4811
 */
 
 include_once(DIR_SYSTEM . 'library/simple/simple_controller.php');
 
 class ControllerCheckoutSimpleCheckoutShipping extends SimpleController {
-    private $_templateData = array();
-
+    
     public function index() {
-        if (!$this->cart->hasShipping()) {
+        if (!$this->simplecheckout->hasShipping()) {
             return;
         }
 
@@ -19,6 +17,10 @@ class ControllerCheckoutSimpleCheckoutShipping extends SimpleController {
 
         $this->simplecheckout = SimpleCheckout::getInstance($this->registry);
 
+        if ($this->simplecheckout->getSettingValue('ignoreShipping')) {
+            return;
+        }
+        
         $this->language->load('checkout/simplecheckout');
 
         $get_route = isset($_GET['route']) ? $_GET['route'] : (isset($_GET['_route_']) ? $_GET['_route_'] : '');
@@ -69,6 +71,7 @@ class ControllerCheckoutSimpleCheckoutShipping extends SimpleController {
 
         foreach ($results as $result) {
             $display = true;
+            
 
             if ($this->_templateData['address_empty']) {
                 $display = $this->simplecheckout->displayShippingMethodForEmptyAddress($result['code']);
@@ -164,10 +167,6 @@ class ControllerCheckoutSimpleCheckoutShipping extends SimpleController {
 
         $this->_templateData['display_type'] = $this->simplecheckout->getShippingDisplayType();
 
-        if ($this->_templateData['display_type'] == '2') {
-            $selectFirst = true;
-        }
-
         if (!empty($this->_templateData['shipping_methods']) && ($hide || ($selectFirst && $this->_templateData['checked_code'] == ''))) {
             $first = false;
             foreach ($this->_templateData['shipping_methods'] as $method) {
@@ -196,10 +195,29 @@ class ControllerCheckoutSimpleCheckoutShipping extends SimpleController {
             unset($this->session->data['shipping_method']);
         }
 
+        $this->checkSessionData();
+
         $this->_templateData['rows'] = $this->simplecheckout->getRows('shipping');
 
         if (!$this->simplecheckout->validateFields('shipping')) {
             $this->simplecheckout->addError('shipping');
+        }
+
+        $hideCost     = $this->simplecheckout->getSettingValue('hideCost', 'shipping');
+        $hideZeroCost = $this->simplecheckout->getSettingValue('hideZeroCost', 'shipping');
+
+        if ($hideCost || $hideZeroCost) {
+            foreach ($this->_templateData['shipping_methods'] as &$shipping_method) {
+                foreach ($shipping_method['quote'] as $code => &$info) {
+                    if ($hideCost) {
+                        $info['text'] = '';
+                    }
+
+                    if ($hideZeroCost && empty($info['cost'])) {
+                        $info['text'] = '';
+                    }
+                }
+            }
         }
 
         $this->_templateData['display_header']        = $this->simplecheckout->getSettingValue('displayHeader', 'shipping');
@@ -207,13 +225,80 @@ class ControllerCheckoutSimpleCheckoutShipping extends SimpleController {
         $this->_templateData['display_address_empty'] = $this->simplecheckout->getSettingValue('displayAddressEmpty', 'shipping');
         $this->_templateData['has_error']             = $this->simplecheckout->hasError('shipping');
         $this->_templateData['hide']                  = $this->simplecheckout->isBlockHidden('shipping');
-        $this->_templateData['hide_cost']             = $this->simplecheckout->getSettingValue('hideCost', 'shipping');
+        
         $this->_templateData['display_for_selected']  = $this->simplecheckout->getSettingValue('displayDescriptionOnlyForSelected', 'shipping');
         
         $this->_templateData['text_checkout_shipping_method'] = $this->language->get('text_checkout_shipping_method');
         $this->_templateData['text_shipping_address']         = $this->language->get('text_shipping_address');
         $this->_templateData['error_no_shipping']             = sprintf($this->language->get('error_no_shipping'), $this->url->link('information/contact'));
-        
+
+        $this->_templateData['text_select'] = $this->language->get('text_select');
+
+        if (!empty($this->session->data['shipping_method'])) {
+            $validatorError = $this->validator($this->session->data['shipping_method']['code']);
+
+            if ($validatorError) {
+                $this->_templateData['has_error_shipping'] = true;
+                $this->_templateData['error_shipping']  = $validatorError;
+                $this->simplecheckout->addError('shipping');
+            }
+        }
+
         $this->setOutputContent($this->renderPage('checkout/simplecheckout_shipping', $this->_templateData));
+    }
+
+    public function validate() {
+        $json = array();
+
+        $shippingMethod = isset($this->request->post['shipping_method']) ? $this->request->post['shipping_method'] : '';
+
+        $error = $this->validator($shippingMethod);
+
+        if ($error) {
+            $json['error'] = $error;
+        }
+
+        $this->response->addHeader('Content-Type: application/json');
+		$this->response->setOutput(json_encode($json));
+    }
+
+    private function validator($shippingMethod) {
+        // тут можно добавить необходимые проверки для нестандартных модулей доставки 
+        // выбранный вариант доставки приходит в $shippingMethod
+        // если нужно предотвратить создание заказа и вывести ошибку, то достаточно вернуть текст ошибки
+        // return 'выберите пункт выдачи!';
+        // таким образом работа нестандартных модулей доставки может быть построена таким образом:
+        // 1. Модуль доставки возвращает свои дополнительные данные и скрипты в 'description'
+        // 2. Если пользователь в браузере выбирает пункт выдачи, то данные уходят контроллеру самого модуля доставки и сохраняются в сессии
+        // 3. При перезагрузке модуль доставки сам восстанавливает своё состояние с сессии и возвращает актуальное состояние в 'description'
+        // 4. Для предотвращения создания заказа в этом методе можно добавить необходимые проверки, например есть ли в сессии данные по пункту заказа.
+
+        return '';
+    } 
+    
+    private function checkSessionData() {
+        if (isset($this->session->data['shipping_method'])) {
+            if (isset($this->session->data['shipping_method']['cost'])) {
+                $this->session->data['shipping_method']['cost'] = (float)$this->session->data['shipping_method']['cost'];
+            }
+
+            if (isset($this->session->data['shipping_method']['image'])) {
+                unset($this->session->data['shipping_method']['image']);
+            }
+        }
+
+        if (isset($this->session->data['shipping_methods'])) {
+            foreach ($this->session->data['shipping_methods'] as $module_code => $methods) {
+                foreach($methods['quote'] as $method_code => $quote) {
+                    if (isset($this->session->data['shipping_methods'][$module_code]['quote'][$method_code]['image'])) {
+                        unset($this->session->data['shipping_methods'][$module_code]['quote'][$method_code]['image']);
+                    }
+
+                    if (isset($this->session->data['shipping_methods'][$module_code]['quote'][$method_code]['image_style'])) {
+                        unset($this->session->data['shipping_methods'][$module_code]['quote'][$method_code]['image_style']);
+                    }
+                }
+            }
+        }
     }
 }

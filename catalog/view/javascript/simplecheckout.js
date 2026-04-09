@@ -38,10 +38,11 @@
         this.currentStep = 1;
         this.saveStepNumber = this.currentStep;
         this.stepReseted = false;
-        this.formSubmitted = false;
+        this.isCreateOrderClicked = false;
         this.backCount = -1;
         this.$paymentForm = false;
         this.storageUsed = false;
+        this.paymentFormObserver = null;
 
         var checkIsInContainer = function($element, selector) {
             if ($element.parents(selector).length) {
@@ -106,10 +107,6 @@
                 self.$paymentForm = false;
             }
 
-            if (self.params.useGoogleApi) {
-                self.initGoogleApi(callbackForComplexField);
-            }
-
             if (self.params.useAutocomplete) {
                 self.initAutocomplete(callbackForComplexField);
             }
@@ -144,18 +141,22 @@
                 self.initReloadingOfPaymentForm();
             }
 
+            this.syncShippingAndPaymentAddresses();
+
             if (typeof self.callback === "function") {
-                self.callback();
+                try {
+                    self.callback();
+                } catch (e) {
+                    console.error(e);
+                }
             }
+
+            this.checkRedirect();
 
             $(window).on("unload", function() {
                 var doSomething = 1;
                 doSomething++;
-            });
-
-            if (self.params.useStorage) {
-                self.initStorage();
-            }
+            });        
         };
 
         this.useReloadingOfPaymentForm = function() {
@@ -187,20 +188,29 @@
 
                 if (bind) {
                     var funcOnChange = $element.attr("data-onchange");
+
                     if (funcOnChange) {
                         $element.on("change", function() {
                             self.setDirty($(this));
                             self.callFunc(funcOnChange, $element);
                         });
                     }
+
                     var funcOnClick = $element.attr("data-onclick");
+
                     if (funcOnClick) {
                         $element.on("click", function() {
-                            if ($element.attr("data-onclick-stopped")) {
+                            if ($(this).attr("disabled")) {
                                 return;
                             }
+
+                            var confirmText = $(this).attr("data-confirm-text");
+
                             self.setDirty();
-                            self.callFunc(funcOnClick, $element);
+                            
+                            if (!confirmText || (confirmText && confirm(confirmText))) {
+                                self.callFunc(funcOnClick, $element);
+                            }
                         });
                     }
                 }
@@ -224,7 +234,7 @@
                 }
             });
 
-            $(self.params.mainContainer).find("input, textarea").on("keydown", function(e) {
+            $(self.params.mainContainer).find("input, textarea").on("keydown change paste propertychange keyup input", function(e) {
                 if (self.skipKey(e.keyCode)) {
                     return;
                 }
@@ -254,11 +264,11 @@
                 }
             };
 
-            $(self.params.mainContainer).find("input[data-mask][data-reload-payment-form], input[type=radio][data-reload-payment-form], input[type=checkbox][data-reload-payment-form], select[data-reload-payment-form], input[type=date][data-reload-payment-form], input[type=time][data-reload-payment-form]").on("change", reload);
+            $(self.params.mainContainer).find("input[data-simple-mask][data-reload-payment-form], input[type=radio][data-reload-payment-form], input[type=checkbox][data-reload-payment-form], select[data-reload-payment-form], input[type=date][data-reload-payment-form], input[type=time][data-reload-payment-form]").on("change", reload);
 
             var timeoutId = 0;
 
-            $(self.params.mainContainer).find("input[type=text][data-reload-payment-form]:not([data-mask]), input[type=email][data-reload-payment-form]:not([data-mask]), input[type=tel][data-reload-payment-form]:not([data-mask]), textarea[data-reload-payment-form]").on("keydown", function(e) {
+            $(self.params.mainContainer).find("input[type=text][data-reload-payment-form]:not([data-simple-mask]), input[type=email][data-reload-payment-form]:not([data-simple-mask]), input[type=tel][data-reload-payment-form]:not([data-simple-mask]), textarea[data-reload-payment-form]").on("keydown", function(e) {
                 if (self.skipKey(e.keyCode)) {
                     return;
                 }
@@ -343,6 +353,14 @@
             }
         }
 
+        this.checkRedirect = function() {
+            var $redirect = $(this.params.mainContainer).find('#simple_redirect_url');
+
+            if ($redirect.length) {
+                window.location = $redirect.val();
+            }
+        }
+
         this.restorePaymentForm = function($oldForm) {
             var self = this;
             var $paymentForm = $(self.params.mainContainer).find(self.selectors.paymentForm);
@@ -391,6 +409,8 @@
             var self = this;
             var $mainContainer = $(self.params.mainContainer);
 
+            self.stopPaymentFormObserving();
+
             if (self.useReloadingOfPaymentForm()) {
                 self.savePaymentForm();
 
@@ -401,9 +421,11 @@
                 $mainContainer.find(self.selectors.paymentForm).attr("data-invalid", "true").empty();
             }
 
-            $mainContainer.find("*[data-payment-button=true]").remove();
+            $mainContainer.find("*[data-payment-button=true]").remove();    
             $mainContainer.find(self.selectors.proceedText).hide();
-            self.formSubmitted = false;
+
+            self.isCreateOrderClicked = false;
+            
             if (self.currentStep == self.stepsCount) {
                 $mainContainer.find(self.selectors.buttons).show();
                 $mainContainer.find(self.selectors.buttonCreate).show();
@@ -433,22 +455,18 @@
             var $lastButton = $paymentForm.find("input[type=button]:last,input[type=submit]:last,input[type=image]:last,button:last");
             var lastLink = $paymentForm.find("a:last").attr("href");
 
-            var overlayButton = function() {
+            var disableButton = function() {
                 $mainContainer.find(self.selectors.buttonCreate).attr("disabled", "disabled");
-                if (!$mainContainer.find(".wait").length) {
-                    //$mainContainer.find(self.selectors.buttonCreate).after("<span class='wait'>&nbsp;<img src='" + self.params.additionalPath + self.resources.loadingSmall + "' alt='' /></span>");
-                }
             };
 
-            var removeOverlay = function() {
+            var enableButton = function() {
                 $mainContainer.find(self.selectors.buttonCreate).removeAttr("disabled");
-                $mainContainer.find(".wait").remove();
             };
 
             if (typeof gatewayLink !== "undefined" && gatewayLink !== "" && gatewayLink !== "#" && gatewayLink !== "javascript://") {
-                overlayButton();
+                disableButton();
                 self.preventOrderDeleting(function() {
-                    removeOverlay();
+                    enableButton();
                     window.location = gatewayLink;
                     self.blockFieldsDuringPayment();
                     self.proceed();
@@ -457,9 +475,9 @@
                 if ($submitButton.attr("href") == "#" || $submitButton.attr("href") == "javascript://") {
                     $submitButton.removeAttr("href");
                 }
-                overlayButton();
+                disableButton();
                 self.preventOrderDeleting(function() {
-                    removeOverlay();
+                    enableButton();
                     if (!$submitButton.attr("disabled")) {
                         $submitButton.mousedown().click();
                         self.blockFieldsDuringPayment($submitButton);
@@ -467,9 +485,9 @@
                     }
                 });
             } else if ($lastButton.length) {
-                overlayButton();
+                disableButton();
                 self.preventOrderDeleting(function() {
-                    removeOverlay();
+                    enableButton();
                     if (!$lastButton.attr("disabled")) {
                         $lastButton.mousedown().click();
                         self.blockFieldsDuringPayment($lastButton);
@@ -477,9 +495,9 @@
                     }
                 });
             } else if (typeof lastLink !== "undefined" && lastLink !== "" && lastLink !== "#" && lastLink !== "javascript://") {
-                overlayButton();
+                disableButton();
                 self.preventOrderDeleting(function() {
-                    removeOverlay();
+                    enableButton();
                     window.location = lastLink;
                     self.blockFieldsDuringPayment();
                     self.proceed();
@@ -496,13 +514,10 @@
             var self = this;
             var $paymentForm = $(self.params.mainContainer).find(self.selectors.paymentForm);
             var $elements = $paymentForm.find(":visible:not(form)");
-            var maxHeight = 0;
+            var paymentFormHeight = $paymentForm.height();
+            var ignoreHeight = 50;
 
-            $elements.each(function(){
-                maxHeight = $(this).outerHeight() > maxHeight ? $(this).outerHeight() : maxHeight;
-            });
-
-            return !self.isPaymentFormEmpty() && $elements.length > 0 && maxHeight > 0 ? true : false;
+            return !self.isPaymentFormEmpty() && $elements.length > 0 && paymentFormHeight > ignoreHeight ? true : false;
         };
 
         this.isPaymentFormEmpty = function() {
@@ -510,6 +525,42 @@
             var $paymentForm = $(self.params.mainContainer).find(self.selectors.paymentForm);
 
             return $paymentForm.length && $paymentForm.find("*").length > 0 ? false : true;
+        };
+
+        this.startPaymentFormObserving = function() {
+            var self = this;
+            var $paymentForm = $(self.params.mainContainer).find(self.selectors.paymentForm);
+
+            if ($paymentForm.length) {
+                try {
+                    var counter = 0;
+                    var threshold = 3;
+
+                    self.paymentFormObserver = new MutationObserver(function(mutation) {
+                        if (counter < threshold) {
+                            self.replaceCreateButtonWithConfirm();
+                        }
+
+                        counter += 1;
+                    });
+                    
+                    self.paymentFormObserver.observe($paymentForm.get(0), {
+                        childList: true,
+                        subtree: true,
+                        characterData: true,
+                        attributes: false
+                    });
+                } catch (e) {
+
+                }
+            }
+        };
+
+        this.stopPaymentFormObserving = function() {
+            if (this.paymentFormObserver) {
+                this.paymentFormObserver.disconnect();
+                this.paymentFormObserver = null;
+            }
         };
 
         this.replaceCreateButtonWithConfirm = function() {
@@ -545,25 +596,30 @@
 
                 var $clone = $obj.clone(false).removeAttr("onclick").addClass("btn button");
 
+                $mainContainer.find("*[data-payment-button=true]").remove();
                 $mainContainer.find(self.selectors.buttonCreate).hide().before($clone);
 
-                $clone.attr("data-payment-button", "true").bind("mousedown", function() {
-                    if ($obj.attr("disabled")) {
-                        return;
-                    }
+                $clone
+                    .attr("data-payment-button", "true")
+                    .bind("mousedown", function() {
+                        if ($obj.attr("disabled")) {
+                            return;
+                        }
 
-                    $obj.mousedown();
-                }).bind("click", function() {
-                    if ($obj.attr("disabled")) {
-                        return;
-                    }
+                        $obj.mousedown();
+                    })
+                    .bind("click", function() {
+                        if ($obj.attr("disabled")) {
+                            return;
+                        }
 
-                    self.preventOrderDeleting(function() {
-                        self.proceed();
-                        $obj.click();
-                        self.blockFieldsDuringPayment($obj);
-                    });
-                });
+                        self.preventOrderDeleting(function() {
+                            self.proceed();
+                            $obj.click();
+                            self.blockFieldsDuringPayment($obj);
+                        });
+                    })
+                    .show();
 
                 $obj.hide();
             } else {
@@ -595,7 +651,7 @@
                     return;
                 }
                 $(this).find("input,select,textarea").attr("disabled", "disabled");
-                $(this).find("[data-onclick]").attr("data-onclick-stopped", "true");
+                $(this).find("[data-onclick]").attr("disabled", "disabled");
             });
         };
 
@@ -607,7 +663,7 @@
                     return;
                 }
                 $(this).find("input:not([data-dummy]),select,textarea").removeAttr("disabled");
-                $(this).find("[data-onclick]").removeAttr("data-onclick-stopped");
+                $(this).find("[data-onclick]").removeAttr("disabled");
             });
         };
 
@@ -689,7 +745,7 @@
 
         this.addSystemFieldsInForm = function() {
             var self = this;
-            if (self.formSubmitted) {
+            if (self.isCreateOrderClicked) {
                 $(self.params.mainContainer).append($("<input/>").attr("type", "hidden").attr("name", "create_order").val(1));
             }
             if (self.currentStep) {
@@ -807,6 +863,7 @@
                 if (self.currentStep == self.stepsCount) {
                     $mainContainer.find(self.selectors.buttonNext).hide();
                     self.replaceCreateButtonWithConfirm();
+                    self.startPaymentFormObserving();
                 }
             };
 
@@ -871,7 +928,7 @@
             initStepsMenu();
             initButtons();
 
-            if (self.currentStep == self.stepsCount && !self.isPaymentFormVisible() && self.isPaymentFormValid() && (isLastStepHasOnlyPaymentForm() || self.formSubmitted)) {
+            if (self.currentStep == self.stepsCount && !self.isPaymentFormVisible() && self.isPaymentFormValid() && (isLastStepHasOnlyPaymentForm() || self.isCreateOrderClicked)) {
                 self.clickOnConfirmButton();
                 if (isLastStepHasOnlyPaymentForm()) {
                     self.currentStep--;
@@ -956,6 +1013,15 @@
                         }, "slow");
                     }
                 }
+            }
+
+            var mainContainerTop = $mainContainer.offset().top;
+            var mainContainerHeight = $mainContainer.outerHeight();
+
+            if ((mainContainerTop + mainContainerHeight) < $(window).scrollTop()) {
+                $("html, body").animate({
+                    scrollTop: mainContainerTop - 50
+                }, "slow");
             }
 
             if (self.params.scrollToPaymentForm && !error) {
@@ -1081,7 +1147,7 @@
 
             self.validate(false).then(function(result) {
                 if (result) {
-                    self.formSubmitted = true;
+                    self.isCreateOrderClicked = true;
                     self.submitForm();
                 } else {
                     if (typeof toastr !== 'undefined' && self.params.notificationCheckForm) {
@@ -1115,6 +1181,7 @@
 
         this.overlayAll = function() {
             var self = this;
+            var $mainContainer = $(self.params.mainContainer);
 
             for (var i in self.blocks) {
                 if (!self.blocks.hasOwnProperty(i)) continue;
@@ -1122,24 +1189,31 @@
                 self.blocks[i].overlay();
             }
 
-            $(self.params.mainContainer).find(self.selectors.block).each(function() {
+            $mainContainer.find(self.selectors.block).each(function() {
                 if (!$(this).data("initialized")) {
                     SimplecheckoutBlock.prototype.overlay.apply(self, [$(this)]);
                 }
             });
+
+            $mainContainer.find("[data-onclick]").attr("disabled", "disabled");
         };
 
         this.removeOverlays = function() {
             var self = this;
+            var $mainContainer = $(self.params.mainContainer);
 
-            $(self.params.mainContainer).find(self.selectors.overlay).remove();
-            $(self.params.mainContainer).find("input:not([data-dummy]),select,textarea").removeAttr("disabled");
+            $mainContainer.find(self.selectors.overlay).remove();
+            $mainContainer.find("input:not([data-dummy]),select,textarea").removeAttr("disabled");
+            $mainContainer.find("[data-onclick]").removeAttr("disabled");
+        };
+
+        this.syncShippingAndPaymentAddresses = function() {
+            //$("#simplecheckout_payment_address").find("input:not([type=hidden]),select,textarea").on("change", )
         };
 
         this.createPostData = function() {
             var self = this;
             var usedBlocks = [];
-            var usedFields = [];
             var fields = [];
 
             var copyFields = function(serializedFields, skipUsed) {
@@ -1147,10 +1221,10 @@
                     if (!serializedFields.hasOwnProperty(i)) continue;
 
                     var info = serializedFields[i];
+                    var pair = encodeURIComponent(info.name)+"="+encodeURIComponent(info.value);
 
-                    if (typeof skipUsed === "undefined" || info.name.indexOf("[]") > -1 || (skipUsed && $.inArray(info.name, usedFields) == -1)) {
-                        usedFields.push(info.name)
-                        fields.push(encodeURIComponent(info.name)+"="+encodeURIComponent(info.value));
+                    if (typeof skipUsed === "undefined" || (skipUsed && $.inArray(pair, fields) == -1)) {
+                        fields.push(pair);
                     }
                 }
             };
@@ -1162,7 +1236,7 @@
                     usedBlocks.push($block.attr("id"));
                 }
 
-                copyFields($block.find("input,select,textarea").serializeArray());
+                copyFields(self.serializeFields($block));
             });
 
             $(self.params.mainContainer + " .simplecheckout-step:not(:visible) .simplecheckout-block:not(#simplecheckout_payment_form)").each(function() {
@@ -1172,14 +1246,14 @@
                     return;
                 }
 
-                copyFields($block.find("input,select,textarea").serializeArray());
+                copyFields(self.serializeFields($block));
             });
 
-            var otherFields = $(self.params.mainContainer + " *:not(#simplecheckout_payment_form)").find("input,select,textarea").serializeArray();
+            var otherFields = self.serializeFields($(self.params.mainContainer + " *:not(#simplecheckout_payment_form)"));
 
             copyFields(otherFields, true);
 
-            var allFields = $(self.params.mainContainer + " > input,select,textarea").serializeArray();
+            var allFields = self.serializeFields($(self.params.mainContainer));
 
             copyFields(allFields, true);
 
@@ -1234,7 +1308,12 @@
                         newData = data;
                     }
 
-                    $(self.params.mainContainer).replaceWith(newData);
+                    try {
+                        $(self.params.mainContainer).replaceWith(newData);
+                    } catch (e) {
+                        console.error(e);
+                    }
+
                     self.init(disableScroll, changeStep);
 
                     if (typeof callback === "function") {
@@ -1268,14 +1347,23 @@
                 beforeSend: function() {},
                 success: function(data) {
                     var newData = $(container, $(data)).get(0);
+
                     if (!newData && data) {
                         newData = data;
                     }
-                    $(container).replaceWith(newData);
+
+                    try {
+                        $(container).replaceWith(newData);
+                    } catch (e) {
+                        console.error(e);
+                    }
+
                     self.init();
+
                     if (typeof callback === "function") {
                         callback.call(self);
                     }
+
                     self.isReloading = false;
                 },
                 error: function(xhr, ajaxOptions, thrownError) {
@@ -1320,7 +1408,7 @@
 
     SimplecheckoutBlock.prototype.reloadAll = function(callback) {
         if (this.simplecheckout) {
-            this.simplecheckout.requestReloadAll(callback);
+            this.simplecheckout.requestReloadAll(callback, false);
         } else {
             this.reload();
         }
@@ -1343,13 +1431,21 @@
             },
             success: function(data) {
                 var newData = $(self.currentContainer, $(data)).get(0);
+                
                 if (!newData && data) {
                     newData = data;
                 }
-                $(self.params.mainContainer).find(self.currentContainer + ":visible").replaceWith(newData);
+
+                try {
+                    $(self.params.mainContainer).find(self.currentContainer + ":visible").replaceWith(newData);
+                } catch (e) {
+                    console.error(e);
+                }
+
                 if (typeof callback === "function") {
                     callback.call(self);
                 }
+                
                 self.removeOverlay();
                 self.isReloading = false;
                 self.init();
@@ -1361,7 +1457,7 @@
         });
     };
 
-    SimplecheckoutBlock.prototype.load = function(callback, container) {
+    SimplecheckoutBlock.prototype.load = function(callback, container, params) {
         var self = this;
         if (self.isLoading) {
             return;
@@ -1370,9 +1466,12 @@
             container = callback;
             callback = null;
         }
+        if (typeof params === "undefined") {
+            params = "";
+        }
         self.isLoading = true;
         $.ajax({
-            url: "index.php?" + self.params.additionalParams + "route=" + self.currentRoute,
+            url: "index.php?" + self.params.additionalParams + "route=" + self.currentRoute + params,
             type: "GET",
             dataType: "text",
             beforeSend: function() {
@@ -1380,19 +1479,27 @@
             },
             success: function(data) {
                 var newData = $(self.currentContainer, $(data)).get(0);
+
                 if (!newData && data) {
                     newData = data;
                 }
+
                 if (newData) {
-                    if (container) {
-                        $(container).html(newData);
-                    } else {
-                        $(self.currentContainer).replaceWith(newData);
+                    try {
+                        if (container) {
+                            $(container).html(newData);
+                        } else {
+                            $(self.currentContainer).replaceWith(newData);
+                        }
+                    } catch (e) {
+                        console.error(e);
                     }
                 }
+
                 if (typeof callback === "function") {
                     callback();
                 }
+
                 self.removeOverlay();
                 self.isLoading = false;
                 self.init();
@@ -1413,6 +1520,7 @@
                 return;
             }
             $block.find("input,select,textarea").attr("disabled", "disabled");
+            $block.find("[data-onclick]").attr("disabled", "disabled");
             $block.append("<div class='simplecheckout_overlay' id='" + $block.attr("id") + "_overlay'></div>");
             $block.find(".simplecheckout_overlay")
                 .css({
@@ -1436,6 +1544,7 @@
 
         if (typeof self.currentContainer !== "undefined") {
             $mainContainer.find(self.currentContainer).find("input:not([data-dummy]),select,textarea").removeAttr("disabled");
+            $mainContainer.find(self.currentContainer).find("[data-onclick]").removeAttr("disabled");
             $mainContainer.find(self.currentContainer + "_overlay").remove();
         }
     };
@@ -1469,7 +1578,7 @@
         });
 
         $currentContainer.find("*[data-onclick]").on("click", function(e) {
-            if ($(this).attr("data-onclick-stopped")) {
+            if ($(this).attr("disabled")) {
                 return;
             }
 
@@ -1477,7 +1586,11 @@
                 self.simplecheckout.setDirty();
             }
 
-            callFunc($(this).attr("data-onclick"), $(this), e);
+            var confirmText = $(this).attr("data-confirm-text");
+
+            if (!confirmText || (confirmText && confirm(confirmText))) {
+                callFunc($(this).attr("data-onclick"), $(this), e);
+            }
         });
 
         $currentContainer.find("*[data-onkeydown]").on("keydown", function(e) {
@@ -1565,10 +1678,10 @@
         var $currentContainer = $(self.params.mainContainer).find(self.currentContainer + ":visible");
         var focusedFieldId = self.simplecheckout.focusedFieldId;
 
-        if (focusedFieldId) {
+        if (focusedFieldId && $currentContainer) {
             var focusedField = $currentContainer.find("#" + focusedFieldId);
 
-            if (focusedField.length && focusedField.is(":visible") && ((focusedField.attr("type") && focusedField.attr("type") == "text" && !focusedField.attr("data-type") && !focusedField.attr("data-mask")) || focusedField.is("textarea"))) {
+            if (focusedField.length && focusedField.is(":visible") && ((focusedField.attr("type") && focusedField.attr("type") == "text" && !focusedField.attr("data-type") && !focusedField.attr("data-simple-mask")) || focusedField.is("textarea"))) {
                 var $field = $currentContainer.find("#" + focusedFieldId);
                 var value = $field.val();
                 $field.val("").focus().val(value);
@@ -1606,6 +1719,14 @@
             return deferred.promise();
         };  
 
+        this.clearCart = function() {
+            var self = this;
+
+            $.get("index.php?" + self.params.additionalParams + "route=" + self.currentRoute + "/clear", function() {
+                self.reloadAll();
+            });
+        };
+
         this.initMiniCart = function() {
             var self = this;
             var $mainContainer = $(self.params.mainContainer);
@@ -1618,26 +1739,6 @@
                 });
 
                 $("#weight").text(weight);
-
-                if (self.params.currentTheme == "shoppica2") {
-                    $("#cart_menu div.s_cart_holder").html("");
-                    $.getJSON("index.php?" + self.params.additionalParams + "route=tb/cartCallback", function(json) {
-                        if (json["html"]) {
-                            $("#cart_menu span.s_grand_total").html(json["total_sum"]);
-                            $("#cart_menu div.s_cart_holder").html(json["html"]);
-                        }
-                    });
-                }
-
-                if (self.params.currentTheme == "shoppica") {
-                    $("#cart_menu div.s_cart_holder").html("");
-                    $.getJSON("index.php?" + self.params.additionalParams + "route=module/shoppica/cartCallback", function(json) {
-                        if (json["output"]) {
-                            $("#cart_menu span.s_grand_total").html(json["total_sum"]);
-                            $("#cart_menu div.s_cart_holder").html(json["output"]);
-                        }
-                    });
-                }
             }
         };
 
@@ -1646,7 +1747,7 @@
 
             var $quantity = $target.parents(".quantity").find("input");
             var quantity = parseFloat($quantity.val());
-            var step = +($quantity.attr("data-minimum") || 1);
+            var step = +$quantity.attr("data-minimum") || 1;
 
             if (!isNaN(quantity)) {
                 $quantity.val(quantity + step);
@@ -1669,7 +1770,7 @@
 
             var $quantity = $target.parents(".quantity").find("input");
             var quantity = parseFloat($quantity.val());
-            var step = +($quantity.attr("data-minimum") || 1);
+            var step = +$quantity.attr("data-minimum") || 1;
             
             if (!isNaN(quantity) && quantity > step) {
                 $quantity.val(quantity - step);
@@ -1694,9 +1795,19 @@
                 $target = $target.parents("td").find("input");
             }
 
-            var quantity = parseFloat($target.val());
+            var $quantity = $target.parents(".quantity").find("input");
+            var quantity = parseFloat($quantity.val());
+            var step = +$quantity.attr("data-minimum") || 1;
+
+            quantity = Math.round(quantity / step) * step;
+
+            if (!quantity) {
+                quantity = step;
+            }
 
             if (!isNaN(quantity)) {
+                $quantity.val(quantity);
+
                 self.copyCartState($target);
 
                 self.reloadAll();
@@ -1708,7 +1819,10 @@
             var $currentContainer = $(self.params.mainContainer).find(self.currentContainer + ":visible");
 
             var productKey = $target.attr("data-product-key");
-            $currentContainer.find("#simplecheckout_remove").val(productKey);
+
+            var $target = $currentContainer.find("#simplecheckout_remove");
+            $target.val(productKey);
+            self.copyCartState($target);
 
             self.reloadAll();
         };
@@ -1718,7 +1832,10 @@
             var $currentContainer = $(self.params.mainContainer).find(self.currentContainer + ":visible");
 
             var giftKey = $target.attr("data-gift-key");
-            $currentContainer.find("#simplecheckout_remove").val(giftKey);
+
+            var $target = $currentContainer.find("#simplecheckout_remove");
+            $target.val(giftKey);
+            self.copyCartState($target);
 
             self.reloadAll();
         };
@@ -1727,7 +1844,10 @@
             var self = this;
             var $currentContainer = $(self.params.mainContainer).find(self.currentContainer + ":visible");
 
-            $currentContainer.find("input[name='coupon']").val("");
+            $target = $currentContainer.find("input[name='coupon']");
+            $target.val("");
+            self.copyCartState($target);
+
             self.reloadAll();
         };
 
@@ -1735,7 +1855,10 @@
             var self = this;
             var $currentContainer = $(self.params.mainContainer).find(self.currentContainer + ":visible");
 
-            $currentContainer.find("input[name='reward']").val("");
+            $target = $currentContainer.find("input[name='reward']");
+            $target.val("");
+            self.copyCartState($target);
+            
             self.reloadAll();
         };
 
@@ -1743,7 +1866,10 @@
             var self = this;
             var $currentContainer = $(self.params.mainContainer).find(self.currentContainer + ":visible");
 
-            $currentContainer.find("input[name='voucher']").val("");
+            $target = $currentContainer.find("input[name='voucher']");
+            $target.val("");
+            self.copyCartState($target);
+
             self.reloadAll();
         };
 
@@ -1960,8 +2086,33 @@
                 result = false;
             }
 
-            SimplecheckoutBlock.prototype.validate.apply(self, arguments).then(function(validatorResult) {
-                deferred.resolve(result && validatorResult);
+            var fieldsValidator = SimplecheckoutBlock.prototype.validate.apply(self, arguments).then(function(validatorResult) {
+                result = result && validatorResult;
+            });
+
+            var backendValidator = $.ajax({
+                url: "index.php?" + self.params.additionalParams + "route=" + self.currentRoute + "/validate",
+                data: $currentContainer.find("input:checked,option:selected"),
+                type: "POST",
+                dataType: "json",
+                success: function(json) {
+                    if (json['error']) {
+                        $("<div/>")
+                            .addClass("alert alert-danger simplecheckout-warning-block simplecheckout-validator-result")
+                            .html(json['error'])
+                            .insertBefore($currentContainer.find(".simplecheckout-block-content"));
+
+                        result = false;
+
+                        return;
+                    } else {
+                        $currentContainer.find(".simplecheckout-validator-result").remove();
+                    }
+                },                   
+            });
+
+            $.when.apply($, [fieldsValidator, backendValidator]).then(function () {
+                deferred.resolve(result);
             });
 
             return deferred.promise();

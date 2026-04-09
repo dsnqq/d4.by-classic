@@ -39,10 +39,6 @@
 
             self.requestTimerId = 0;
 
-            if (self.params.useGoogleApi) {
-                self.initGoogleApi(callbackForComplexField);
-            }
-
             if (self.params.useAutocomplete) {
                 self.initAutocomplete(callbackForComplexField);
             }
@@ -338,7 +334,19 @@
             }
             self.addSystemFieldsInForm();
             self.isReloading = true;
-            postData = $(self.params.mainContainer).find("input,select,textarea").serialize();
+
+            var fields = [];
+            var serializedFields = self.serializeFields($(self.params.mainContainer));
+
+            for (var i in serializedFields) {
+                if (!serializedFields.hasOwnProperty(i)) continue;
+
+                var info = serializedFields[i];
+
+                fields.push(encodeURIComponent(info.name)+"="+encodeURIComponent(info.value));
+            }
+
+            postData = fields.join("&");
 
             var overlayTimeoutId = 0;
 

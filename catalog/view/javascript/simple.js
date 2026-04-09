@@ -8,9 +8,33 @@
 
     Simple.prototype.resources = {
         loading: "catalog/view/image/loading.gif",
-        loadingSmall: "catalog/view/theme/default/image/loading.gif",
         next: "catalog/view/image/next_gray.png",
         nextCompleted: "catalog/view/image/next_green.png"
+    };
+
+    Simple.prototype.serializeFields = function($block) {
+        var serialized = $block.find("input,select,textarea").serializeArray();
+
+        $block.find('input:checkbox:not(:checked)').each(function() {
+            var found = false;
+
+            for (var i in serialized) {
+                if (!serialized.hasOwnProperty(i)) continue;
+
+                if (serialized[i].name == this.name) {
+                    found = true;
+                }
+            }
+
+            if (!found) {
+                serialized.push({
+                    name: this.name,
+                    value: this.dataset && this.dataset.uncheckedValue ? this.dataset.uncheckedValue : ''
+                });
+            }
+        });
+
+        return serialized;
     };
 
     Simple.prototype.getValidationRules = function() {
@@ -19,6 +43,7 @@
         return {
             notEmpty: function($rule, silent) {
                 var fieldId = $rule.attr("data-for");
+                var fieldType = $rule.attr("data-for-type");
 
                 if (typeof silent === "undefined") {
                     silent = false;
@@ -26,6 +51,10 @@
 
                 if (fieldId) {
                     var $field = $(self.params.mainContainer).find("#" + fieldId);
+
+                    if (fieldType == 'checkbox' || fieldType == 'radio') {
+                        $field = $(self.params.mainContainer).find("[id*=" + fieldId + "_]");
+                    }
                     
                     if ($field.length) {
                         if (!$rule.attr("data-required")) {
@@ -35,17 +64,14 @@
 
                         var value = "";
 
-                        if ($field.attr("type") == "checkbox") {
+                        if (fieldType == "checkbox" || fieldType == "radio") {
                             var arr = $field.serializeArray();
                             var values = [];
                             for (var i in arr) {
                                 if (!arr.hasOwnProperty(i)) continue;
-                                var realValue = arr[i].name.match(/.+\[(.+)\]\[(.+)\]/);
-                                values.push(realValue[2]);                                   
+                                values.push(arr[i].value);                                   
                             }
                             value = values.join(',');
-                        } else if ($field.attr("type") == "radio") {
-                            value = $(self.params.mainContainer).find("#" + fieldId + ":checked").val();
                         } else {
                             value = $field.val();
                         }
@@ -145,6 +171,7 @@
                             return false;
                         } else {
                             $rule.hide();
+
                             return true;
                         }
                     }
@@ -153,6 +180,7 @@
             },
             regexp: function($rule, silent) {
                 var fieldId = $rule.attr("data-for");
+                var fieldType = $rule.attr("data-for-type");
 
                 if (typeof silent === "undefined") {
                     silent = false;
@@ -161,23 +189,24 @@
                 if (fieldId) {
                     var $field = $(self.params.mainContainer).find("#" + fieldId);
 
+                    if (fieldType == 'checkbox' || fieldType == 'radio') {
+                        $field = $(self.params.mainContainer).find("[id*=" + fieldId + "_]");
+                    }
+                    
                     if ($field.length) {
                         var regexp = $rule.attr("data-regexp");
 
                         if (regexp) {
                             var value = "";
 
-                            if ($field.attr("type") == "checkbox") {
+                            if (fieldType == "checkbox" || fieldType == "radio") {
                                 var arr = $field.serializeArray();
                                 var values = [];
                                 for (var i in arr) {
                                     if (!arr.hasOwnProperty(i)) continue;
-                                    var realValue = arr[i].name.match(/.+\[(.+)\]\[(.+)\]/);
-                                    values.push(realValue[2]);                                   
+                                    values.push(arr[i].value);                                   
                                 }
                                 value = values.join(',');
-                            } else if ($field.attr("type") == "radio") {
-                                value = $(self.params.mainContainer).find("#" + fieldId + ":checked").val();
                             } else {
                                 value = $field.val();
                             }
@@ -213,6 +242,8 @@
             },
             api: function($rule, silent) {
                 var fieldId = $rule.attr("data-for");
+                var fieldType = $rule.attr("data-for-type");
+
                 var $mainContainer = $(self.params.mainContainer);
 
                 if (typeof silent === "undefined") {
@@ -222,78 +253,63 @@
                 if (fieldId) {
                     var $field = $mainContainer.find("#" + fieldId);
 
+                    if (fieldType == 'checkbox' || fieldType == 'radio') {
+                        $field = $(self.params.mainContainer).find("[id*=" + fieldId + "_]");
+                    }
+
                     if ($field.length) {
-                        var filter = "";
-
-                        if ($rule.attr("data-filter")) {
-                            var $filter = $mainContainer.find("#" + $rule.attr("data-filter"));
-
-                            if ($filter.length) {
-                                if ($filter.attr("type") == "radio") {
-                                    var $checked = $mainContainer.find("#" + $rule.attr("data-filter") + ":checked");
-                                    if ($checked) {
-                                        filter = $checked.val();
-                                    } else {
-                                        filter = "";
-                                    }
-                                } else if ($filter.attr("type") == "checkbox") {
-                                    var $checkboxes = $mainContainer.find("#" + $rule.attr("data-filter"));
-                                    if ($checkboxes) {
-                                        var tmp = [];
-                                        var matches = false;
-
-                                        for (var i = 0; i < $checkboxes.length; i++) {
-                                            matches = $($checkboxes[i]).attr("name").match(/\]\[(.+?)\]$/);
-
-                                            if (matches) {
-                                                if ($($checkboxes[i]).is(":checked")) {
-                                                    tmp[tmp.length] = matches[1];
-                                                }
-                                            } else {
-                                                if ($($checkboxes[i]).is(":checked")) {
-                                                    tmp[0] = '1';
-                                                } else {
-                                                    tmp[0] = '0';
-                                                }
-                                            }                                                                             
-                                        }
-                                        filter = tmp.join(",");
-                                    } else {
-                                        filter = "";
-                                    }
-                                } else {
-                                    filter = $filter.val();
-                                }
-                            } else if ($rule.attr("data-filter-value")) {
-                                filter = $rule.attr("data-filter-value");
-                            }
-                        }
-
                         var method = $rule.attr("data-method");
 
                         if (method) {
+                            var filter = "";
+
+                            if ($rule.attr("data-filter")) {
+                                var filterType = $rule.attr("data-filter-type");
+
+                                var $filter = $mainContainer.find("#" + $rule.attr("data-filter"));
+
+                                if (filterType == 'checkbox' || filterType == 'radio') {
+                                    $filter = $mainContainer.find("[id*=" + $rule.attr("data-filter") + "_]");
+                                }
+
+                                if ($filter.length) {
+                                    if (filterType == "radio" || filterType == "checkbox") {
+                                        var arr = $filter.serializeArray();
+                                        var values = [];
+                                        for (var i in arr) {
+                                            if (!arr.hasOwnProperty(i)) continue;
+                                            values.push(arr[i].value);                                   
+                                        }
+                                        filter = values.join(',');
+                                    } else {
+                                        filter = $filter.val();
+                                    }
+                                } else if ($rule.attr("data-filter-value")) {
+                                    filter = $rule.attr("data-filter-value");
+                                }
+                            }
+
                             var custom = $rule.attr("data-custom") ? true : false;
 
                             var deferred = $.Deferred();
 
                             var value = "";
 
-                            if ($field.attr("type") == "checkbox") {
+                            if (fieldType == "checkbox" || fieldType == "radio") {
                                 var arr = $field.serializeArray();
                                 var values = [];
                                 for (var i in arr) {
                                     if (!arr.hasOwnProperty(i)) continue;
-                                    var realValue = arr[i].name.match(/.+\[(.+)\]\[(.+)\]/);
-                                    values.push(realValue[2]);                                   
+                                    values.push(arr[i].value);                                   
                                 }
                                 value = values.join(',');
-                            } else if ($field.attr("type") == "radio") {
-                                value = $(self.params.mainContainer).find("#" + fieldId + ":checked").val();
                             } else {
                                 value = $field.val();
                             }
 
-                            $.get("index.php?" + self.params.additionalParams + "route=common/simple_connector/validate&method=" + method + "&filter=" + filter + "&value=" + value + (custom ? "&custom=1 " : ""), function(data) {
+                            $.get("index.php?" + self.params.additionalParams + "route=common/simple_connector/validate&method=" + method + "&filter=" + encodeURIComponent(filter) + "&value=" + encodeURIComponent(value) + (custom ? "&custom=1 " : ""), function(data) {
+                                data = data.trim();
+                                
                                 if (data == "invalid") {
                                     if (!silent) {
                                         if (typeof toastr !== 'undefined' && self.params.notificationToasts) {
@@ -332,6 +348,10 @@
 
             if (fieldId) {
                 var $field = $mainContainer.find("#" + fieldId);
+                
+                if (!$field.length) {
+                    $field = $mainContainer.find("[id*=" + fieldId + "_]");
+                }
 
                 if ($field.length) {
                     var checker = function() {
@@ -341,7 +361,7 @@
                             var $rule = $(this);
                             var type = $(this).attr("data-rule");
                             var rules = self.getValidationRules();
-
+                            
                             if (typeof rules[type] === "function") {
                                 var promise = $.when(rules[type]($rule)).then(function(ruleResult){
                                     if (!ruleResult) {
@@ -367,7 +387,7 @@
                     };
 
                     var $pairField = false;
-
+                    
                     $ruleGroup.find(".simplecheckout-rule").each(function() {
                         if ($(this).attr("data-rule") == 'equal' && $(this).attr("data-equal")) {
                             if ($("#" + $(this).attr("data-equal")).length) {
@@ -376,7 +396,7 @@
                         }
                     });
 
-                    if ($field.attr('data-validate-on') && typeof $field[$field.attr('data-validate-on')] === 'function') {
+                    if (!self.params.notificationToasts && $field.attr('data-validate-on') && typeof $field[$field.attr('data-validate-on')] === 'function') {
                         $field[$field.attr('data-validate-on')](checker);
 
                         if ($pairField) {
@@ -386,7 +406,11 @@
                         $field.change(checker);
 
                         if ($pairField) {
-                            $pairField.change(checker);
+                            $pairField.change(function() { 
+                                if ($field.val()) {
+                                    checker.call($field);
+                                }
+                            });
                         }
                     }                    
                 }
@@ -419,6 +443,10 @@
 
                 if (fieldId) {
                     var $field = $mainContainer.find("#" + fieldId);
+
+                    if (!$field.length) {
+                        $field = $mainContainer.find("[id*=" + fieldId + "_]");
+                    }
 
                     if ($field.length) {
                         $ruleGroup.find(".simplecheckout-rule").each(function() {
@@ -689,25 +717,26 @@
         var self = this;
         var $mainContainer = $(self.params.mainContainer);
 
-        $mainContainer.find("input,select,textarea").each(function() {
-            if ($(this).attr("data-file")) {
-                $mainContainer.find(".simplecheckout-tooltip[data-for='" + $(this).attr("data-file") + "']").show();
-            } else {
-                if (bootstrap && typeof $(this).tooltip === "function") {
-                    var $tooltip = $(self.params.mainContainer + " .simplecheckout-tooltip[data-for='" + $(this).attr("id") + "']");
-                    if ($tooltip.length) {
-                        $(this).tooltip({
+        $mainContainer.find(".simplecheckout-tooltip[data-for]").each(function() {
+            var $target = $mainContainer.find("#" + $(this).attr("data-for"));
+
+            if ($target.length) {
+                if ($target.attr("data-file")) {
+                    $(this).show();
+                } else {
+                    if (bootstrap && typeof $target.tooltip === "function") {
+                        $target.tooltip({
                             html: true,
-                            title: $tooltip.html(),
+                            title: $(this).html(),
                             placement: 'bottom',
                             container: 'body'
                         });
+                    } else if (typeof $target.easyTooltip === "function") {
+                        $target.easyTooltip({
+                            useElement: self.params.mainContainer + " .simplecheckout-tooltip[data-for='" + $(this).attr("data-for") + "']",
+                            clickRemove: true
+                        });
                     }
-                } else if (typeof $(this).easyTooltip === "function") {
-                    $(this).easyTooltip({
-                        useElement: self.params.mainContainer + " .simplecheckout-tooltip[data-for='" + $(this).attr("id") + "']",
-                        clickRemove: true
-                    });
                 }
             }
         });
@@ -717,10 +746,10 @@
         var self = this;
         var $mainContainer = $(self.params.mainContainer);
 
-        if (typeof $(document).inputmask !== "undefined" && !window.localStorage.getItem('inputmaskFailed')) {
+        if (typeof $(document).inputmask !== "undefined" /*&& !window.localStorage.getItem('inputmaskFailed')*/) {
             var masked = [];
-            $mainContainer.find("input[data-mask]").each(function(indx) {
-                var mask = $(this).attr("data-mask");
+            $mainContainer.find("input[data-simple-mask]").each(function(indx) {
+                var mask = $(this).attr("data-simple-mask");
                 var id = $(this).attr("id");
                 if (mask && id) {
                     masked[masked.length] = [id, mask];
@@ -735,14 +764,14 @@
                         .inputmask({
                             mask: mask,
                             clearMaskOnLostFocus: true,
-                            clearIncomplete: true
-                        })
-                        .on('change', function() {
+                            clearIncomplete: true,
+                        });
+                        /*.on('change', function() {
                             if ($(this).val().indexOf('_') > -1) {
                                 window.localStorage.setItem('inputmaskFailed', true);
                                 $(this).inputmask('remove');
                             }                      
-                        });
+                        });*/
                 }
             } catch (err) {}
         }
@@ -822,28 +851,28 @@
             return [false, ""];
         };
 
-        $(self.params.mainContainer).find("input[type=date],input[data-type=date]").each(function() {
+        $(self.params.mainContainer).find("input[type=date],input[type=datetime],input[data-type=date],input[data-type=datetime]").each(function() {
             var onlyWeekdays = $(this).attr("data-weekdays-only") ? true : false,
                 min = new Date(),
                 max = new Date();
-
+            
             if ($(this).attr("data-days-only")) {
                 days = $(this).attr("data-days-only").split(",");
                 onlyWeekdays = false;
             }
-
+            
             if ($(this).attr("data-start-day")) {
                 min = $(this).attr("data-start-day");
             } else if ($(this).attr("data-start-after")) {
                 min.setDate(min.getDate() + addDays($(this).attr("data-start-after"), onlyWeekdays));
             }
-
+            
             if ($(this).attr("data-end-day")) {
                 max = $(this).attr("data-end-day");
             } else if ($(this).attr("data-end-after")) {
                 max.setDate(max.getDate() + addDays($(this).attr("data-end-after"), onlyWeekdays));
             }
-
+            
             if (typeof($(this).datetimepicker) !== "undefined") {
                 var disabledDays = [];
 
@@ -860,12 +889,12 @@
                         }
                     }
                 }
-
+                
                 var $el = $(this);
-
+ 
                 $el.datetimepicker({
                     pickDate: true,
-                    pickTime: false,
+                    pickTime: $el.attr("data-type") == "datetime" ? true : false,
                     showTimepicker: false,
                     daysOfWeekDisabled: disabledDays,
                     firstDay: 1,
@@ -875,6 +904,7 @@
                     useCurrent: false,
                     showButtonPanel: false,
                     language: self.params.languageCode,
+                    locale: self.params.languageCode,
                     onSelect: function() {
                         $el.datetimepicker('hide');
                     }
@@ -925,6 +955,9 @@
                 
                 $el.datetimepicker({
                     pickDate: false,
+                    //language: document.cookie.match(new RegExp('language=([^;]+)')) && document.cookie.match(new RegExp('language=([^;]+)'))[1],
+                    language: self.params.languageCode,
+                    locale: self.params.languageCode,
                     pickTime: true,
                     showMinute: !onlyHours,
                     useCurrent: false
@@ -957,64 +990,6 @@
         });
     };
 
-    Simple.prototype.initGoogleApi = function(callbackAfterChanging) {
-        var self = this;
-        var $mainContainer = $(self.params.mainContainer);
-
-        var $fields = $mainContainer.find("#payment_address_postcode, #shipping_address_postcode, #register_postcode, #address_postcode");
-
-        $fields.each(function() {
-            var tmp = $(this).attr("data-onchange");
-            if (tmp) {
-                $(this).removeAttr("data-onchange");
-                $(this).removeAttr("data-reload-payment-form");
-                $(this).attr("data-onchange-delayed", tmp);
-            }
-        });
-
-        $fields.change(function() {
-            var $target = $(this);
-            var name = $(this).attr("name");
-            var from = name.substr(0, name.indexOf("["));
-            var geocoder = new google.maps.Geocoder();
-            var address = $mainContainer.find("#" + from + "_postcode").val() + "," + $mainContainer.find("#" + from + "_country_id option:selected").text();
-            var typeShort;
-            var anythingChanged = false;
-
-            if (geocoder) {
-                geocoder.geocode({
-                    "address": address,
-                    "language": $mainContainer.find("#" + from + "_country_id option:selected").text()
-                }, function(results, status) {
-                    if (status == google.maps.GeocoderStatus.OK) {
-                        for (var result in results) {
-                            for (var component in results[result].address_components) {
-                                for (var type in results[result].address_components[component].types) {
-                                    typeShort = results[result].address_components[component].types[type];
-                                    if (typeShort == "administrative_area_level_1") {
-                                        $mainContainer.find("#" + from + "_zone_id option").filter(function() {
-                                            return $(this).text().replace(/\W/g, "") == results[result].address_components[component].long_name.replace(/\W/g, "");
-                                        }).attr("selected", "selected");
-                                        anythingChanged = true;
-                                    }
-                                    if (typeShort == "locality") {
-                                        $mainContainer.find("#" + from + "_city").val(results[result].address_components[component].long_name);
-                                        anythingChanged = true;
-                                    }
-                                }
-                            }
-                        }
-                        if (anythingChanged && typeof callbackAfterChanging === "function") {
-                            callbackAfterChanging($target);
-                        }
-                    } else {
-                        //console.log("Geocoding failed: " + status);
-                    }
-                });
-            }
-        });
-    };
-
     Simple.prototype.checkIsHuman = function() {
         var self = this;
         var timeoutId = 0;
@@ -1024,9 +999,8 @@
                 clearTimeout(timeoutId);
 
                 timeoutId = window.setTimeout(function(){
-                    $.get("index.php?" + self.params.additionalParams + "route=common/simple_connector/human", function() {
-                        self.human = true;
-                    });
+                    self.human = true;
+                    $.get("index.php?" + self.params.additionalParams + "route=common/simple_connector/human");
                 }, 300);
             }
         });

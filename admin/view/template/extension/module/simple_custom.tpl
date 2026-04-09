@@ -63,6 +63,9 @@
                 <?php $name = basename(utf8_substr($field['value'], 0, utf8_strrpos($field['value'], '.'))); $name = $name ? $name : basename($field['value']) ?>
                 <a href="<?php echo $download.$field['value'] ?>"><?php echo $name ?></a>
             <?php } ?>
+            <?php if ($field['type'] == 'switcher') { ?>
+                <label><input type="checkbox" name="<?php echo $field['id'] ?>" value="1" <?php echo $field['value'] == '1' ? 'checked="checked"' : '' ?>></label>
+            <?php } ?>
             <?php if ($field['type'] == 'hidden') { ?>
                 <input type="hidden" name="<?php echo $field['id'] ?>" value="<?php echo $field['value'] ?>">
             <?php } ?>
