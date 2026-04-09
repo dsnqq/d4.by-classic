@@ -223,14 +223,42 @@ $(function() {
     // Инициализация селектов
     $('.same_pick').selectpicker();
 
-    // Обработка кнопки "очистить"
-    $('.select2-selection__clear').on('click', function() {
-        const select = $(this).next().find('select');
-        select.val('default').selectpicker("refresh");
+    function resetDiskExtras() {
+        const $extras = $('#disk-filter-extras');
+        if (!$extras.length) return;
 
-        const input = $(this).siblings('input');
-        input.val('');
-        input.trigger('input');
+        $extras.find('select').val('');
+        $extras.find('input').val('');
+
+        $extras.find('select.selectpicker, select.same_pick').each(function() {
+            try { $(this).selectpicker('refresh'); } catch (e) {}
+        });
+
+        $extras.hide();
+    }
+
+    // Обработка кнопки "очистить"
+    $(document).on('click', '.select2-selection__clear', function() {
+        const $th = $(this).closest('th');
+
+        // Clear selects inside this filter cell (manufacturer/category/etc)
+        $th.find('select').each(function() {
+            $(this).val('');
+            try { $(this).selectpicker('refresh'); } catch (e) {}
+            $(this).trigger('change');
+        });
+
+        // Clear any inputs inside this filter cell
+        $th.find('input').each(function() {
+            $(this).val('');
+            $(this).trigger('input');
+            $(this).trigger('change');
+        });
+
+        // Special case: manufacturer filter also controls disk extras
+        if ($th.find('#filter-manufacturer-select').length) {
+            resetDiskExtras();
+        }
     });
 
     // Разделение запятых на новые строки

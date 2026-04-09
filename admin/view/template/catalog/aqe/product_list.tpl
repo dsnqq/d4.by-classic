@@ -166,7 +166,7 @@
 								}
 							}
 						?>
-                        <th class="<?php echo $column_info[$col]['align']; ?>" style="position:relative;min-width:160px;">
+                        <th class="<?php echo $column_info[$col]['align']; ?>" style="position:relative;min-width:160px;padding-top: 30px;">
                             <span class="select2-selection__clear"><span>Очистить </span>×</span>
                             <select name="filter_<?php echo $col; ?>" id="filter-manufacturer-select" class="same_pick form-control input-sm search_init fltr <?php echo $col; ?>" data-column="<?php echo $col; ?>" data-live-search="true">
                                 <option value=""<?php echo (!is_null($filters[$col]) && $filters[$col] == '*') ? ' selected' : ''; ?>><?php echo $text_none; ?></option>
