@@ -138,10 +138,12 @@
 		  <?php } else{ ?>
                   	<div class="price_product_add1">Цена: <?php echo $price; ?></div>
 		  <?php } ?>
-                  <!----<div class="price_product_add_flex">
-                    <div class="price_product_add2">~<?php echo $price_2; ?></div>
-                    <div class="price_product_add2">~<?php echo $price_3; ?></div>
-                  </div>--->
+				  <?php if (!empty($price_2) || !empty($price_3)) { ?>
+                  <div class="price_product_add_flex">
+					<?php if (!empty($price_2)) { ?><div class="price_product_add2">~<?php echo $price_2; ?></div><?php } ?>
+					<?php if (!empty($price_3)) { ?><div class="price_product_add2">~<?php echo $price_3; ?></div><?php } ?>
+                  </div>
+				  <?php } ?>
                   <?php /*<div class="btn_add_carte">Купить</div>*/ ?>
 				  
 				  <div class="form-group">

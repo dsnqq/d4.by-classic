@@ -111,8 +111,10 @@
                   	<div class="price_product_add1">Цена: <?php echo $price; ?></div>
 		  <?php } ?>
 				  <?php if (!empty($price_2) || !empty($price_3)) { ?>
-				  <?php if (!empty($price_2)) { ?><div class="price_product_add2">~<?php echo $price_2; ?></div><?php } ?>
-				  <?php if (!empty($price_3)) { ?><div class="price_product_add2">~<?php echo $price_3; ?></div><?php } ?>
+				  <div class="price_product_add_flex">
+					<?php if (!empty($price_2)) { ?><div class="price_product_add2">~<?php echo $price_2; ?></div><?php } ?>
+					<?php if (!empty($price_3)) { ?><div class="price_product_add2">~<?php echo $price_3; ?></div><?php } ?>
+				  </div>
 				  <?php } ?>
 				  <div class="form-group">
 					<input type="text" name="quantity" value="<?php echo $minimum; ?>" size="2" id="input-quantity" class="form-control" style="display:none;"/>

@@ -1069,12 +1069,18 @@ header{
     display: flex;
     justify-content: flex-end;
     margin-top:15px;
+    gap: 5px;
+    flex-wrap: wrap;
+}
+.wrapper_product_page .price_product_add .price_product_add_flex{
+    margin-top: 0;
 }
 .price_product_add2{
     font-size: 16px;
     line-height: 18px;
     color: #90A4AF;
     text-align: right;
+    white-space: nowrap;
 }
 .btn_add_carte{
     font-size: 14px;
