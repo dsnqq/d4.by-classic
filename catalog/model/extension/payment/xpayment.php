@@ -620,7 +620,8 @@ class ModelExtensionPaymentXpayment extends Model {
 			$method_data = array(
 				'code'       => 'xpayment',
 				'title'      => $this->language->get('text_title'),
-				'methods'      => $x_method,
+				'quote'      => $x_method,
+				'methods'    => $x_method,
 				'sort_order' => $this->config->get('xpayment_sort_order')
 			);	
 	   
