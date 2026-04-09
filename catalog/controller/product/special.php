@@ -124,6 +124,11 @@ class ControllerProductSpecial extends Controller {
 				$tax = false;
 			}
 
+			// Доп. цены (USD/EUR) для вывода рядом с BYN
+			$base_amount = (float)$result['special'] ? (float)$result['special'] : (float)$result['price'];
+			$price_2 = '$' . round($base_amount, 0);
+			$price_3 = round($this->currency->convert($base_amount, $this->config->get('config_currency'), 'EUR'), 0) . '€';
+
 			if ($this->config->get('config_review_status')) {
 				$rating = (int)$result['rating'];
 			} else {
@@ -140,6 +145,8 @@ class ControllerProductSpecial extends Controller {
 				'injection'	  => $result['mpn'],
 				'description' => utf8_substr(strip_tags(html_entity_decode($result['description'], ENT_QUOTES, 'UTF-8')), 0, $this->config->get($this->config->get('config_theme') . '_product_description_length')) . '..',
 				'price'       => $price,
+				'price_2'     => $price_2,
+				'price_3'     => $price_3,
 				'special'     => $special,
 				'tax'         => $tax,
 				'minimum'     => ($result['minimum'] > 0) ? $result['minimum'] : 1,

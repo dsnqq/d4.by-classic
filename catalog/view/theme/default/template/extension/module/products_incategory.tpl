@@ -52,10 +52,12 @@
 	  <?php }else{ ?>
             <div class="product_this_price__main"><?php echo $product['price']; ?></div>
 	  <?php } ?>
-                        <!---<div class="this_price__flex">
-                          <div class="this_price_flex_item">~<?php echo $product['price_2']; ?></div>
-                          <div class="this_price_flex_item">~<?php echo $product['price_3']; ?></div>
-                        </div>-->
+                        <?php if (!empty($product['price_2']) || !empty($product['price_3'])) { ?>
+                        <div class="this_price__flex">
+                          <?php if (!empty($product['price_2'])) { ?><div class="this_price_flex_item">~<?php echo $product['price_2']; ?></div><?php } ?>
+                          <?php if (!empty($product['price_3'])) { ?><div class="this_price_flex_item">~<?php echo $product['price_3']; ?></div><?php } ?>
+                        </div>
+                        <?php } ?>
                       </div>
                       <a href="<?php echo $product['href']; ?>" class="product_this__btn">в корзину</a>
                     </div>

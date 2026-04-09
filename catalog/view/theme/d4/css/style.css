@@ -809,14 +809,26 @@ header{
 .product_this__price{
     text-align:right;
 }
+.product_this__price:has(.this_price__flex){
+    display:flex;
+    align-items: flex-start;
+    gap: 10px;
+    text-align:left;
+}
+.product_this__price:has(.this_price__flex) .this_price__flex{
+    margin-left: 10px;
+    white-space: nowrap;
+}
+.product_this__price:has(.this_price__flex) .product_this_price__main{
+    flex: 0 1 auto;
+}
 .this_price__flex{
-    display:grid;
-    grid-template-columns: 1fr 1fr;
-    grid-gap:20px;
+    text-align: left;
+    font-size: 10px;
 }
 .this_price_flex_item{
-    font-size: 16px;
-    line-height: 30px;
+    font-size: 12px;
+    line-height: 14px;
     color: #90A4AF;
 }
 .product_this__time{
@@ -1054,12 +1066,10 @@ header{
     margin-top:15px;
 }
 .price_product_add2{
-    font-size: 18px;
-    line-height: 30px;
+    font-size: 16px;
+    line-height: 18px;
     color: #90A4AF;
-}
-.price_product_add2:last-child{
-    margin-left:20px;
+    text-align: right;
 }
 .btn_add_carte{
     font-size: 14px;
