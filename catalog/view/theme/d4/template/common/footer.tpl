@@ -153,11 +153,17 @@
         © 2006–2024 d4.by, ИП Шпак Сергей Сергеевич
     </div>
 </div>
-<?php // Для фильтра?>
-<link type="text/css" href="/catalog/view/javascript/bootstrap/css/bootstrap-ew.css" rel="stylesheet" media="screen" />
-<link type="text/css" href="catalog/view/stylesheet/bootstrap-select.css" rel="stylesheet" media="screen" />
-<script src="catalog/view/javascript/bootstrap-select.js"></script>
-<script src="catalog/view/javascript/jquery.chained.js"></script>
+<?php
+  // Для фильтра. На simplecheckout не подключаем, чтобы не ломать стили/разметку.
+  $is_simplecheckout_route = !empty($_GET['route']) && $_GET['route'] === 'checkout/simplecheckout';
+  $is_simplecheckout_uri = !empty($_SERVER['REQUEST_URI']) && (strpos($_SERVER['REQUEST_URI'], '/simplecheckout') !== false);
+?>
+<?php if (!($is_simplecheckout_route || $is_simplecheckout_uri)) { ?>
+  <link type="text/css" href="/catalog/view/javascript/bootstrap/css/bootstrap-ew.css" rel="stylesheet" media="screen" />
+  <link type="text/css" href="catalog/view/stylesheet/bootstrap-select.css" rel="stylesheet" media="screen" />
+  <script src="catalog/view/javascript/bootstrap-select.js"></script>
+  <script src="catalog/view/javascript/jquery.chained.js"></script>
+<?php } ?>
 
 <script>
 $(document).ready(function() { //

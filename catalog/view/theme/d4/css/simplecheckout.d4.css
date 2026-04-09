@@ -1,5 +1,19 @@
 .simple-content{
-  margin: 0;
+  /* align with theme container width */
+  max-width: 1200px;
+  margin: 22px auto 60px;
+  padding: 0 15px;
+}
+
+.simple-content .content{
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0px 5px 20px rgba(44, 61, 81, 0.1);
+  padding: 22px 18px;
+  font-family: RobotoRegular, Arial, sans-serif;
+  font-size: 18px;
+  line-height: 1.35;
+  text-align: center;
 }
 
 /* make simplecheckout look like site cards/sections */
@@ -83,6 +97,37 @@
   background: #b30000;
   border-color: #b30000;
   color: #fff;
+}
+
+/* "Continue" / bottom buttons layout */
+.simplecheckout-button-block{
+  margin-top: 14px;
+  display: flex;
+  justify-content: flex-end;
+}
+.simplecheckout-button-right{
+  float: none !important;
+  text-align: right;
+}
+.simplecheckout-button-right .btn,
+.simplecheckout-button-right .button{
+  height: 44px;
+  padding: 0 18px;
+  border-radius: 12px;
+  font-family: RobotoBold, Arial, sans-serif;
+}
+
+/* links inside totals remove */
+.simplecheckout-cart-total-remove a{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  text-decoration: none;
+  color: #b30000;
+  background: rgba(179,0,0,0.08);
 }
 
 /* quantity control */
