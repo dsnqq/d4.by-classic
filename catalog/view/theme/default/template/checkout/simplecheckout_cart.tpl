@@ -92,7 +92,7 @@
     </div>
 
 <?php foreach ($totals as $total) { ?>
-    <?php if ($total['code'] == 'sub_total' || $total['code'] == 'total') { continue; } ?>
+    <?php if ($total['code'] == 'sub_total') { continue; } ?>
     <div class="simplecheckout-cart-total" id="total_<?php echo $total['code']; ?>">
         <span><b><?php echo $total['title']; ?>:</b></span>
         <span class="simplecheckout-cart-total-value"><?php echo $total['text']; ?></span>
