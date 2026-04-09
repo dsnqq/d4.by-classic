@@ -1921,7 +1921,7 @@ li[data-id="ean"],li[data-id="upc"],li[data-id="jan"],li[data-id="isbn"],li[data
 @media screen and (max-width: 991px) {
     .widget_curse {
         transform: rotate(-90deg);
-        right: -150px;
+        right: -250px;
         top: 150px;
         position: fixed;
         z-index: 10;
