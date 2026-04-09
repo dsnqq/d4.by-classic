@@ -105,15 +105,21 @@
 				   <?php } ?>
               </ul>
               <div class="price_product_add">
-		  <?php if($special != ""){ ?>
-                  	<div class="price_product_add1">Цена: <span style="color:red;"><?php echo $special; ?></span><div style="text-decoration:line-through;"><?php echo $price; ?></div></div>
-		  <?php } else{ ?>
-                  	<div class="price_product_add1">Цена: <?php echo $price; ?></div>
-		  <?php } ?>
-				  <?php if (!empty($price_2) || !empty($price_3)) { ?>
-				  <?php if (!empty($price_2)) { ?><div class="price_product_add2">~<?php echo $price_2; ?></div><?php } ?>
-				  <?php if (!empty($price_3)) { ?><div class="price_product_add2">~<?php echo $price_3; ?></div><?php } ?>
-				  <?php } ?>
+                <div class="price_product_add_flex price_product_add_flex--main">
+                  <?php if($special != ""){ ?>
+                    <div class="price_product_add1">Цена: <span style="color:red;"><?php echo $special; ?></span><div style="text-decoration:line-through;"><?php echo $price; ?></div></div>
+                  <?php } else{ ?>
+                    <div class="price_product_add1">Цена: <?php echo $price; ?></div>
+                  <?php } ?>
+
+                  <?php if (!empty($price_2) || !empty($price_3)) { ?>
+                    <div class="price_product_add_rates">
+                      <?php if (!empty($price_2)) { ?><span class="price_product_add2">~<?php echo $price_2; ?></span><?php } ?>
+                      <?php if (!empty($price_3)) { ?><span class="price_product_add2">~<?php echo $price_3; ?></span><?php } ?>
+                    </div>
+                  <?php } ?>
+                </div>
+
 				  <div class="form-group">
 					<input type="text" name="quantity" value="<?php echo $minimum; ?>" size="2" id="input-quantity" class="form-control" style="display:none;"/>
 					<input type="hidden" name="product_id" value="<?php echo $product_id; ?>" />
