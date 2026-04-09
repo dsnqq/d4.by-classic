@@ -128,7 +128,7 @@ body .big-contact p,body .big-contact span,body .big-contact b{
 }
 #simplecheckout_shipping .simplecheckout-block-content .form-group label{
     font-weight: 100;
-    margin-top: -10px;
+    margin-top: 0;
     display: block !important;
     font-size: 12px;
     color: #999;
