@@ -178,6 +178,13 @@ class ControllerStartupStartup extends Controller {
 		if (!array_key_exists($code, $currencies)) {
 			$code = $this->config->get('config_currency');
 		}
+
+		// Принудительно показываем витрину в BYN, при этом цены в админке можно вести в USD
+		// (USD должен быть базовой валютой магазина, BYN — с актуальным курсом в таблице валют).
+		$force_code = 'BYN';
+		if (!empty($currencies[$force_code]) && !empty($currencies[$force_code]['status'])) {
+			$code = $force_code;
+		}
 		
 		if (!isset($this->session->data['currency']) || $this->session->data['currency'] != $code) {
 			$this->session->data['currency'] = $code;
