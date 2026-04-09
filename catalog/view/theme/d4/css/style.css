@@ -1917,7 +1917,7 @@ li[data-id="ean"],li[data-id="upc"],li[data-id="jan"],li[data-id="isbn"],li[data
     .widget_curse {
         transform: rotate(-90deg);
         right: -50px;
-        top: 150px
+        top: 150px;
         position: fixed;
         z-index: 10;
         background: #fff;

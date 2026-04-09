@@ -269,7 +269,7 @@ class SimpleCheckout extends Simple {
 
     public function isBlockHidden($block) {
         if ($this->hasBlock($block)) {
-            if (($block == 'shipping_address' || $block == 'shipping') && !$this->cart->hasShipping()) {
+            if (($block == 'shipping_address' || $block == 'shipping') && !$this->hasShipping()) {
                 return true;
             }
             
@@ -337,12 +337,21 @@ class SimpleCheckout extends Simple {
         return $hidden ? true : false;
     }
 
-    public function addError($block) {
-        $this->_errors[] = $block;
+    public function addError($block, $text = '') {
+        $this->_errors[] = array(
+            'block' => $block,
+            'text' => $text
+        );
     }
 
     public function hasError($block) {
-        return in_array($block, $this->_errors) ? true : false;
+        foreach ($this->_errors as $error) {
+            if ($error['block'] == $block) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public function blockOrder() {
@@ -388,9 +397,45 @@ class SimpleCheckout extends Simple {
         return false;
     }
 
+    public function needLoadBlock($block) {
+        if ($block == 'shipping' && $this->getSettingValue('ignoreShipping')) {
+            return false;
+        }
+
+        if ($block == 'payment' && $this->getSettingValue('ignorePayment')) {
+            return false;
+        }
+
+        $stepsCount = $this->getStepsCount();
+
+        if ($this->request->server['REQUEST_METHOD'] == 'POST') {
+            if (isset($this->request->post['create_order'])) {
+                return true;
+            }
+
+            if ($stepsCount == 1 || ($stepsCount > 1 && isset($this->request->post['next_step']) && $this->getBlockStepNumber($block) <= $this->request->post['next_step'])) {
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            if ($stepsCount == 1 || ($stepsCount > 1 && $this->getBlockStepNumber($block) == 1)) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     public function canCreateOrder() {
         $result = false;
         $asap = $this->customer->isLogged() ? $this->getSettingValue('asapForLogged') : $this->getSettingValue('asapForGuests');
+
+        if ($this->getSettingValue('ignorePayment')) {
+            $asap = false;
+        }
 
         if ($this->getStepsCount() == 1) {
             if ($asap) {
@@ -482,12 +527,12 @@ class SimpleCheckout extends Simple {
                     if (!empty($fieldSettings['saveToComment'])) {
                         $value = isset($this->session->data['simple'][$block][$fieldSettings['id']]) ? $this->session->data['simple'][$block][$fieldSettings['id']] : '';
 
-                        if (in_array($fieldSettings['type'], array('radio','select','checkbox')) && !empty($this->_values[$block][$fieldSettings['id']]) && is_array($this->_values[$block][$fieldSettings['id']])) {
+                        if (in_array($fieldSettings['type'], array('radio','select','select2','checkbox')) && !empty($this->_values[$block][$fieldSettings['id']]) && is_array($this->_values[$block][$fieldSettings['id']])) {
                             if (is_array($value)) {
                                 $tmp = array();
 
                                 foreach ($this->_values[$block][$fieldSettings['id']] as $info) {
-                                    if (array_key_exists($info['id'], $value) && !empty($value[$info['id']])) {
+                                    if (in_array($info['id'], $value)) {
                                         $tmp[] = $info['text'];
                                     }
                                 }
@@ -501,6 +546,14 @@ class SimpleCheckout extends Simple {
                                     }
                                 }
                             }
+                        }
+
+                        if ($fieldSettings['type'] == 'switcher') {
+                            $value = $value ? $this->language->get('text_yes') : $this->language->get('text_no');
+                        }
+
+                        if ($fieldSettings['type'] == 'file') {
+                            $value = HTTP_SERVER . 'index.php?route=common/simple_connector/download&code='.$value;
                         }
 
                         if (!empty($value)) {
@@ -780,7 +833,7 @@ class SimpleCheckout extends Simple {
             return array();
         }
 
-        if (!$this->isPaymentBeforeShipping() && $this->cart->hasShipping() && empty($checkedMethod['forAllMethods']) && !empty($checkedMethod['forMethods'])) {
+        if (!$this->isPaymentBeforeShipping() && $this->hasShipping() && empty($checkedMethod['forAllMethods']) && !empty($checkedMethod['forMethods'])) {
             $shippingMethod = isset($this->session->data['shipping_method']) ? $this->session->data['shipping_method'] : array();;
 
             $isLinksUsed = false;
@@ -806,12 +859,16 @@ class SimpleCheckout extends Simple {
         return $result;
     }
 
+    public function hasShipping() {
+        return $this->getSettingValue('ignoreProductShipping') ? true : $this->cart->hasShipping();
+    }
+
     public function displayWeight() {
         return $this->getSettingValue('displayWeight');
     }
 
     public function displayAddressSame() {
-        return $this->cart->hasShipping() && !$this->isBlockHidden('shipping_address') && !$this->isBlockHidden('payment_address') && $this->getSettingValue('displayAddressSame', 'payment_address');
+        return $this->hasShipping() && !$this->isBlockHidden('shipping_address') && !$this->isBlockHidden('payment_address') && $this->getSettingValue('displayAddressSame', 'payment_address');
     }
 
     public function isAddressSame() {
@@ -907,7 +964,7 @@ class SimpleCheckout extends Simple {
         $addressFields = array_merge($addressFields, $addressCustomFields);
         $addressFields = array_merge($addressFields, $orderCustomFields);
 
-        $specialFields = array('postcode', 'country_id', 'zone_id');
+        $specialFields = array('postcode', 'country_id', 'zone_id', 'city');
 
         $result = array();
 
@@ -969,6 +1026,18 @@ class SimpleCheckout extends Simple {
             }   
         }     
 
+        if (!empty($this->session->data['prmn.city_manager'])) {
+            foreach ($specialFields as $field) {
+                if (!empty($this->session->data['prmn.city_manager'][$field])) {
+                    $result[$field] = $this->session->data['prmn.city_manager'][$field];
+                }
+            }
+
+            if (!empty($this->session->data['prmn.city_manager']['short_city_name'])) {
+                $result['city'] = $this->session->data['prmn.city_manager']['short_city_name'];
+            }
+        }
+
         if (count($result) > 0) {
             $this->session->data['simple']['shipping_address'] = $result;
         }
@@ -983,10 +1052,6 @@ class SimpleCheckout extends Simple {
 
         if ($this->request->server['REQUEST_METHOD'] == 'GET') {
             if (!$this->customer->isLogged()) {
-                if ($this->getSettingValue('useCookies')) {
-                    $this->loadFromCookies();
-                }
-
                 foreach (array('payment_address', 'shipping_address') as $block) {
                     $this->loadSimpleSessionViaGeoIp($block);
                 }
@@ -1008,10 +1073,6 @@ class SimpleCheckout extends Simple {
         $this->setCustomerId();
         $this->copyNameFields();
         $this->copyFields();
-
-        if ($this->getSettingValue('useCookies') && !$ignorePostManual) {
-            $this->saveToCookies();
-        }
 
         if (!empty($this->session->data['simple']['customer']['customer_group_id']) && $this->config->get('config_customer_group_id') != $this->session->data['simple']['customer']['customer_group_id']) {
             $this->config->set('config_customer_group_id', $this->session->data['simple']['customer']['customer_group_id']);
@@ -1057,7 +1118,7 @@ class SimpleCheckout extends Simple {
             }
         }
 
-        if (isset($this->request->post['address_same'])) {
+        if (isset($this->request->post['address_same']) && !empty($this->request->post['address_same'])) {
             $this->request->post['shipping_address']['ignore_post'] = true;
 
             $this->reset('shipping_address');
@@ -1086,18 +1147,17 @@ class SimpleCheckout extends Simple {
                     $result = array();
 
                     foreach ($info as $item) {
-                        $parts = explode('=', $item);
+                        $pos = strpos($item, '=');
 
-                        if (count($parts) != 2) {
-                            continue;
-                        }
+                        if ($pos > 0 && $pos < (strlen($item) - 1)) {
+                            $key = substr($item, 0, $pos);
+                            $value = substr($item, $pos + 1);
+                            
+                            $value = @base64_decode($value);
 
-                        list($key, $value) = $parts;
-
-                        $value = @base64_decode($value);
-
-                        if (empty($this->session->data['simple'][$block][$key]) && !empty($value)) {
-                            $result[$key] = $value;
+                            if (empty($this->session->data['simple'][$block][$key]) && !empty($value)) {
+                                $result[$key] = $value;
+                            }
                         }
                     }
 
