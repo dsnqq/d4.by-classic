@@ -341,34 +341,11 @@
     padding: 14px;
 }
 
-.wrapper_product_page.product-modern .price_product_add_flex.price_product_add_flex--main {
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 10px 14px;
-}
-
 .wrapper_product_page.product-modern .price_product_add1 {
     font-size: 26px;
     line-height: 1.2;
     color: #2C3D51;
     font-family: HelveticaNeueCyrBlack;
-}
-
-.wrapper_product_page.product-modern .price_product_add_rates {
-    display: inline-flex;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: 4px;
-    padding-top: 4px;
-}
-
-.wrapper_product_page.product-modern .price_product_add2 {
-    font-size: 14px;
-    line-height: 1.2;
-    color: #90A4AF;
-    white-space: nowrap;
 }
 
 .wrapper_product_page.product-modern .btn_add_carte {
