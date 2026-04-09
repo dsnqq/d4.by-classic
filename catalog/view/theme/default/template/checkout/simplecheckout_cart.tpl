@@ -15,7 +15,6 @@
                 <col class="name">
                 <col class="model">
                 <col class="quantity">
-                <col class="price">
                 <col class="total">
                 <col class="remove">
             </colgroup>
@@ -25,7 +24,6 @@
                     <th class="name"><?php echo $column_name; ?></th>
                     <th class="model"><?php echo $column_model; ?></th>
                     <th class="quantity"><?php echo $column_quantity; ?></th>
-                    <th class="price"><?php echo $column_price; ?></th>
                     <th class="total"><?php echo $column_total; ?></th>     
                     <th class="remove"></th>
                 </tr>
@@ -62,26 +60,12 @@
                     </td>
                     <td class="model"><?php echo $product['model']; ?></td>
                     <td class="quantity">
-                        <div class="input-group btn-block" style="max-width: 200px;">
-                            <span class="input-group-btn">
-                                <button class="btn btn-primary" data-onclick="decreaseProductQuantity" data-toggle="tooltip" type="submit">
-                                    <span aria-hidden="true">−</span>
-                                </button>
-                            </span>
-                            <input class="form-control" type="text" data-onchange="changeProductQuantity" <?php echo $quantity_step_as_minimum ? 'data-minimum="' . $product['minimum'] . '"' : '' ?> name="quantity[<?php echo !empty($product['cart_id']) ? $product['cart_id'] : $product['key']; ?>]" value="<?php echo $product['quantity']; ?>" size="1" />
-                            <span class="input-group-btn">
-                                <button class="btn btn-primary" data-onclick="increaseProductQuantity" data-toggle="tooltip" type="submit">
-                                    <span aria-hidden="true">+</span>
-                                </button>
-                                <button class="btn btn-danger" data-onclick="removeProduct" data-product-key="<?php echo !empty($product['cart_id']) ? $product['cart_id'] : $product['key'] ?>" data-toggle="tooltip" type="button">
-                                    <span aria-hidden="true">×</span>
-                                </button>
-                            </span>
+                        <div class="simplecheckout-quantity-readonly">
+                            <?php echo (int)$product['quantity']; ?>
+                            <button class="btn btn-danger" data-onclick="removeProduct" data-product-key="<?php echo !empty($product['cart_id']) ? $product['cart_id'] : $product['key'] ?>" data-toggle="tooltip" type="button">
+                                <span aria-hidden="true">×</span>
+                            </button>
                         </div>
-                    </td>
-                    <td class="price">
-                        <?php if (!empty($product['old_price'])) { ?><div style="text-decoration: line-through;"><?php echo $product['old_price']; ?></div><?php } ?>
-                        <div><?php echo $product['price']; ?></div>
                     </td>
                     <td class="total"><?php echo $product['total']; ?></td>
                     <td class="remove"></td>
@@ -93,16 +77,12 @@
                         <td class="name"><?php echo $voucher_info['description']; ?></td>
                         <td class="model"></td>
                         <td class="quantity">
-                            <div class="input-group btn-block" style="max-width: 200px;">
-                                <input class="form-control" type="text" value="1" disabled size="1" />
-                                <span class="input-group-btn">
-                                    <button class="btn btn-danger" data-onclick="removeGift" data-gift-key="<?php echo $voucher_info['key']; ?>" type="button">
-                                        <span aria-hidden="true">×</span>
-                                    </button>
-                                </span>
+                            <div class="simplecheckout-quantity-readonly">
+                                <button class="btn btn-danger" data-onclick="removeGift" data-gift-key="<?php echo $voucher_info['key']; ?>" type="button">
+                                    <span aria-hidden="true">×</span>
+                                </button>
                             </div>
                         </td>
-                        <td class="price"><?php echo $voucher_info['amount']; ?></td>
                         <td class="total"><?php echo $voucher_info['amount']; ?></td>
                         <td class="remove"></td>
                     </tr>
@@ -112,6 +92,7 @@
     </div>
 
 <?php foreach ($totals as $total) { ?>
+    <?php if ($total['code'] == 'sub_total' || $total['code'] == 'total') { continue; } ?>
     <div class="simplecheckout-cart-total" id="total_<?php echo $total['code']; ?>">
         <span><b><?php echo $total['title']; ?>:</b></span>
         <span class="simplecheckout-cart-total-value"><?php echo $total['text']; ?></span>
