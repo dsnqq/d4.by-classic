@@ -1238,7 +1238,46 @@ class MegaFilterCore {
 			}
 		}
 		
+		$this->_syncVehicleParamsFromCategoryFilters();
+		
 		return $this->_parseParams;
+	}
+	
+	/**
+	 * When URL carries only c-* category keys (related categories), the vehicles widget
+	 * expects params['vehicle'] for selected options — mirror values so the filter UI matches results.
+	 */
+	private function _syncVehicleParamsFromCategoryFilters() {
+		if( empty( $this->_parseParams ) || ! is_array( $this->_parseParams ) ) {
+			return;
+		}
+		
+		$vehicle = isset( $this->_parseParams['vehicle'] ) ? $this->_parseParams['vehicle'] : null;
+		$has_vehicle = is_array( $vehicle ) && count( array_filter( $vehicle, function( $v ) {
+			return $v !== '' && $v !== null;
+		} ) );
+		
+		if( $has_vehicle ) {
+			return;
+		}
+		
+		foreach( $this->_parseParams as $key => $val ) {
+			if( ! preg_match( '/^c-.+-[0-9]+$/', $key ) ) {
+				continue;
+			}
+			
+			if( empty( $val ) || ! is_array( $val ) ) {
+				continue;
+			}
+			
+			$this->_parseParams['vehicle'] = $val;
+			
+			if( isset( $this->_params ) && is_array( $this->_params ) ) {
+				$this->_params['vehicle'] = $val;
+			}
+			
+			return;
+		}
 	}
 	
 	private function findIds( $type, $values, $item_id = null ) {

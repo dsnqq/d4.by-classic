@@ -2153,20 +2153,18 @@ MegaFilter.prototype = {
 					break;
 				}
 				case 'vehicles' : {
+					var vehicleVals = self._vehicleValuesFromParams( filters );
+					
+					if( typeof vehicleVals == 'undefined' ) {
+						vehicleVals = self._vehicleValuesFromParams( self.urlToFilters() );
+					}
+					
+					var vehicleDepth = vehicleVals ? vehicleVals.length : 0;
+					
 					self._box.find('.mfilter-filter-item.mfilter-vehicles').each(function(){
 						var $li = jQuery(this),
 							$prev = null,
-							auto_levels = $li.attr('data-auto-levels') == '1' ? true : false,
-							params = self._parseUrl( document.location.href.toString(), {'x':'x'} );
-							/*filters = {};
-				
-							if( self._options.refreshResults == 'using_button' ) {
-								filters = self.filters();
-							} else if( typeof params[self._options.seo.parameter] != 'undefined' ) {
-								filters = self.__urlToFilters( decodeURIComponent( params[self._options.seo.parameter] ) );
-							}*/
-							
-							params	= typeof filters.vehicle != 'undefined' ? filters.vehicle.length : 0;
+							auto_levels = $li.attr('data-auto-levels') == '1' ? true : false;
 						
 						$li.find('.mfilter-vehicles > .form-control').removeClass('mfilter-hide');
 						
@@ -2174,13 +2172,13 @@ MegaFilter.prototype = {
 							var keys	= [ 'makes', 'models', 'engines', 'years' ],
 								vals	= typeof json['vehicles'][keys[i]] != 'undefined' ? json['vehicles'][keys[i]] : [],
 								$self	= jQuery(this),
-								val		= '';//typeof self.urlToFilters().vehicle != 'undefined' ? self.urlToFilters().vehicle[i] : '';
+								val		= '';
 
-							if( typeof filters.vehicle != 'undefined' ) {
-								val = filters.vehicle[i];
+							if( typeof vehicleVals != 'undefined' && typeof vehicleVals[i] != 'undefined' ) {
+								val = vehicleVals[i];
 							}
 							
-							if( ( ( $prev == null || ! $prev.is(':disabled') ) && ( vals.length || params < i ) ) || ( keys[i] == 'years' && typeof json.vehicles.years != 'undefined' && json.vehicles.years.length ) ) {
+							if( ( ( $prev == null || ! $prev.is(':disabled') ) && ( vals.length || vehicleDepth < i ) ) || ( keys[i] == 'years' && typeof json.vehicles.years != 'undefined' && json.vehicles.years.length ) ) {
 								$self.html( '<option value="">' + $self.find('option:first').text() + '</option>' );
 								
 								for( var j = 0; j < vals.length; j++ ) {
@@ -2204,7 +2202,7 @@ MegaFilter.prototype = {
 								$self.attr('disabled',true).mf_selectpicker('refresh');
 							}
 							
-							if( auto_levels || ( keys[i] == 'engines' && params >= 2 && ! vals.length ) ) {
+							if( auto_levels || ( keys[i] == 'engines' && vehicleDepth >= 2 && ! vals.length ) ) {
 								$self.parent()[i>0&&$self.is(':disabled')?'addClass':'removeClass']('mfilter-hide');
 							}
 
@@ -3729,8 +3727,6 @@ MegaFilter.prototype = {
 	setFiltersByUrl: function( params ) {
 		var self	= this;
 		
-		console.log(params);
-		
 		if( typeof params == 'undefined' ) {
 			params = self.urlToFilters();
 		}
@@ -3742,6 +3738,14 @@ MegaFilter.prototype = {
 				type	= _this.attr('data-type'),
 				seoName	= type == 'tree' || type == 'cat_checkbox' ? 'path' : _this.attr('data-seo-name'),
 				value	= params[seoName];
+			
+			if( type == 'vehicles' && ( typeof value == 'undefined' || typeof value[0] == 'undefined' ) ) {
+				value = self._vehicleValuesFromParams( params );
+			}
+			
+			if( type == 'related' && ( typeof value == 'undefined' || typeof value[0] == 'undefined' ) ) {
+				value = self._vehicleValuesFromParams( params );
+			}
 			
 			if( typeof value == 'undefined' || typeof value[0] == 'undefined' ) {
 				return;
@@ -3808,18 +3812,34 @@ MegaFilter.prototype = {
 				case 'levels' :
 				case 'vehicles' : {
 					_this.find('select').each(function(i){
-						if( typeof value[i] != 'undefined' ) {
-							jQuery(this).find('option').each(function(j){
-								if( value[i] == jQuery(this).val() ) {
-									var $s = jQuery(this).parent().prop('selectedIndex',j);
-									
-									if( type != 'related' ) {
-										$s.mf_selectpicker('refresh');
-									}
-									
-									return false;
-								}
-							});
+						if( typeof value[i] == 'undefined' ) {
+							return;
+						}
+						
+						var $sel = jQuery( this ),
+							raw = value[i],
+							v;
+						
+						try {
+							v = decodeURIComponent( raw );
+						} catch( e ) {
+							v = raw;
+						}
+						
+						v = self.decode( v );
+						
+						$sel.find( 'option' ).each(function( j ) {
+							if( String( v ) !== String( jQuery( this ).val() ) ) {
+								return;
+							}
+							
+							$sel.prop( 'selectedIndex', j );
+							
+							return false;
+						});
+						
+						if( $sel.hasClass( 'mf_selectpicker' ) ) {
+							$sel.mf_selectpicker( 'refresh' );
 						}
 					});
 					
@@ -3876,6 +3896,8 @@ MegaFilter.prototype = {
 				}
 			}
 		});
+		
+		self._refreshBootstrapSelectpickers();
 		
 		//for( var i = 0; i < self._sliders.length; i++ ) {
 		//	self._sliders[i].setValues();
@@ -4815,6 +4837,55 @@ MegaFilter.prototype = {
 		}
 		
 		return whitespace.indexOf(str.charAt(0)) === -1 ? str : '';
+	},
+	
+	/**
+	 * Vehicle selects use seo key "vehicle"; the same selection may appear in URL only as c-* (related categories).
+	 */
+	_vehicleValuesFromParams: function( params ) {
+		if( typeof params == 'undefined' || params === null ) {
+			return undefined;
+		}
+		
+		if( typeof params.vehicle != 'undefined' && typeof params.vehicle[0] != 'undefined' ) {
+			return params.vehicle;
+		}
+		
+		var ck;
+		
+		for( ck in params ) {
+			if( ! Object.prototype.hasOwnProperty.call( params, ck ) ) {
+				continue;
+			}
+			
+			if( /^c-.+-[0-9]+$/.test( ck ) && params[ck] && typeof params[ck][0] != 'undefined' ) {
+				return params[ck];
+			}
+		}
+		
+		return undefined;
+	},
+	
+	/**
+	 * Theme uses Bootstrap .same_pick + selectpicker() in footer; refresh after programmatic value changes.
+	 */
+	_refreshBootstrapSelectpickers: function() {
+		var self = this;
+		
+		function run() {
+			if( typeof jQuery.fn.selectpicker != 'function' ) {
+				return;
+			}
+			
+			self._box.find( 'select.same_pick' ).each(function() {
+				try {
+					jQuery( this ).selectpicker( 'refresh' );
+				} catch( e ) {}
+			});
+		}
+		
+		setTimeout( run, 0 );
+		setTimeout( run, 100 );
 	},
 	
 	resetFilters: function( renderSelectedFilters, click ){
