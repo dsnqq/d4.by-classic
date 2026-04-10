@@ -5327,11 +5327,15 @@ jQuery().ready(function(){
 });
 
 function display_MFP(view) {
-	// Product List
-	$('#list-view').click(function() {
+	// Product List (keep in sync with catalog/view/javascript/common.js — theme d4 uses .row_s.view for list layout)
+	$('#list-view').off('click.mfpdisplay').on('click.mfpdisplay', function() {
 		$('#content .product-grid > .clearfix').remove();
 
 		$('#content .row > .product-grid').attr('class', 'product-layout product-list col-xs-12');
+
+		$('#grid-view').removeClass('active');
+		$('#list-view').addClass('active');
+		$('.row_s').addClass('view');
 
 		if( typeof localStorage === 'object' ) {
 			try {
@@ -5341,7 +5345,7 @@ function display_MFP(view) {
 	});
 
 	// Product Grid
-	$('#grid-view').click(function() {
+	$('#grid-view').off('click.mfpdisplay').on('click.mfpdisplay', function() {
 		$('#content .product-layout > .clearfix').remove();
 		
 		// What a shame bootstrap does not take into account dynamically loaded columns
@@ -5355,6 +5359,10 @@ function display_MFP(view) {
 			$('#content .product-list').attr('class', 'product-layout product-grid col-lg-3 col-md-3 col-sm-6 col-xs-12');
 		}
 
+		$('#list-view').removeClass('active');
+		$('#grid-view').addClass('active');
+		$('.row_s').removeClass('view');
+
 		if( typeof localStorage === 'object' ) {
 			try {
 				localStorage.setItem('display', 'grid');
@@ -5363,7 +5371,14 @@ function display_MFP(view) {
 	});
 
 	try {
-		if (typeof localStorage === 'object' && localStorage.getItem('display') == 'list') {
+		var mode = null;
+		if (typeof localStorage === 'object') {
+			mode = localStorage.getItem('display');
+		}
+		if (mode !== 'list' && mode !== 'grid' && (view === 'list' || view === 'grid')) {
+			mode = view;
+		}
+		if (mode === 'list') {
 			$('#list-view').trigger('click');
 		} else {
 			$('#grid-view').trigger('click');
