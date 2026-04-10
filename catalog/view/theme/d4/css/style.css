@@ -769,6 +769,7 @@ header{
     font-size: 14px;
     line-height: 18px;
     color: #626666;
+    word-break: break-all;
 }
 .product_this__grid {
     display: grid;
