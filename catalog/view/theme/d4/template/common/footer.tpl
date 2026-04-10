@@ -1,24 +1,46 @@
-<div class="widget_curse ">
-	<div class="panel panel-primary">
-	  <div class="panel-heading">
-		<h4 class="panel-title" style="text-align:center;">Курсы валют</h4></div>
-	  <div class="widget_curse--body">
-	  <table class="table table-striped table-hover">
-		<tbody>
-			<td style="white-space: nowrap; text-overflow:ellipsis; overflow: hidden; max-width:160px;"><img src="//static.currencyrate.today/f/i/flags/us.png" width="16" height="11" alt="USD" loading="lazy"> <span>Доллар США</span></td>
-			<td class="text-right"><span class="label label-default"><?php echo round($currencies['BYN']['value'], 2); ?></span></td>
-		  </tr>
-		  <tr>
-			<td style="white-space: nowrap; text-overflow:ellipsis; overflow: hidden; max-width:160px;"><img src="//static.currencyrate.today/f/i/flags/ru.png" width="16" height="11" alt="RUB" loading="lazy"> <span>Российский Рубль</span></td>
-			<td class="text-right"> <span title="-13.84910" class="label label-danger"><?php echo round($currencies['RUB']['value'], 2); ?></span></td>
-		  </tr>
-		  <tr>
-		</tbody>
-	  </table>
-	  <div class="panel-footer">
-		<p class="text-muted pull-right" style="font-size:10px;padding-top:9px;text-align: center;"><?php echo date('d.m.Y'); ?></p>
-	  </div>
-	  </div>
+<div class="widget_curse" aria-expanded="false">
+	<button type="button" class="widget_curse__trigger" aria-controls="widget-curse-panel" aria-expanded="false" aria-label="Открыть курсы валют">
+		<span class="widget_curse__trigger-icon" aria-hidden="true">
+			<svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1.41 16.09V20h-2.67v-1.93c-1.71-.36-3.16-1.46-3.27-3.4h1.96c.1 1.05.82 1.87 2.65 1.87 1.96 0 2.4-.98 2.4-1.59 0-.83-.44-1.61-2.67-2.14-2.48-.6-4.16-1.68-4.16-3.67 0-1.72 1.39-2.84 3.11-3.21V4h2.67v1.95c1.86.45 2.79 1.86 2.85 3.39H14.3c-.05-1.11-.64-1.87-2.22-1.87-1.5 0-2.4.68-2.4 1.64 0 .84.65 1.39 2.67 1.91s4.73 1.36 4.73 3.91c-.01 1.83-1.38 2.83-3.12 3.16z" fill="currentColor"/></svg>
+		</span>
+		<span class="widget_curse__trigger-main">
+			<span class="widget_curse__trigger-title">Курсы валют</span>
+			<span class="widget_curse__trigger-rates">
+				<span class="widget_curse__rate"><abbr title="Доллар США">USD</abbr> <?php echo round($currencies['BYN']['value'], 2); ?></span>
+				<span class="widget_curse__rate-sep" aria-hidden="true">·</span>
+				<span class="widget_curse__rate"><abbr title="Российский рубль">RUB</abbr> <?php echo round($currencies['RUB']['value'], 2); ?></span>
+			</span>
+		</span>
+	</button>
+	<div class="widget_curse__backdrop" aria-hidden="true"></div>
+	<div id="widget-curse-panel" class="widget_curse--body" role="dialog" aria-modal="true" aria-labelledby="widget-curse-title">
+		<div class="widget_curse__panel">
+			<div class="widget_curse__header">
+				<h2 id="widget-curse-title" class="widget_curse__heading">Курсы валют</h2>
+				<button type="button" class="widget_curse__close" aria-label="Закрыть">&times;</button>
+			</div>
+			<div class="widget_curse__table-wrap">
+				<table class="widget_curse__table">
+					<tbody>
+						<tr>
+							<td class="widget_curse__cell-name">
+								<img src="//static.currencyrate.today/f/i/flags/us.png" width="18" height="12" alt="" loading="lazy">
+								<span>Доллар США</span>
+							</td>
+							<td class="widget_curse__cell-val"><span class="widget_curse__badge widget_curse__badge--neutral"><?php echo round($currencies['BYN']['value'], 2); ?></span></td>
+						</tr>
+						<tr>
+							<td class="widget_curse__cell-name">
+								<img src="//static.currencyrate.today/f/i/flags/ru.png" width="18" height="12" alt="" loading="lazy">
+								<span>Российский рубль</span>
+							</td>
+							<td class="widget_curse__cell-val"><span class="widget_curse__badge widget_curse__badge--down" title="-13.84910"><?php echo round($currencies['RUB']['value'], 2); ?></span></td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+			<p class="widget_curse__date">На дату <?php echo date('d.m.Y'); ?></p>
+		</div>
 	</div>
 </div>
 
@@ -179,13 +201,34 @@ $(document).ready(function() { //
   });
 
 
-	$('.widget_curse').on('click', function(){
-		$(this).toggleClass('activate');
+	function widgetCurseSetOpen($w, open) {
+		$w.toggleClass('activate', open).attr('aria-expanded', open ? 'true' : 'false');
+		$w.find('.widget_curse__trigger').attr('aria-expanded', open ? 'true' : 'false');
+		var lockScroll = open && $(window).width() <= 991;
+		$('body').toggleClass('widget-curse-open', lockScroll);
+	}
+	$(document).on('click', '.widget_curse__trigger', function (e) {
+		e.preventDefault();
+		e.stopPropagation();
+		var $w = $(this).closest('.widget_curse');
+		widgetCurseSetOpen($w, !$w.hasClass('activate'));
 	});
-	$(document).mouseup(function (e) {
-		var container = $(".widget_curse");
-		if (container.has(e.target).length === 0){
-			container.removeClass('activate');
+	$(document).on('click', '.widget_curse__backdrop, .widget_curse__close', function (e) {
+		e.preventDefault();
+		e.stopPropagation();
+		widgetCurseSetOpen($(this).closest('.widget_curse'), false);
+	});
+	$(document).on('click', function (e) {
+		if (!$(e.target).closest('.widget_curse').length) {
+			widgetCurseSetOpen($('.widget_curse'), false);
+		}
+	});
+	$(document).on('click', '.widget_curse--body', function (e) {
+		e.stopPropagation();
+	});
+	$(document).on('keydown', function (e) {
+		if (e.key === 'Escape' && $('.widget_curse').hasClass('activate')) {
+			widgetCurseSetOpen($('.widget_curse'), false);
 		}
 	});
 });
