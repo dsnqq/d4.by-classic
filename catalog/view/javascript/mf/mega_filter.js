@@ -4078,7 +4078,7 @@ MegaFilter.prototype = {
 		})();
 		
 		if( typeof url == 'undefined' || url === null ) {
-			url = [ self._options.routeProduct, self._options.routeHome, self._options.routeInformation, self._options.routeManufacturerList ].indexOf( self._options.route ) > -1 ? self.createUrl( self._options.ajaxResultsUrl, undefined, undefined, ! ( self._options.seo.enabled && self._options.seo.usePostAjaxRequests ) ) : self.createUrl( undefined, undefined, undefined, ! ( self._options.seo.enabled && self._options.seo.usePostAjaxRequests ) );
+			url = self.createUrl( self._options.ajaxResultsUrl, undefined, undefined, ! ( self._options.seo.enabled && self._options.seo.usePostAjaxRequests ) );
 		} else {
 			var mfpUrl = this.filtersToUrl();
 			
@@ -4095,8 +4095,18 @@ MegaFilter.prototype = {
 			cname += self._ajaxPagination;
 		}
 		
-		if( ( ! self._options.homePageAJAX && self._options.routeHome == self._options.route ) || [ self._options.routeProduct, self._options.routeInformation, self._options.routeManufacturerList ].indexOf( self._options.route ) > -1 ) {
-			if( url.indexOf( 'path,' ) < 0 && url.indexOf( 'path[' ) < 0 && self._options.data.category_id !== null ) {
+		if( ( ! self._options.homePageAJAX && self._options.routeHome == self._options.route ) || [ self._options.routeProduct, self._options.routeInformation, self._options.routeManufacturerList ].indexOf( self._options.route ) > -1 || ( self._options.route == self._options.routeCategory && ! nextPage ) ) {
+			var ajaxSeo = ! ( self._options.seo.enabled && self._options.seo.usePostAjaxRequests );
+			var parsedForReload = self._parseUrl( url, {} );
+			var keepParams = {};
+			var preserveKeys = [ 'page', 'sort', 'order', 'limit' ];
+			for( var _kpi = 0; _kpi < preserveKeys.length; _kpi++ ) {
+				if( typeof parsedForReload[ preserveKeys[_kpi] ] != 'undefined' ) {
+					keepParams[ preserveKeys[_kpi] ] = parsedForReload[ preserveKeys[_kpi] ];
+				}
+			}
+			url = self.createUrl( self._options.ajaxResultsUrl, keepParams, undefined, ajaxSeo );
+			if( self._options.route != self._options.routeCategory && url.indexOf( 'path,' ) < 0 && url.indexOf( 'path[' ) < 0 && self._options.data.category_id !== null ) {
 				if( url.indexOf( self._options.seo.parameter + '=' ) < 0 ) {
 					url += url.indexOf( '?' ) >= 0 ? '&' : '?';
 					url += self._options.seo.parameter + '=';
@@ -4932,8 +4942,9 @@ MegaFilter.prototype = {
 	 */
 	reload: function() {
 		var self = this;
+		var ajaxSeo = ! ( self._options.seo.enabled && self._options.seo.usePostAjaxRequests );
 		
-		window.location.href = self.createUrl();
+		window.location.href = self.createUrl( self._options.ajaxResultsUrl, undefined, undefined, ajaxSeo );
 	}
 };
 var MegaFilterLang = {};
