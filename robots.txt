@@ -14,7 +14,6 @@ Allow: /catalog/*.png
 Allow: /catalog/*.gif
 Allow: /catalog/*.svg
 Disallow: /*export.php
-Disallow: /*modification.php
 Disallow: /system
 Disallow: /*?sort=
 Disallow: /*&sort=
@@ -49,7 +48,6 @@ Allow: /catalog/*.png
 Allow: /catalog/*.gif
 Allow: /catalog/*.svg
 Disallow: /*export.php
-Disallow: /*modification.php
 Disallow: /system
 Disallow: /*?sort=
 Disallow: /*&sort=

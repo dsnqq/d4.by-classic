@@ -547,7 +547,7 @@ $('#same_1').change(function () {
 	//getCategoryFilters - Функция на получение фильтров категории /catalog/model/catalog/category.php
 
 	$.ajax({
-		url: '/modification.php',
+		url: '/index.php?route=product/category_modifications',
 		data: {
 		"category_id" : selectedItem
 		},
