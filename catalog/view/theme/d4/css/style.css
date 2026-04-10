@@ -1149,7 +1149,7 @@ body .mfilter-option.mfilter-select select{
     border-radius: 4px !important;
     text-align:center !important;
     padding:10px 0px !important;
-    max-width:119px !important;
+    /*max-width:119px !important;*/
     width:100% !important;
     height:auto !important;
 }
@@ -1220,7 +1220,7 @@ body .mfilter-option.mfilter-select select{
     box-sizing: border-box !important;
     border-radius: 4px !important;
     padding:10px 25px !important;
-    max-width:119px !important;
+    /*max-width:119px !important;*/
     width:100% !important;
     height:auto !important;
     text-align:left !important;
