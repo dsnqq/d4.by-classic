@@ -8,7 +8,20 @@ class ModelCatalogProduct extends Model {
 			return $data['image'];
 		}
 		if (!empty($data['product_image']) && is_array($data['product_image'])) {
-			foreach ($data['product_image'] as $product_image) {
+			$images = $data['product_image'];
+
+			usort($images, function($a, $b) {
+				$sortA = isset($a['sort_order']) ? (int)$a['sort_order'] : PHP_INT_MAX;
+				$sortB = isset($b['sort_order']) ? (int)$b['sort_order'] : PHP_INT_MAX;
+
+				if ($sortA === $sortB) {
+					return 0;
+				}
+
+				return ($sortA < $sortB) ? -1 : 1;
+			});
+
+			foreach ($images as $product_image) {
 				if (!empty($product_image['image']) && trim($product_image['image']) !== '') {
 					return $product_image['image'];
 				}
