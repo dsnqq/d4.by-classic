@@ -1,10 +1,18 @@
 $(function () {
-    // Выбор главного фото
+        // Выбор главного фото
     $('body').on('click', '.main_image', function () {
         const mainPhoto = $(this).closest('.itemsBlock').find('.image_for_main').val();
         $('button').removeClass('activeMain');
         $(this).addClass('activeMain');
-        $('.input-image-main-dop').val(mainPhoto);
+        
+        // Убедимся что поле image существует, создадим если нужно
+        let $mainImageInput = $('input[name="image"]');
+        if ($mainImageInput.length === 0) {
+            // Создаём поле для главного фото если его нет (вне #preview для надёжности)
+            $('#preview').before('<input type="hidden" name="image" value="" class="input-image-main-dop">');
+            $mainImageInput = $('input[name="image"]');
+        }
+        $mainImageInput.val(mainPhoto);
     });
 
     // Открытие модалки
@@ -28,15 +36,25 @@ $(function () {
                 myDropzone.processQueue();
             });
 
-            this.on("queuecomplete", function () {
+                        this.on("queuecomplete", function () {
                 const path = 'image/catalog/d4_img';
                 const folderName = `${path}/<?=$time?>/`;
                 const maskName = `catalog/d4_img/<?=$time?>/`;
                 let sameFile = $('.itemsBlock').length || 0;
 
+                // Убедимся что есть контейнер для фото
+                if ($('#preview').html().trim() === '' || $('#preview .row').length === 0) {
+                    $('#preview').html('<div class="row itemsBlockFlex"></div>');
+                }
+
+                // Проверяем есть ли поле для главного фото (вне #preview)
+                let $mainImageInput = $('input[name="image"]');
+                let mainImageUnset = $mainImageInput.length === 0 || !$mainImageInput.val() || String($mainImageInput.val()).trim() === '';
+                let mainFromDropzoneSet = false;
+
                 myDropzone.files.forEach((file, index) => {
                     if (!file) return;
-                    const classActive = sameFile === 0 ? "activeMain" : "";
+                    const classActive = (sameFile === 0 && mainImageUnset) ? "activeMain" : "";
                     const imgHtml = `
                         <div class="itemsBlock">
                             <img src="${file.dataURL}" class="img-thumbnail" width="175" height="175" style="height:175px;" />
@@ -46,10 +64,18 @@ $(function () {
                             <button type="button" class="btn btn-link main_image ${classActive}">Главное фото</button>
                         </div>`;
 
-                    if (!$('#preview').html().trim() || !$('.input-image-main-dop').val()) {
-                        $('#preview').html(`<div class="row itemsBlockFlex"><input type="hidden" name="image" value="${maskName}${file.upload.filename}" class="input-image-main-dop">${imgHtml}</div>`);
-                    } else {
-                        $('#preview .row').append(imgHtml);
+                    $('#preview .row').append(imgHtml);
+
+                    // Устанавливаем первое загруженное фото как главное, если главное ещё не установлено
+                    if (mainImageUnset && !mainFromDropzoneSet) {
+                        // Создаём поле image если его ещё нет (вне #preview)
+                        if ($mainImageInput.length === 0) {
+                            $('#preview').before(`<input type="hidden" name="image" value="${maskName}${file.upload.filename}" class="input-image-main-dop">`);
+                            $mainImageInput = $('input[name="image"]');
+                        } else {
+                            $mainImageInput.val(maskName + file.upload.filename);
+                        }
+                        mainFromDropzoneSet = true;
                     }
 
                     sameFile++;
@@ -61,18 +87,43 @@ $(function () {
         }
     };
 
-    // Удаление фото
+        // Удаление фото
     $(document).on('click', '.remove_image', function () {
-        $(this).closest('.itemsBlock').remove();
+        const $itemBlock = $(this).closest('.itemsBlock');
+        const wasMain = $itemBlock.find('.main_image').hasClass('activeMain');
+        
+        $itemBlock.remove();
+        
+        // Если удалили главное фото, нужно выбрать новое главное
+        if (wasMain) {
+            const $firstItem = $('.itemsBlock').first();
+            if ($firstItem.length > 0) {
+                const firstImagePath = $firstItem.find('.image_for_main').val();
+                $firstItem.find('.main_image').addClass('activeMain');
+                $('input[name="image"]').val(firstImagePath);
+            } else {
+                // Если фото не осталось, очищаем поле image
+                $('input[name="image"]').val('');
+            }
+        }
     });
 
-    // Получение изображений
+        // Получение изображений
     function listImage() {
         $.get("<?=$site_url_photo?>", function (data) {
             if (!$('#preview').html().trim()) {
-                $('#preview').html(`<div class="row">${data}</div>`);
+                $('#preview').html(`<div class="row itemsBlockFlex">${data}</div>`);
             } else {
                 $('#preview .row').html(data);
+            }
+            
+            // После загрузки изображений проверяем есть ли поле image
+            // и устанавливаем активное главное фото если нужно
+            if ($('input[name="image"]').length === 0 && $('.itemsBlock').length > 0) {
+                // Если поля image нет, но есть фото - создаём поле и делаем первое фото главным
+                var firstImagePath = $('.itemsBlock').first().find('.image_for_main').val();
+                $('#preview').before('<input type="hidden" name="image" value="' + firstImagePath + '" class="input-image-main-dop">');
+                $('.itemsBlock').first().find('.main_image').addClass('activeMain');
             }
         });
     }
