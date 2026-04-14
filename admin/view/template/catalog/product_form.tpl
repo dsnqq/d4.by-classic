@@ -1483,8 +1483,8 @@
   <script>
       $(document).ready(function() {
           $('body').on('click','.main_image', function(){
-              var _main_photo = $(this).parent('.itemsBlock').find('.image_for_main').val();
-              $('button').removeClass('activeMain');
+              var _main_photo = $(this).closest('.itemsBlock').find('.image_for_main').val();
+              $('#preview .main_image').removeClass('activeMain');
               $(this).addClass('activeMain');
               $('#input-image').val(_main_photo);
           });
