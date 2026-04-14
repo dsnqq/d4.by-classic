@@ -1482,41 +1482,12 @@
   </div>
   <script>
       $(document).ready(function() {
-          function syncPreviewOrderingAndMain() {
-              $('#preview .itemsBlock').each(function(index) {
-                  $(this).find('.sort_order').val(index);
-              });
-
-              var selectedMain = $('#preview .main_image.activeMain').closest('.itemsBlock').find('.image_for_main').val();
-
-              if (selectedMain && String(selectedMain).trim() !== '') {
-                  $('#input-image').val(selectedMain);
-              }
-          }
-
           $('body').on('click','.main_image', function(){
               var _main_photo = $(this).closest('.itemsBlock').find('.image_for_main').val();
               $('#preview .main_image').removeClass('activeMain');
               $(this).addClass('activeMain');
               $('#input-image').val(_main_photo);
           });
-
-          if ($.isFunction($.fn.sortable) && $('#preview .row.itemsBlockFlex').length) {
-              $('#preview .row.itemsBlockFlex').sortable('option', 'update', function() {
-                  $('#preview .itemsBlock').each(function(index) {
-                      $(this).find('.sort_order').val(index);
-
-                      if (index === 0) {
-                          $(this).find('button.main_image').trigger('click');
-                      }
-                  });
-              });
-          }
-
-          $('#form-product').on('submit', function() {
-              syncPreviewOrderingAndMain();
-          });
-
           $('.modalOpenAddPhotoMe').on('click', function(){
               $("#myModalBox").modal('show');
           });
