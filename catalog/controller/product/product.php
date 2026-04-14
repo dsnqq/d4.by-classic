@@ -382,16 +382,17 @@ class ControllerProductProduct extends Controller {
             $data['datetime1'] = date_create($product_info['date_added']);
 
             $currency_code = $this->session->data['currency'];
+            $price_for_conversion = (float)((float)$product_info['special'] ? $product_info['special'] : $product_info['price']);
 
-            if($currency_code == "BYN"){
-                $data['price_2'] = "$".round($this->currency->convert($data['price'], $currency_code, 'USD'), 0);
-                $data['price_3'] = round($this->currency->convert($data['price'], $currency_code, 'EUR'), 0)."€";
-            } elseif($currency_code == "EUR"){
-                $data['price_2'] = round($this->currency->convert($data['price'], $currency_code, 'BYN'), 0)."BYN";
-                $data['price_3'] = "$".round($this->currency->convert($data['price'], $currency_code, 'USD'), 0);
-            } elseif($currency_code == "USD"){
-                $data['price_2'] = round($this->currency->convert(substr($data['price'], 1), $currency_code, 'BYN'), 0)."BYN";
-                $data['price_3'] = round($this->currency->convert(substr($data['price'], 1), $currency_code, 'EUR'), 0)."€";
+            if ($currency_code == "BYN") {
+                $data['price_2'] = "$" . round($this->currency->convert($price_for_conversion, $currency_code, 'USD'), 0);
+                $data['price_3'] = round($this->currency->convert($price_for_conversion, $currency_code, 'EUR'), 0) . "€";
+            } elseif ($currency_code == "EUR") {
+                $data['price_2'] = round($this->currency->convert($price_for_conversion, $currency_code, 'BYN'), 0) . "BYN";
+                $data['price_3'] = "$" . round($this->currency->convert($price_for_conversion, $currency_code, 'USD'), 0);
+            } elseif ($currency_code == "USD") {
+                $data['price_2'] = round($this->currency->convert($price_for_conversion, $currency_code, 'BYN'), 0) . "BYN";
+                $data['price_3'] = round($this->currency->convert($price_for_conversion, $currency_code, 'EUR'), 0) . "€";
             }
 
 
