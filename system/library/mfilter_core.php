@@ -56,6 +56,108 @@ class MegaFilterCore {
 	
 	private static $_om = null;
 	
+	private static $_manufacturer_parent_fallback = null;
+
+	private function _manufacturerParentFallback() {
+		if( self::$_manufacturer_parent_fallback !== null ) {
+			return self::$_manufacturer_parent_fallback;
+		}
+		
+		self::$_manufacturer_parent_fallback = array(
+			12 => array( 13 ),
+			136 => array( 137, 138, 1347 ),
+			177 => array( 178, 179, 180, 181 ),
+			183 => array( 1256 ),
+			191 => array( 192, 193, 194, 195, 196, 197, 198, 199, 200, 201, 202, 203, 204, 205, 206, 207, 208, 209, 210, 211, 212, 213, 214, 215, 216, 217, 218, 219, 220, 221, 222, 223, 224, 225, 226, 227, 228, 229, 230, 231, 232, 233 ),
+			256 => array( 1237, 1519, 1520, 1521, 1522 ),
+			263 => array( 264 ),
+			484 => array( 485, 486, 487, 488, 489, 490, 492, 493, 494, 495, 497, 498, 499, 500, 501, 1432, 1433, 1434, 1435, 1436, 1437, 1438, 1246, 1248, 1249, 1250, 1251, 1252, 1277, 1332, 1389, 1397, 1472, 1473, 1474, 1475, 1476 ),
+			508 => array( 509, 510, 511, 512, 513, 514, 515, 516, 517, 518, 519, 520, 521 ),
+			671 => array( 672, 673, 674 ),
+			724 => array( 725, 726, 727, 728 ),
+			743 => array( 1199, 1203, 1208, 1215 ),
+			744 => array( 1185, 1186 ),
+			749 => array( 750, 751, 1284 ),
+			756 => array( 757 ),
+			768 => array( 1222, 1289 ),
+			778 => array( 779, 780, 781, 782, 783, 784 ),
+			789 => array( 790, 1285, 1446 ),
+			819 => array( 820, 821, 822, 823, 824, 1229, 1234, 1515, 1516 ),
+			826 => array( 1195 ),
+			836 => array( 1339 ),
+			875 => array( 876, 877, 878, 879 ),
+			885 => array( 886, 887 ),
+			910 => array( 911, 912, 913, 914, 915 ),
+			922 => array( 923, 924 ),
+			925 => array( 926, 927 ),
+			942 => array( 1219, 1221 ),
+			951 => array( 1268, 1269 ),
+			981 => array( 982, 983, 984, 985 ),
+			986 => array( 987, 988, 989, 990 ),
+			1009 => array( 1010, 1011, 1012, 1013 ),
+			1057 => array( 1058, 1059, 1060, 1405, 1393, 1406, 1407, 1503 ),
+			1062 => array( 1230, 1231, 1232, 1233, 1261, 1272, 1309, 1363, 1455 ),
+			1126 => array( 1128, 1129, 1130, 1131 )
+		);
+
+		return self::$_manufacturer_parent_fallback;
+	}
+
+	public function manufacturerParentFallbackMap() {
+		return $this->_manufacturerParentFallback();
+	}
+
+	private function _normalizeManufacturerIds( array $ids ) {
+		$result = array();
+
+		foreach( $ids as $id ) {
+			$id = (int) $id;
+
+			if( $id > 0 ) {
+				$result[$id] = $id;
+			}
+		}
+
+		return array_values( $result );
+	}
+
+	private function _expandManufacturerIdsWithFallback( array $ids ) {
+		$expanded = array();
+		$fallback = $this->_manufacturerParentFallback();
+
+		foreach( $this->_normalizeManufacturerIds( $ids ) as $id ) {
+			$expanded[$id] = $id;
+
+			if( isset( $fallback[$id] ) ) {
+				foreach( $fallback[$id] as $child_id ) {
+					$expanded[(int) $child_id] = (int) $child_id;
+				}
+			}
+		}
+
+		return array_values( $expanded );
+	}
+
+	private function _applyManufacturerFallbackCounts( array $counts ) {
+		$fallback = $this->_manufacturerParentFallback();
+
+		foreach( $fallback as $parent_id => $children_ids ) {
+			$total = isset( $counts[$parent_id] ) ? (int) $counts[$parent_id] : 0;
+
+			foreach( $children_ids as $child_id ) {
+				if( isset( $counts[$child_id] ) ) {
+					$total += (int) $counts[$child_id];
+				}
+			}
+
+			if( $total > 0 ) {
+				$counts[$parent_id] = $total;
+			}
+		}
+
+		return $counts;
+	}
+	
 	static public function newInstance( & $ctrl, $sql, array $data = array(), $settings = array() ) {
 		return new MegaFilterCore( $ctrl, $sql, $data, $settings );
 	}
@@ -1086,7 +1188,13 @@ class MegaFilterCore {
 							break;
 						}
 						case 'manufacturers' : {
-							$this->_conditions['in']['manufacturers'] = '`p`.`manufacturer_id` IN(' . implode( ',', $this->aliasesToIds( 'manufacturer_id', $value ) ) . ')';
+							$manufacturer_ids = $this->_expandManufacturerIdsWithFallback( $this->aliasesToIds( 'manufacturer_id', $value ) );
+
+							if( ! $manufacturer_ids ) {
+								$manufacturer_ids = array( 0 );
+							}
+
+							$this->_conditions['in']['manufacturers'] = '`p`.`manufacturer_id` IN(' . implode( ',', $manufacturer_ids ) . ')';
 							
 							break;
 						}
@@ -2375,7 +2483,13 @@ class MegaFilterCore {
 		}
 		
 		if( ! empty( $data['filter_manufacturer_id'] ) ) {
-			$conditions['manufacturer_id'] = '`p`.`manufacturer_id` = ' . (int) $data['filter_manufacturer_id'];
+			$manufacturer_ids = $this->_expandManufacturerIdsWithFallback( array( (int) $data['filter_manufacturer_id'] ) );
+
+			if( ! $manufacturer_ids ) {
+				$manufacturer_ids = array( (int) $data['filter_manufacturer_id'] );
+			}
+
+			$conditions['manufacturer_id'] = '`p`.`manufacturer_id` IN(' . implode( ',', $manufacturer_ids ) . ')';
 		}
 		
 		$mfilter_search = false;
@@ -3248,11 +3362,13 @@ class MegaFilterCore {
 	}
 	
 	public function getCountsByManufacturers() {
-		return $this->getCountsByType( 'manufacturers', array(
+		$counts = $this->getCountsByType( 'manufacturers', array(
 				'`p`.`manufacturer_id`'
 			),
 			'manufacturer_id'
 		);
+
+		return $this->_applyManufacturerFallbackCounts( $counts );
 	}
 	
 	private function _replaceCounts( array $counts1, array $counts2 ) {

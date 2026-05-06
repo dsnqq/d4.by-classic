@@ -833,11 +833,71 @@ class ModelModuleMegaFilter extends Model {
 		$manufacturers	= array();
 		$seo_keywords	= array();
 		$query			= $this->db->query( $sql );
+		$rows			= $query->rows;
+
+		$manufacturer_parent_fallback = method_exists( $core, 'manufacturerParentFallbackMap' ) ? $core->manufacturerParentFallbackMap() : array();
+
+		if( $rows ) {
+			$rows_by_id = array();
+
+			foreach( $rows as $row ) {
+				$rows_by_id[(int) $row['manufacturer_id']] = $row;
+			}
+
+			$parent_ids_to_load = array();
+
+			foreach( $manufacturer_parent_fallback as $parent_id => $children_ids ) {
+				$parent_id = (int) $parent_id;
+
+				if( isset( $rows_by_id[$parent_id] ) ) {
+					continue;
+				}
+
+				foreach( $children_ids as $child_id ) {
+					if( isset( $rows_by_id[(int) $child_id] ) ) {
+						$parent_ids_to_load[$parent_id] = $parent_id;
+						break;
+					}
+				}
+			}
+
+			if( $parent_ids_to_load ) {
+				$sql_parents = "
+					SELECT
+						`m`.*
+					FROM
+						`" . DB_PREFIX . "manufacturer` AS `m`
+					INNER JOIN
+						`" . DB_PREFIX . "manufacturer_to_store` AS `m2s`
+					ON
+						`m`.`manufacturer_id` = `m2s`.`manufacturer_id` AND `m2s`.`store_id` = '" . (int) $this->config->get('config_store_id') . "'
+					WHERE
+						`m`.`manufacturer_id` IN(" . implode( ',', $parent_ids_to_load ) . ")
+				";
+
+				foreach( $this->db->query( $sql_parents )->rows as $parent_row ) {
+					$rows_by_id[(int) $parent_row['manufacturer_id']] = $parent_row;
+				}
+			}
+
+			$rows = array_values( $rows_by_id );
+
+			usort($rows, function($a, $b) {
+				$sort_a = (int) $a['sort_order'];
+				$sort_b = (int) $b['sort_order'];
+
+				if( $sort_a === $sort_b ) {
+					return strcmp( $a['name'], $b['name'] );
+				}
+
+				return $sort_a < $sort_b ? -1 : 1;
+			});
+		}
 
 		if( $this->isSeoEnabled() ) {
 			$manufacturer_queries = array();
 
-			foreach( $query->rows as $row ) {
+			foreach( $rows as $row ) {
 				$manufacturer_queries[] = "'manufacturer_id=" . $row['manufacturer_id'] . "'";
 			}
 
@@ -862,7 +922,7 @@ class ModelModuleMegaFilter extends Model {
 			unset( $manufacturer_queries );
 		}
 
-		foreach( $query->rows as $row ) {
+		foreach( $rows as $row ) {
 			$value = $this->isSeoEnabled() && isset( $seo_keywords['manufacturer_id='.$row['manufacturer_id']] ) ? $seo_keywords['manufacturer_id='.$row['manufacturer_id']] : $row['manufacturer_id'];
 
 			$manufacturers[] = $core->addParamToCurrentUrl( array(

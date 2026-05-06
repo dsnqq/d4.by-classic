@@ -693,6 +693,9 @@ $(document).ready(function(){
 		overflow: hidden;
 	}
 </style>
+<script type="text/javascript">
+	window.MF_MANUFACTURER_PARENT_FALLBACK = <?php echo json_encode( empty( $manufacturer_parent_fallback_map ) ? array() : $manufacturer_parent_fallback_map ); ?>;
+</script>
 <script src="/catalog/view/javascript/manufacturer-list-filter.js"></script>
 
 <script type="text/javascript">

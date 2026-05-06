@@ -376,6 +376,7 @@ class MegaFilterModule {
 		$data['joo_cart']		= $joo_cart;
 		$data['jcart']			= $jcart;
 		$data['filters']		= $attributes;
+		$data['manufacturer_parent_fallback_map'] = method_exists( $core, 'manufacturerParentFallbackMap' ) ? $core->manufacturerParentFallbackMap() : array();
 		$data['settings']		= $settings;
 		$data['params']			= $core->getParseParams();
 		$data['_data']			= $core->getData();
