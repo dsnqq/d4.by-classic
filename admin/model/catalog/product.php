@@ -4,6 +4,9 @@ class ModelCatalogProduct extends Model {
 	 * Главное фото: из поля image или, если оно пустое, первое непустое из product_image (Dropzone пишет только в галерею).
 	 */
 	private function resolveMainImagePath($data) {
+		if (!empty($data['selected_main_image']) && trim($data['selected_main_image']) !== '') {
+			return $data['selected_main_image'];
+		}
 		if (!empty($data['image']) && trim($data['image']) !== '') {
 			return $data['image'];
 		}

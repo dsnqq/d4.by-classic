@@ -1163,6 +1163,7 @@
       <div class="row itemsBlockFlex">
         <?php $photo_num = 0; ?>
         <?php /* Главное фото: только #input-image (выше). Второй name="image" давал в PHP пустое значение из-за дублей в длинной форме. */ ?>
+        <input type="hidden" name="selected_main_image" value="<?php echo $image; ?>" id="input-selected-main-image" />
 
         <?php foreach ($product_images as $product_photo) { ?>
         <div class="itemsBlock">
@@ -1482,14 +1483,33 @@
   </div>
   <script>
       $(document).ready(function() {
+          function syncMainImageFromSelection() {
+              var $activeMainButton = $('#preview .main_image.activeMain').first();
+              var mainImagePath = '';
+
+              if ($activeMainButton.length) {
+                  mainImagePath = $activeMainButton.closest('.itemsBlock').find('.image_for_main').val();
+              } else {
+                  mainImagePath = $('#preview .itemsBlock .image_for_main').first().val() || '';
+              }
+
+              $('#input-image').val(mainImagePath || '');
+              $('#input-selected-main-image').val(mainImagePath || '');
+          }
+
           $('body').on('click','.main_image', function(){
-              var _main_photo = $(this).parent('.itemsBlock').find('.image_for_main').val();
-              $('button').removeClass('activeMain');
+              var _main_photo = $(this).closest('.itemsBlock').find('.image_for_main').val();
+              $('.main_image').removeClass('activeMain');
               $(this).addClass('activeMain');
               $('#input-image').val(_main_photo);
+              $('#input-selected-main-image').val(_main_photo);
           });
           $('.modalOpenAddPhotoMe').on('click', function(){
               $("#myModalBox").modal('show');
+          });
+
+          $('#form-product').on('submit', function() {
+              syncMainImageFromSelection();
           });
       });
       $(document).ready(function() {
@@ -1582,7 +1602,20 @@
           }
 
           $(document).on('click', '.remove_image', function() {
-              $(this).parent('.itemsBlock').remove();
+              var $removed = $(this).closest('.itemsBlock');
+              var isRemovedMain = $removed.find('.main_image').hasClass('activeMain');
+              $removed.remove();
+
+              if (isRemovedMain) {
+                  var $newMain = $('#preview .itemsBlock .main_image').first();
+
+                  if ($newMain.length) {
+                      $newMain.trigger('click');
+                  } else {
+                      $('#input-image').val('');
+                      $('#input-selected-main-image').val('');
+                  }
+              }
           });
 
           $('.procent_price').on('input', function(){

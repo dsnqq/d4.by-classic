@@ -47,7 +47,7 @@
               update: function() {
                   $('.itemsBlock').each(function() {
                       $(this).find('.sort_order').val($(this).index());
-                      if($(this).index() == 1){
+                      if($(this).index() == 0){
                           $(this).find('button.main_image').trigger('click');
                       }
                   });
