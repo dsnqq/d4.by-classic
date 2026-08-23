@@ -67,9 +67,6 @@ class ModelCatalogCategory extends Model {
 		return $query->row['total'];
 	}
 
-
-
-
     public function getCurrencies($data = array()) {
         if ($data) {
             $sql = "SELECT * FROM " . DB_PREFIX . "currency";
