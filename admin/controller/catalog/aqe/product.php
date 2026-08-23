@@ -748,48 +748,7 @@ class ControllerCatalogAqeProduct extends Controller {
 						$row['view_date_list'] = explode(',', $product_stax_view['view_date_list']);
                         $row['change'] = $this->model_catalog_product->getChangeProductData($result['product_id']); // ОТКЛЮЧАЕМ ФУНКЦИОНАЛ
 
-						$url = '';
-						if (isset($this->request->get['filter_category'])) {
-							$url .= '&filter_category=' . urlencode(html_entity_decode($this->request->get['filter_category'], ENT_QUOTES, 'UTF-8'));
-						}
-						if (isset($this->request->get['filter_sub_category'])) {
-							$url .= '&filter_sub_category=' . urlencode(html_entity_decode($this->request->get['filter_sub_category'], ENT_QUOTES, 'UTF-8'));
-						}
-						if (isset($this->request->get['filter_special_price'])) {
-							$url .= '&filter_special_price=' . urlencode(html_entity_decode($this->request->get['filter_special_price'], ENT_QUOTES, 'UTF-8'));
-						}
-						if (isset($this->request->get['filter_manufacturer'])) {
-							$url .= '&filter_manufacturer=' . $this->request->get['filter_manufacturer'];
-						}
-						if (isset($this->request->get['filter_jan'])) {
-							$url .= '&filter_jan=' . $this->request->get['filter_jan'];
-						}
-						if (isset($this->request->get['filter_isbn'])) {
-							$url .= '&filter_isbn=' . $this->request->get['filter_isbn'];
-						}
-						if (isset($this->request->get['sort'])) {
-							$url .= '&sort=' . $this->request->get['sort'];
-						}
-						if (isset($this->request->get['filter_model'])) {
-							$url .= '&filter_model=' . $this->request->get['filter_model'];
-						}
-						if (isset($this->request->get['filter_sku'])) {
-							$url .= '&filter_sku=' . $this->request->get['filter_sku'];
-						}
-						if (isset($this->request->get['filter_length'])) {
-							$url .= '&filter_length=' . $this->request->get['filter_length'];
-						}
-						if (isset($this->request->get['order'])) {
-							$url .= '&order=' . $this->request->get['order'];
-						}
-						if (isset($this->request->get['page'])) {
-							$url .= '&page=' . $this->request->get['page'];
-						}
-						if (isset($this->request->get['filter_status'])) {
-							$url .= '&filter_status=' . $this->request->get['filter_status'];
-						}
-						$url .= $this->diskFilterQueryString();
-						$row['url_deleted'] = $url;
+						$row['url_deleted'] = $this->listFilterQueryString();
 						$row[$column] = $_buttons;
 					} else if ($column == 'selector') {
 						$row[$column] = '';
@@ -2062,6 +2021,40 @@ class ControllerCatalogAqeProduct extends Controller {
 
 		$this->response->addHeader('Content-Type: application/json');
 		$this->response->setOutput(json_encode($response));
+	}
+
+	protected function listFilterQueryString() {
+		$url = '';
+
+		foreach ($this->config->get('aqe_catalog_products') as $column => $attr) {
+			if (isset($this->request->get['filter_' . $column]) && $this->request->get['filter_' . $column] !== '') {
+				$url .= '&filter_' . $column . '=' . urlencode(html_entity_decode($this->request->get['filter_' . $column], ENT_QUOTES, 'UTF-8'));
+			}
+		}
+
+		if (isset($this->request->get['filter_sub_category'])) {
+			$url .= '&filter_sub_category=' . urlencode(html_entity_decode($this->request->get['filter_sub_category'], ENT_QUOTES, 'UTF-8'));
+		}
+
+		if (isset($this->request->get['filter_special_price'])) {
+			$url .= '&filter_special_price=' . urlencode(html_entity_decode($this->request->get['filter_special_price'], ENT_QUOTES, 'UTF-8'));
+		}
+
+		$url .= $this->diskFilterQueryString();
+
+		if (isset($this->request->get['sort'])) {
+			$url .= '&sort=' . $this->request->get['sort'];
+		}
+
+		if (isset($this->request->get['order'])) {
+			$url .= '&order=' . $this->request->get['order'];
+		}
+
+		if (isset($this->request->get['page'])) {
+			$url .= '&page=' . $this->request->get['page'];
+		}
+
+		return $url;
 	}
 
 	protected function diskFilterQueryString() {
