@@ -568,12 +568,14 @@ class ControllerCatalogAqeProduct extends Controller {
 					if ($column == 'image') {
 						if ($result['image'] && file_exists(DIR_IMAGE . $result['image'])) {
 							$image = $result['image'];
+							$row[$column] = $result['image'];
+							$row['thumb'] = $image;
+							$row['thumb_mini'] = $this->model_tool_image->resize($image, 170, 170);
 						} else {
-							$image = $this->model_tool_image->resize('no_image.png', $this->config->get('aqe_list_view_image_width'), $this->config->get('aqe_list_view_image_height'));
+							$row[$column] = $result['image'];
+							$row['thumb'] = $result['image'];
+							$row['thumb_mini'] = $this->model_tool_image->resize('no_image.png', 170, 170);
 						}
-						$row[$column] = $result['image'];
-						$row['thumb'] = $image;
-						$row['thumb_mini'] = $this->model_tool_image->resize($image,170, 170);
 
 
                         $row['images'] = array();

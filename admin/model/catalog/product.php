@@ -24,6 +24,30 @@ class ModelCatalogProduct extends Model {
 		if($data['main_category_id'] <= 0){
 			return false;
 		}
+		if (isset($data['model']) && $data['model'] != '') {
+            $model = $data['model'];
+            $check_query = $this->db->query("SELECT COUNT(*) as total FROM " . DB_PREFIX . "product WHERE model = '" . $this->db->escape($model) . "'");
+            if ($check_query->row['total'] > 0) {
+                if (is_numeric($model)) {
+                    $new_model = (int)$model + 1;
+                    while (true) {
+                        $check = $this->db->query("SELECT COUNT(*) as total FROM " . DB_PREFIX . "product WHERE model = '" . $this->db->escape((string)$new_model) . "'");
+                        if ($check->row['total'] == 0) break;
+                        $new_model++;
+                    }
+                    $data['model'] = (string)$new_model;
+                } else {
+                    $counter = 1;
+                    do {
+                        $new_model = $model . '_' . $counter;
+                        $check = $this->db->query("SELECT COUNT(*) as total FROM " . DB_PREFIX . "product WHERE model = '" . $this->db->escape($new_model) . "'");
+                        $counter++;
+                    } while ($check->row['total'] > 0);
+                    $data['model'] = $new_model;
+                }
+                //$this->log->write('Был занят артикул "' . $model . '", сгенерирован новый: "' . $data['model'] . '"');
+            }
+        }
 		$this->db->query("INSERT INTO " . DB_PREFIX . "product SET model = '" . $this->db->escape($data['model']) . "', sku = '" . $this->db->escape($data['sku']) . "', upc = '" . $this->db->escape($data['upc']) . "', ean = '" . $this->db->escape($data['ean']) . "', jan = '" . $this->db->escape($data['jan']) . "', diadiametr = '" . $this->db->escape($data['diadiametr']) . "', version = '" . $this->db->escape($data['version']) . "', etvylet = '" . $this->db->escape($data['etvylet']) . "', youtube = '" . $this->db->escape($data['youtube']) . "', isbn = '" . $this->db->escape($data['isbn']) . "', mpn = '" . $this->db->escape($data['mpn']) . "', location = '" . $this->db->escape($data['location']) . "', quantity = '" . (int)$data['quantity'] . "', minimum = '" . (int)$data['minimum'] . "', subtract = '" . (int)$data['subtract'] . "', stock_status_id = '" . (int)$data['stock_status_id'] . "', date_available = '" . $this->db->escape($data['date_available']) . "', manufacturer_id = '" . (int)$data['manufacturer_id'] . "', shipping = '" . (int)$data['shipping'] . "', price = '" . (float)$data['price'] . "', points = '" . (int)$data['points'] . "', weight = '" . (float)$data['weight'] . "', weight_class_id = '" . (int)$data['weight_class_id'] . "', length = '" . (float)$data['length'] . "', width = '" . (float)$data['width'] . "', height = '" . (float)$data['height'] . "', length_class_id = '" . (int)$data['length_class_id'] . "', status = '" . (int)$data['status'] . "', tax_class_id = '" . (int)$data['tax_class_id'] . "', sort_order = '" . (int)$data['sort_order'] . "', date_added = NOW()");
 
 		$product_id = $this->db->getLastId();

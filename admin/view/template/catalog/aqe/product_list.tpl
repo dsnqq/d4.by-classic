@@ -386,7 +386,7 @@
 											case 'image': ?>
                         <td style="display: grid;grid-template-columns: 1fr 1fr 1fr;min-width:170px;"class="<?php echo $column_info[$col]['align']; ?><?php echo ($column_info[$col]['qe_status']) ? ' ' . $column_info[$col]['type'] : ''; ?>" id="<?php echo $col . "-" . $product['product_id']; ?>">
                         <div style=" grid-column: 1 / -1;">
-                            <a data-lightbox="image<?php echo $product['product_id']; ?>" href="https://d4.by/image/<?php echo $product['thumb']; ?>">
+                            <a data-lightbox="image<?php echo $product['product_id']; ?>" href="<?php echo (strpos($product['thumb'], 'http') === 0) ? $product['thumb'] : 'https://d4.by/image/' . $product['thumb']; ?>">
                                 <img src="<?php echo $product['thumb_mini']; ?>" width="150px" class="img-thumbnail" data-id="<?php echo $product['product_id']; ?>" data-image="<?php echo $product['image']; ?>" />
                             </a>
                         </div>
