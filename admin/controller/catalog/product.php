@@ -44,7 +44,7 @@ class ControllerCatalogProduct extends Controller {
 			$query_link ="UPDATE oc_product SET status='0' WHERE product_id='" . $category_id . "'";
 			$result2020 = mysqli_query($link, $query_link) or die("Ошибка " . mysqli_error($link));
 
-            if($user_id == 8) {
+        if($user_id == 8 || $user_id == 9 || $user_id == 10 || $user_id == 11) {
                 // Добавляем в аккаунт к бухгалтеру //
                 $product_this = $this->model_catalog_product->getProduct((int)$category_id);
                 $price_byn = $this->currency->format($this->tax->calculate($product_this['price'], $product_this['tax_class_id'], $this->config->get('config_tax')), 'BYN');
@@ -277,7 +277,7 @@ class ControllerCatalogProduct extends Controller {
                     $this->model_catalog_product->addChangeProductData($data_old[$param[0]], $data_new[$param[0]], $param[1], $this->request->get['product_id'], $user_id);
 
                     // Добавляем в аккаунт к бухгалтеру //
-                    if($user_id == 8 && $param[0] == "status") {
+                    if(($user_id == 8 || $user_id == 9 || $user_id == 10 || $user_id == 11) && $param[0] == "status") {
                         $this->load->model('catalog/manufacturer');
                         $this->load->model('catalog/category');
                         $product_this = $this->model_catalog_product->getProduct((int)$this->request->get['product_id']);
