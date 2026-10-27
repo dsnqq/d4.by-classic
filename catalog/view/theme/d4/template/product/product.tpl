@@ -192,16 +192,17 @@
 						<?php
 							if(stripos(trim($attribute__phone__item), 'viber') !== false) {
 								$viber_status = true;
-								$attribute__phone__item = preg_replace('/viber/i','',$attribute__phone__item);
+								$attribute__phone__item = preg_replace('/[\s,]*viber[\s,]*/i',' ',$attribute__phone__item);
 							}
 							if(stripos(trim($attribute__phone__item), 'whatsapp') !== false) {
 								$whatsapp_status = true;
-								$attribute__phone__item = preg_replace('/whatsapp/i','',$attribute__phone__item);
+								$attribute__phone__item = preg_replace('/[\s,]*whatsapp[\s,]*/i',' ',$attribute__phone__item);
 							}
 							if(stripos(trim($attribute__phone__item), 'telegram') !== false) {
 								$telegram_status = true;
-								$attribute__phone__item = preg_replace('/telegram/i','',$attribute__phone__item);
+								$attribute__phone__item = preg_replace('/[\s,]*telegram[\s,]*/i',' ',$attribute__phone__item);
 							}
+							$attribute__phone__item = trim(preg_replace('/\s+/', ' ', $attribute__phone__item));
 						?>
 						  <a class="btn btn-danger btn-block btn-phone" href="tel:<?php echo $attribute__phone__item; ?>">
 							  <?php echo $attribute__phone__item; ?>
